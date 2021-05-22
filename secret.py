@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# author: cysec0x67
+# license: MIT license
+
+# use simple shift cypher to encode message/ decode using reverse cypher/ and censor a word from a sentence/paragraph
 
 # spaces are always ! points
 coder = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1 234567890!"
