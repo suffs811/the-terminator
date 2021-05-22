@@ -1,4 +1,10 @@
 #!/usr/bin/env Python3
+# author: cysec0x67
+# license: MIT license
+
+# take a wordlist, encode it to an md5 hash, and run against inputted md5 hash
+# to find the password
+
 
 import hashlib
 print("******************** Password Cracker ********************")
