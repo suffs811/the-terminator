@@ -1,4 +1,9 @@
 #!/usr/bin/env Python3
+# author: cysec0x67
+# license: MIT license
+
+# take an ascii word and hash it using md5
+
 
 import hashlib
 
