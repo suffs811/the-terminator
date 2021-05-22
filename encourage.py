@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+# author: cysec0x67
+# license: MIT license
 
-'''
-a program that lets you choose a mood/explression 
-and then gives you a bible verse for encouragement.
-'''
+# choose a mood/explression 
+# and return a bible verse for encouragement
+
 
 verses = {
 "crying":"Blessed are those who mourn, for they will be comforted.\n[Matthew 5:4]",
