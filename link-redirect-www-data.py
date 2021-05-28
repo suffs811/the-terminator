@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-# created 22 May 2021 by cysec0x67
+# author: cysec11
 # license: MIT license
-# run as python script in cli against linux/unix-like.
+
+# run as python script in cli against linux/unix-like machine
 
 # this script will find the index.html file on a compromised server and replace any
 # paragraphs <p> with a link to whatever ip you input
