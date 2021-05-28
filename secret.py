@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# author: cysec0x67
+# author: cysec11
 # license: MIT license
 
 # use simple shift cypher to encode message/ decode using reverse cypher/ and censor a word from a sentence/paragraph
