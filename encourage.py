@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# author: cysec0x67
+# author: cysec11
 # license: MIT license
 
 # choose a mood/explression 
