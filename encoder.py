@@ -1,5 +1,5 @@
 #!/usr/bin/env Python3
-# author: cysec0x67
+# author: cysec11
 # license: MIT license
 
 # take an ascii word and hash it using md5
