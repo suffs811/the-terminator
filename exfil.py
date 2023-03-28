@@ -1,4 +1,4 @@
-#!/usr/env/python3
+#!/usr/bin/python3
 # author: suffs811 github: https://github.com/cysec11/scripts
 # python script for catting /etc files, saving them to file,
 # sending them to local system,
