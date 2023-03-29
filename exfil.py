@@ -1,5 +1,6 @@
 #!/usr/env/python3
-# author: suffs811 github: https://github.com/cysec11/scripts
+# author: suffs811 
+# github: https://github.com/cysec11/scripts.git
 # python script for catting /etc files, saving them to file,
 # sending them to local system,
 # and deleting history/script from target machine.
