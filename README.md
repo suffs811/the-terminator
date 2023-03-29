@@ -12,3 +12,6 @@ The remaining files are not connected to one another and are used for various, s
 - system(notes).py - various notes I took on finding system information using python.
 - exfil.py - script that write system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
 - pers.py - script for establishing persistence on compromised target machine with root permissions
+
+TO DO:
+- add else: and f.close() to function
