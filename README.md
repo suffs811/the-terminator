@@ -15,3 +15,4 @@ The remaining files are not connected to one another and are used for various, s
 
 TO DO:
 - add else: and f.close() to add_user function in pers.py
+- change ip and passwd input() in exfil.py
