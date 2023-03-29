@@ -11,3 +11,4 @@ The remaining files are not connected to one another and are used for various, s
 - secret.py - disguised as a normal program. When asked how you are feeling today, reply 'secret' to encode/decode a message, or censor a word from a sentence/paragraph.
 - system(notes).py - various notes I took on finding system information using python.
 - exfil.py - script that write system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
+- pers.py - script for establishing persistence on compromised target machine with root permissions
