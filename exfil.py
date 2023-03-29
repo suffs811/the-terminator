@@ -99,6 +99,7 @@ def extract_clear(local_path):
 if args.password:
     print("\n### running sudo -l: ###")
     os.system(f"timeout -k 3 3 sudo -l -S {password}")
+    #os.system("sudo -S < <(echo '{password}') <your sudo command>")
 else:
     print("\n*** no password was specified, could not run 'sudo -l' ***")
     return
