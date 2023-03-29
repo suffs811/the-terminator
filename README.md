@@ -14,4 +14,4 @@ The remaining files are not connected to one another and are used for various, s
 - pers.py - script for establishing persistence on compromised target machine with root permissions
 
 TO DO:
-- add else: and f.close() to function
+- add else: and f.close() to add_user function in pers.py
