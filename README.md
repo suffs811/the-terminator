@@ -1,11 +1,15 @@
 # scripts
-various scripts. Use at your own risk. I am not responsible for any damage or harm done to anything or anyone at all ever for anything ever.
+various scripts. Use at your own risk.
 
+Linux pentesting scripts:
+- exfil.py - script that write system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
+- priv.py - script to automate common privelege escalation techniques
+- pers.py - script for establishing persistence on compromised target machine with root permissions.
+
+Older scripts:
 The encoder.py and decoder.py are to be used together as they hash a word into standard md5 hash format and decode an md5 hash, respectly. 
 The remaining files are not connected to one another and are used for various tasks described below:
 
-- exfil.py - script that write system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
-- pers.py - script for establishing persistence on compromised target machine with root permissions.
 - encoder.py - word to md5 hash.
 - decoder.py - md5 hash to word via rockyou.txt (provide path to wordlist).
 - encourage.py - asks for an emotion and gives a bible verse for encouragement.
