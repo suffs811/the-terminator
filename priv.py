@@ -198,6 +198,7 @@ def path():
         for line in lines:
             split_path = line.split("/")
             split_path_1 = split_path[-1]
+            print(line)
             os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
             strings_file = open("/tmp/.path/root_{}".format(split_path_1))
             lines_strings = strings_file.readlines()
