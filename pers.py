@@ -5,11 +5,6 @@
 # 
 # usage: python3 pers.py -u 'pepe' -p 'password' 10.0.0.1 4444
 
-'''
-TO DO:
-- figure out how to add user in script
-- automate su USER
-'''
 
 import os
 import argparse
