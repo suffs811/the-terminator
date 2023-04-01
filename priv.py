@@ -96,7 +96,8 @@ def sudo_l(sudo_no_pass):
     # open last line of sudo -l output to determine sudo capabilities
     with open('/tmp/sudo_l.txt', 'r') as pwd:
         last_line = pwd.readlines()[-1]
-        last_line.lower()
+        lower_line = last_line.lower()
+        print(lower_line)
 
     # loop through dictionaries and print cmds if need user interaction, otherwise execute
     for key in sudo_bins_print:
