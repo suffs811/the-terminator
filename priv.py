@@ -102,15 +102,15 @@ def sudo_l():
         # loop through dictionaries and print cmds if need user interaction, otherwise execute
         for key in sudo_bins_print:
             if key in lower_line:
-                print("{}: {}".format(key,value))
+                print("{}: {}".format(key,sudo_bins_print[key]))
                 continue
             else:
                 continue
 
         for key in sudo_bins_exec:
             if key in lower_line:
-                print("{}: {}".format(key,value))
-                sudo_cmd = value.strip()
+                print("{}: {}".format(key,sudo_bins_exec[key]))
+                sudo_cmd = sudo_bins_exec[key].strip()
                 os.system(sudo_cmd)
                 exit()
             else:
