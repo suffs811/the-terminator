@@ -197,8 +197,9 @@ def path():
         lines = root_files.readlines()
         for line in lines:
             split_path = line.split("/")
-            os.system("strings {} > /tmp/.path/root_{}".format(line,split_path[-1]))
-            strings_file = open("/tmp/.path/root_{}".format(split_path[-1]))
+            split_path_1 = split_path[-1]
+            os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
+            strings_file = open("/tmp/.path/root_{}".format(split_path_1))
             lines_strings = strings_file.readlines()
             for cmd in common_cmds:
                 non_path_cmd = re.search("\\s{}\\s".format(cmd), lines_strings)
