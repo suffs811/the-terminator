@@ -70,7 +70,7 @@ def add_user(username,password):
 		pass_file = open("/tmp/.backups/pass.txt", "r")
 		new_user_pass = pass_file.readlines()[-1].strip()
 		os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
-		os.system("echo '{}:x:0:0:{}:/home/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
+		os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
 		os.system("usermod -aG sudo {}".format(username))
 		print("user {} created and added to sudo group".format(username))
 		pass_file.close()
