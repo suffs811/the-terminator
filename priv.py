@@ -242,6 +242,17 @@ def pass_shadow():
             print("\n*** /etc/shadow is not writable ***")
 
 
+# check for root
+def root_check():
+    os.system("id > /tmp/pwd.txt")
+    with open("/tmp/pwd.txt") as check:
+        read_check = check.readline()
+        if "root" in read_check:
+            print("\n-+- welcome, root -+-")
+        else:
+            print("\n-+- no privelege escalation path found... try manually -+-")
+
+
 # reestablish history logging and replace log files
 def clear_tracks():
         print("\n### clearing and replacing log files to previous state... ###")
@@ -278,17 +289,5 @@ sudo_l(sudo_no_pass)
 suid()
 path()
 pass_shadow()
-
-
-# check for root
-def root_check():
-    os.system("id > /tmp/pwd.txt")
-    with open("/tmp/pwd.txt") as check:
-        read_check = check.readline()
-        if "root" in read_check:
-            print("\n-+- welcome, root -+-")
-        else:
-            print("\n-+- no privelege escalation path found... try manually -+-")
-
-
+root_check()
 clear_tracks()
