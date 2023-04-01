@@ -199,17 +199,20 @@ def path():
             split_path = line.split("/")
             split_path_1 = split_path[-1]
             print(line)
-            os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
-            strings_file = open("/tmp/.path/root_{}".format(split_path_1))
-            lines_strings = strings_file.readlines()
-            for cmd in common_cmds:
-                non_path_cmd = re.search("\\s{}\\s".format(cmd), lines_strings)
-                if non_path_cmd:
-                    print("\n### {} does not specify full path of {} ###".format(line,cmd))
-                    os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
-                    break
-                else:
-                    continue
+            if split_path_1 = "snap-confine":
+                continue
+            else:
+                os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
+                strings_file = open("/tmp/.path/root_{}".format(split_path_1))
+                lines_strings = strings_file.readlines()
+                for cmd in common_cmds:
+                    non_path_cmd = re.search("\\s{}\\s".format(cmd), lines_strings)
+                    if non_path_cmd:
+                        print("\n### {} does not specify full path of {} ###".format(line,cmd))
+                        os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
+                        break
+                    else:
+                        continue
             strings_file.close()
 
 
