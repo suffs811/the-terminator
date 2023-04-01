@@ -101,8 +101,8 @@ def sudo_l():
     if args.password:
         print("\n### attempting sudo -l: ###")
         # trouble finding a way to run sudo -l bc it requires password input
-        #os.system("timeout -k 3 3 sudo -l -S {}".format(password))
-        #os.system("sudo -S < <(echo '{}') sudo -l".format(password))
+        os.system("timeout -k 5 5 sudo -l -S {}".format(password))
+        #os.system("sudo -S -l < <(echo '{}')".format(password))
     else:
         print("\n*** no password was specified, could not run 'sudo -l' ***")
 
