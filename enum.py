@@ -25,14 +25,6 @@ pwd = os.getcwd()
 
 # run initial nmap scan
 def init_scan(ip,pwd):
-	serv_dic = {
-	"ftp"ftp()
-	"ssh":ssh()
-	"smtp":smtp()
-	"http":web()
-	"smb":smb()
-	}
-	
 	print("\n### finding open ports... ###")
 	os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN scan_1".format(ip))
 	ports = []
