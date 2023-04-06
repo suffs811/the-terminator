@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 # author: suffs811
-# github: https://github.com/cysec11/scripts.git
-# purpose: automate enumeration using nmap, nikto, dirbuster, enum4linux, and others.
+# https://github.com/cysec11/scripts.git
+# purpose: automate common enumeration techniques 
+# using nmap, nikto, dirbuster, and enum4linux.
 #
-# usage: python3 enum.py -w <path_to_drectory_list> 10.0.0.1
+# usage: python3 enum.py -w <path_to_directory_list> <target_ip>
+
 
 import os
 import argparse
@@ -65,9 +67,11 @@ def init_scan(ip,pwd):
 			else:
 				continue
 
+	tot = ports+services
+
 	print("\n### services found: {}".format(services.strip()))
 
-	return ports,services
+	return ports,services,tot
 
 
 def web(ip,wordlist,services):
@@ -86,10 +90,13 @@ def web(ip,wordlist,services):
 	for port in web_port:
 		print("\n### curling robots.txt for {}:{}... ###".format(ip,port))
 		os.system("curl http://{}:{}/robots.txt | tee enum/robots.txt".format(ip,port.strip()))
+	print("\n### looking for webserver version in searchsploit... ###")
+	os.system("searchsploit {} | tee enum/searchsploit.txt".format(services["http"]))
 
-	print("\n### web enum output saved to nikto.txt, dir_walk.txt, and robots.txt in enum/ ###")
+	print("\n### web enum output saved to nikto.txt, dir_walk.txt, robots.txt, and searchsploit.txt in enum/ ###")
 
 
+# use enum4linux and nmap to enumerate smb shares/users
 def smb(ip):
 	print("\n### initiating smb enumeration... ###")
 	os.system("enum4linux -A {} | tee enum/smb_enum.txt".format(ip))
@@ -97,12 +104,14 @@ def smb(ip):
 	print("\n### smb enum output saved to enum/smb_nmap.txt ###")
 
 
+# use nmap to try ftp anonymous login
 def ftp(ip):
 	print("\n### initiating ftp enumeration... ###")
 	os.system("nmap -vv -p 21 --script=ftp-anon {} -oN enum/ftp_nmap.txt".format(ip))
 	print("\n### ftp enum output saved to enum/ftp_nmap.txt ###")
 
 
+# use nmap to show NFS mounts
 def nfs(ip):
 	print("\n### initiating nfs enumeration... ###")
 	os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN enum/nfs_nmap.txt".format(ip))
@@ -112,17 +121,18 @@ def nfs(ip):
 # call functions
 init_scan(ip)
 
-if "80" in ports or "8080" in ports or "http" in services.values():
-	web(ip,wordlist)
-	continue
-elif "139" in ports or "445" in ports or "smb" in services.values() or "samba" in services.values():
-	smb(ip)
-	continue
-elif "21" in ports or "ftp" in services.values():
-	ftp(ip)
-	continue
-elif "111" in ports or "nfs" in services.values():
-	nfs(ip)
-else:
-	print("\n### scan complete... continue with manual enumeration ###")
+for item in tot:
+	if item == "80" or item == "8080" or item == "http":
+		web(ip,wordlist)
+		continue
+	elif item == "139" or item == "445" or item == "smb" or item == "samba":
+		smb(ip)
+		continue
+	elif or item == "21" or item == "ftp":
+		ftp(ip)
+		continue
+	elif or item == "111" or item == "nfs":
+		nfs(ip)
+	else:
+		print("\n### scan complete... continue with manual enumeration ###")
 
