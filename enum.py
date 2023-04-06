@@ -19,12 +19,13 @@ ip = args.ip
 wordlist = args.wordlist
 
 
-# get pwd
+# get pwd and make enum directory
 pwd = os.getcwd()
-
+os.system("mkdir enum")
 
 # run initial nmap scan
 def init_scan(ip,pwd):
+	
 	print("\n### finding open ports... ###")
 	os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN scan_1".format(ip))
 	ports = []
@@ -79,33 +80,33 @@ def web(ip,wordlist,services):
 			continue
 
 	print("\n### running nikto... ###")
-	os.system("nikto -h {} -o nikto.txt nmap".format(ip))
+	os.system("nikto -h {} -o enum/nikto.txt".format(ip))
 	print("\n### running gobuster... ###")
-	os.system("gobuster dir -u {} -w {} | tee dir_walk.txt".format(ip,wordlist))
+	os.system("gobuster dir -u {} -w {} | tee enum/dir_walk.txt".format(ip,wordlist))
 	for port in web_port:
 		print("\n### curling robots.txt for {}:{}... ###".format(ip,port))
-		os.system("curl http://{}:{}/robots.txt | tee robots.txt".format(ip,port.strip()))
+		os.system("curl http://{}:{}/robots.txt | tee enum/robots.txt".format(ip,port.strip()))
 
-	print("\n### web enum output saved to nikto.txt, dir_walk.txt, and robots.txt ###")
+	print("\n### web enum output saved to nikto.txt, dir_walk.txt, and robots.txt in enum/ ###")
 
 
 def smb(ip):
 	print("\n### initiating smb enumeration... ###")
-	os.system("enum4linux -A {} | tee smb_enum.txt".format(ip))
-	os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN smb_nmap.txt".format(ip))
-	print("\n### smb enum output saved to smb_nmap.txt ###")
+	os.system("enum4linux -A {} | tee enum/smb_enum.txt".format(ip))
+	os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN enum/smb_nmap.txt".format(ip))
+	print("\n### smb enum output saved to enum/smb_nmap.txt ###")
 
 
 def ftp(ip):
 	print("\n### initiating ftp enumeration... ###")
-	os.system("nmap -vv -p 21 --script=ftp-anon {} -oN ftp_nmap.txt".format(ip))
-	print("\n### ftp enum output saved to ftp_nmap.txt ###")
+	os.system("nmap -vv -p 21 --script=ftp-anon {} -oN enum/ftp_nmap.txt".format(ip))
+	print("\n### ftp enum output saved to enum/ftp_nmap.txt ###")
 
 
 def nfs(ip):
 	print("\n### initiating nfs enumeration... ###")
-	os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN nfs_nmap.txt".format(ip))
-	print("\n### nfs enum output saved to nfs_nmap.txt ###")
+	os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN enum/nfs_nmap.txt".format(ip))
+	print("\n### nfs enum output saved to enum/nfs_nmap.txt ###")
 
 
 # call functions
