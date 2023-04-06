@@ -3,7 +3,7 @@
 # github: https://github.com/cysec11/scripts.git
 # purpose: automate enumeration using nmap, nikto, dirbuster, enum4linux, and others.
 #
-# usage: python3 enum.py -w /home/kali/directory.txt 10.0.0.1
+# usage: python3 enum.py -w <path_to_drectory_list> 10.0.0.1
 
 import os
 import argparse
