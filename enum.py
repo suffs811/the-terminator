@@ -28,10 +28,11 @@ os.system("mkdir enum")
 # run initial nmap scan
 def init_scan(ip,pwd):
 	
-	print("\n### finding open ports... ###")
-	os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN scan_1".format(ip))
 	ports = []
 	services = {}
+	# run initial port scan
+	print("\n### finding open ports... ###")
+	os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN enum/scan_1".format(ip))
 
 	# get ports for next scan
 	with open("{}/scan_1".format(pwd)) as scan_1:
@@ -50,8 +51,8 @@ def init_scan(ip,pwd):
 	print("\n### open ports: {}".format(ports))
 	time.sleep(3)
 	print("\n### finding services for ports... ###")
-	port_scan = ",".join()
-	os.system("nmap -vv -A -p {} {} -oN scan_2".format(port_scan,ip))
+	port_scan = ",".join(ports)
+	os.system("nmap -vv -A -p {} {} -oN enum/scan_2".format(port_scan,ip))
 
 	# get services for open ports
 	with open("{}/scan_2".format(pwd)) as scan_2:
