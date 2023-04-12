@@ -1,8 +1,14 @@
-# scripts
-various scripts.
+# The Terminator
++++ A tool for automating the enumeration, privilege escalation, persistence, and exfiltration stages of a pentest +++
 
-Linux pentesting scripts:
+# how to use
+terminator.py is used by itself and is comprised of enum.py, exfil.py, priv.py, and pers.py. for this reason, you can either use terminator.py by itself, or use each of the other scripts individually.
+
+/ for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" enum.py)
+
 - enum.py - script for automating common enumeration techniques (nmap,web,ftp,smb,nfs)
-- exfil.py - script that write system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
 - priv.py - script to automate common privelege escalation techniques
 - pers.py - script for establishing persistence on compromised target machine with root permissions.
+- exfil.py - script for writing system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
+
+Leave a comment if you have any questions!
