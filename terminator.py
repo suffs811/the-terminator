@@ -62,15 +62,18 @@ print('''
 
 # enumeration ###############################
 
-# get pwd and make enum directory
+# get pwd
 pwd = os.getcwd()
-os.system("mkdir enum/")
 
 # run initial nmap scan
 def init_scan(ip,pwd):
    
    ports = []
    services = {}
+
+   # make enum directory for output files
+   os.system("mkdir enum/")
+
    # run initial port scan
    print("\n### finding open ports... ###")
    os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN enum/scan_1".format(ip))
@@ -180,7 +183,7 @@ def nfs(ip):
 # call functions
 if level == "enum":
    # call enumeration functions
-   init_scan(ip)
+   init_scan(ip,pwd)
    for item in tot:
       if item == "80" or item == "8080" or item == "http":
          web(ip,wordlist)
