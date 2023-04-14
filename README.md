@@ -24,6 +24,8 @@ first on your own machine, second time on the target machine after gaining initi
 
 *for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)*
 
+*hint: local machine = your own machine*
+
 # syntax
 (stage 1-enumerating target from local machine):
 - python3 terminator.py enum -t <target_ip_to_enumerate>
@@ -38,7 +40,5 @@ first on your own machine, second time on the target machine after gaining initi
 
 (stage 4-create report on local machine):
 - python3 terminator.py report -o <output_file_name>
-
-local machine = your own machine
 
 -+- Leave a comment if you have any questions! -+-
