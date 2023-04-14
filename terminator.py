@@ -588,4 +588,4 @@ elif level == "report":
    # call report functions
    pass
 else:
-   print("\n*** specify either 'enum', 'exploit', or 'report' ***")
+   print("\n*** specify either 'enum', 'priv', 'root', or 'report' ***")
