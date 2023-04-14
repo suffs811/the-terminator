@@ -16,7 +16,10 @@ you can also use the individual scripts instead of terminator.py (which contains
 terminator.py is used by itself and is comprised of enum.py, exfil.py, priv.py, pers.py, and report.py. 
 for this reason, you can either use terminator.py by itself, or use each of the other scripts individually. because terminator only automates the most common and simple penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
 
-// for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)
+- clone the repository to your computer with "git clone https://github.com/suffs811/the-terminator.git"
+- if you choose to only download terminator.py, you will need to specify a directory wordlist for webpage enumeration (see terminator source code for details)
+
+*for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)
 
 # syntax
 python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
@@ -26,4 +29,4 @@ python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_
 python3 terminator.py report -o <output_file_name>
 
 
--+- Leave a comment if you have any questions! -+-
+# -+- Leave a comment if you have any questions! -+-
