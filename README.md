@@ -29,4 +29,4 @@ python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_
 python3 terminator.py report -o <output_file_name>
 
 
-# -+- Leave a comment if you have any questions! -+-
+-+- Leave a comment if you have any questions! -+-
