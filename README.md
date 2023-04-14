@@ -22,11 +22,11 @@ for this reason, you can either use terminator.py by itself, or use each of the 
 *for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)
 
 # syntax
-python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
+- python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
 
-python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (avoid root permissions check))
+- python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))
 
-python3 terminator.py report -o <output_file_name>
+- python3 terminator.py report -o <output_file_name>
 
 
 -+- Leave a comment if you have any questions! -+-
