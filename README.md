@@ -19,7 +19,9 @@ for this reason, you can either use terminator.py by itself, or use each of the 
 - clone the repository to your computer with "git clone https://github.com/suffs811/the-terminator.git"
 - if you choose to only download terminator.py, you will need to specify a directory wordlist for webpage enumeration (see terminator source code for details)
 
-*for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)
+<> note: for full terminator productivity, you will need to run the script three separate times: first on your local machine for enumeration, second on the target machine after gaining initial shell for exploitation, and third on your local machine again to compile the report.
+
+*for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)*
 
 # syntax
 - python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
