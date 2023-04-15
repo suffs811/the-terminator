@@ -17,7 +17,7 @@ terminator.py is used by itself and is comprised of enum.py, exfil.py, priv.py, 
 for this reason, you can either use terminator.py by itself, or use each of the other scripts individually. because terminator only automates the most common and simple penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
 
 - clone the repository to your computer with "git clone https://github.com/suffs811/the-terminator.git"
-- if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration (see terminator source code for details)
+- if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
 
 <>note: for full terminator productivity, you will need to run the script *four* separate times:
 first on your own machine, second time on the target machine after gaining initial shell, third time on target machine after gaining root privileges, and fourth time on your local machine to compile report.
@@ -40,5 +40,12 @@ first on your own machine, second time on the target machine after gaining initi
 
 (stage 4-create report on local machine):
 - python3 terminator.py report -o <output_file_name>
+
+# details
+stage 1 - enumeration
+
+stage 2 - privilege escalation
+
+stage 3 - persistence and data exfiltration
 
 -+- Leave a comment if you have any questions! -+-
