@@ -69,4 +69,11 @@ stage 3 - persistence and data exfiltration
 
 stage 4 - report writing
 
+# credit
+directory-list.txt is taken from directory-list-2.3-small.txt.
+Copyright 2007 James Fisher.
+This work is licensed under the Creative Commons
+Attribution-Share Alike 3.0 License. To view a copy of this
+license, visit http://creativecommons.org/licenses/by-sa/3.0/
+
 -+- Leave a comment if you have any questions! -+-
