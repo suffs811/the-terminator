@@ -138,4 +138,5 @@ for item in tot:
 	elif item == "111" or item == "nfs":
 		nfs(ip)
 	else:
-		print("\n### scan complete... continue with manual enumeration ###")
+		continue
+print("\n### scan complete... continue with manual enumeration ###")
