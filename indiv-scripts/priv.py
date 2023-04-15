@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # author: suffs811
-# github: https://github.com/cysec11/scripts.git
+# Copyright (c) 2023 suffs811
+# https://github.com/suffs811/the-terminator.git
+# read the README.md file for more details; software distributed under MIT license
+#
 # purpose: script for automating common privesc techniques.
 # if the cmd can be run, it we be execute automatically;
 # if not, it will print the cmd to screen for the user to exec manually.
@@ -102,17 +105,17 @@ def sudo_l():
         # loop through dictionaries and print cmds if need user interaction, otherwise execute
         for key in sudo_bins_print:
             if key in lower_line:
-                print("{}: {}".format(key,sudo_bins_print[key]))
+                print("\n{}: {}".format(key,sudo_bins_print[key]))
                 continue
             else:
                 continue
 
         for key in sudo_bins_exec:
             if key in lower_line:
-                print("{}: {}".format(key,sudo_bins_exec[key]))
+                print("\n{}: {}".format(key,sudo_bins_exec[key]))
                 sudo_cmd = sudo_bins_exec[key].strip()
                 os.system(sudo_cmd)
-                exit()
+                break
             else:
                 continue
 
@@ -166,16 +169,17 @@ def suid():
                 print(line)
             else:
                 continue
+
         for key in suid_bins_print:
             if key in suid:
-                print("\n{}: {}".format(key,value))
+                print("\n{}: {}".format(key,suid_bins_print[key]))
             else:
                 continue
 
         for key in suid_bins_exec:
             if key in suid:
-                print("\n{}: {}".format(key,value))
-                suid_cmd = value.strip()
+                print("\n{}: {}".format(key,suid_bins_exec[key]))
+                suid_cmd = suid_bins_exec[key].strip()
                 os.system(suid_cmd)
                 break
             else:
