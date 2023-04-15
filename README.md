@@ -43,9 +43,30 @@ first on your own machine, second time on the target machine after gaining initi
 
 # details
 stage 1 - enumeration
+- initial nmap scan to find open ports on host
+- secondary nmap scan to identify services running on open ports
+- if http in use, run nikto, gobuster, curl robots.txt, and searchsploit for service version exploits
+- if smb in use, run enum4linux and nmap scripts to scan smb shares and users
+- if ftp in use, run nmap scripts to determine if ftp allows 'anonymous' logon
+- if nfs in use, run nmap scripts to identify service status and mounted shares
 
 stage 2 - privilege escalation
+- attempt to disable history logging of current session and create current backups of log files
+- attempt running sudo-l to find commands user can run as sudo, then run the command if it does not require user interaction; if it does, then print to screen
+- find files with suid bitset and if the binary exists in terminator's dictionary, execute the code; if it needs user interaction, print to screen
+- run strings on suid files to find commands that do not specify command's full path, then create binary file in /tmp, echo '/bin/bash -p' to file, add /tmp to $PATH, execute binary
+- check if /etc/passwd or /etc/shadow are world-writable; if either one is, create password from user input and append new root user to the file; su user for root
+- check for root permissions; if not root, suggest manually finding privesc vector
 
 stage 3 - persistence and data exfiltration
+- check for root permissions and suggest -f to bypass root check
+- if root permissions is true, create password from user input, add new root user to /etc/passwd, /etc/shadow files and add to root group
+- create shell script at /dev/shm/.data/data_log containing netcat reverse shell at ip:port from user input
+- create cronjob in /etc/crontab to execute the shell script every 5 minutes
+
+- write id,whoami,netstat and /etc/passwd,/etc/shadow,/etc/hosts,/etc/crontab,/etc/exports, and suid files to single file and scp the file to local machine using ip from user input; *scp will prompt for user's root password on local machine*
+- cover tracks by clearing log files and history, restoring log files to the copies made during stage 2, deleting all files created by terminator, and deleting terminator.py itself
+
+stage 4 - report writing
 
 -+- Leave a comment if you have any questions! -+-
