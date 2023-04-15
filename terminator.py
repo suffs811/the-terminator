@@ -3,7 +3,7 @@
 # Copyright (c) 2023 suffs811
 # https://github.com/suffs811/the-terminator.git
 # read the README.md file for more details; software distributed under MIT license
-# --purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
+# <> purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
 # initial shell will need to be done manually
 #
 # <> note: for full terminator productivity, you will need to run the script *four* separate times:
