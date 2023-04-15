@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # author: suffs811
-# https://github.com/cysec11/scripts.git
+# Copyright (c) 2023 suffs811
+# https://github.com/suffs811/the-terminator.git
+# read the README.md file for more details; software distributed under MIT license
+#
 # purpose: automate common enumeration techniques 
 # using nmap, nikto, dirbuster, and enum4linux.
 #
@@ -23,7 +26,7 @@ wordlist = args.wordlist
 
 # get pwd and make enum directory
 pwd = os.getcwd()
-os.system("mkdir enum")
+os.system("mkdir enum/")
 
 # run initial nmap scan
 def init_scan(ip,pwd):
@@ -35,7 +38,7 @@ def init_scan(ip,pwd):
 	os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN enum/scan_1".format(ip))
 
 	# get ports for next scan
-	with open("{}/scan_1".format(pwd)) as scan_1:
+	with open("{}/enum/scan_1".format(pwd)) as scan_1:
 		lines_1 = scan_1.readlines()
 		for line in lines_1:
 			number = re.search("\A[1-9][0-9]",line)
@@ -55,7 +58,7 @@ def init_scan(ip,pwd):
 	os.system("nmap -vv -A -p {} {} -oN enum/scan_2".format(port_scan,ip))
 
 	# get services for open ports
-	with open("{}/scan_2".format(pwd)) as scan_2:
+	with open("{}/enum/scan_2".format(pwd)) as scan_2:
 		lines_2 = scan_2.readlines()
 		for line in lines_2:
 			number = re.search("\A[1-9][0-9]",line)
@@ -129,11 +132,10 @@ for item in tot:
 	elif item == "139" or item == "445" or item == "smb" or item == "samba":
 		smb(ip)
 		continue
-	elif or item == "21" or item == "ftp":
+	elif item == "21" or item == "ftp":
 		ftp(ip)
 		continue
-	elif or item == "111" or item == "nfs":
+	elif item == "111" or item == "nfs":
 		nfs(ip)
 	else:
 		print("\n### scan complete... continue with manual enumeration ###")
-
