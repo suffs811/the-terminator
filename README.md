@@ -6,8 +6,7 @@ the terminator automates every stage of pentesting except initial exploitation (
 - terminator.py - tool for automating simple methods for enumeration, privilege escalation, persistence, exfiltration, and reporting
 
 you can also use the individual scripts instead of terminator.py (which contains all of these by itself)
-- enum.py - script for automating common enumeration techni![Uploading 2289150975-huge.jpg…]()
-ques (nmap,web,ftp,smb,nfs)
+- enum.py - script for automating common enumeration techniques (nmap,web,ftp,smb,nfs)
 - priv.py - script to automate common privelege escalation techniques
 - pers.py - script for establishing persistence on compromised target machine with root permissions.
 - exfil.py - script for writing system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
