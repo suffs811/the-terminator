@@ -69,7 +69,13 @@ stage 3 - persistence and data exfiltration
 
 stage 4 - report writing
 
-# credit
+# TO DO
+- finish report.py script
+- test final terminator.py script
+
+# credit and license
 the terminator was created by suffs811 / https://github.com/suffs811.
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 -+- Leave a comment if you have any questions! -+-
