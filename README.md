@@ -74,7 +74,9 @@ stage 4 - report writing
 - test final terminator.py script
 
 # credit and license
-the terminator was created by suffs811 / https://github.com/suffs811.
+Copyright (c) 2023 suffs811
+
+https://github.com/suffs811
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
