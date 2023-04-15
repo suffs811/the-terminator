@@ -3,7 +3,7 @@
 # https://github.com/suffs811/the-terminator.git
 # purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
 #
-# <>note: for full terminator productivity, you will need to run the script *four* separate times:
+# <> note: for full terminator productivity, you will need to run the script *four* separate times:
 # first on your own machine, second time on the target machine after gaining initial shell, 
 # third time on target machine after gaining root privileges, and fourth time on your local machine to compile report.
 #
@@ -17,7 +17,6 @@
 
 '''
 TO DO:
-write enum/priv vector/pers data to file and scp out in data exfil
 add local directory list file to github - directory-list.txt
 write report script
 test
@@ -82,6 +81,8 @@ def init_scan(ip):
 
    # make terminator directory for output files
    os.system("mkdir /terminator/")
+   os.system("touch /terminator/enum.txt")
+   os.system("echo '### enumeration details for {}' >> /terminator/enum.txt".format(ip))
 
    # run initial port scan
    print("\n### finding open ports... ###")
@@ -127,6 +128,7 @@ def init_scan(ip):
       tot.append(service)
 
    print("\n### services found: {}".format(services.strip()))
+   os.system("echo '### open ports and services on {} ###' >> /terminator/enum.txt".format(ip))
 
    return ports,services,tot
 
@@ -142,41 +144,60 @@ def web(ip,wordlist,services):
          continue
 
    print("\n### running nikto... ###")
-   os.system("nikto -h {} -o /terminator/nikto.txt".format(ip))
+   os.system("echo '### nikto results ###' >> /terminator/enum.txt")
+   os.system("nikto -h {} -t 3 -o /terminator/nikto.txt".format(ip))
+   os.system("cat /terminator/nikto.txt >> /terminator/enum.txt")
    print("\n### running gobuster... ###")
    if wordlist:
-      os.system("gobuster dir -u {} -w {} | tee /terminator/dir_walk.txt".format(ip,wordlist))
+      os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
+      os.system("gobuster dir -u {} -w {} | tee -a /terminator/enum.txt".format(ip,wordlist))
    else:
-      os.system("gobuster dir -u {} -w directory-list.txt | tee /terminator/dir_walk.txt".format(ip))
+      os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
+      os.system("gobuster dir -u {} -w directory-list.txt | tee -a /terminator/enum.txt".format(ip))
+   os.system("echo '### robots.txt results ###' >> /terminator/enum.txt")
    for port in web_port:
       print("\n### curling robots.txt for {}:{}... ###".format(ip,port))
       os.system("curl http://{}:{}/robots.txt | tee /terminator/robots.txt".format(ip,port.strip()))
+      with open("/terminator/robots.txt") as rob:
+         r = rob.readlines()
+         for line in r:
+            if "/" in line:
+               os.system("echo '{}' >> /terminator/enum.txt")
+            else:
+               continue
    print("\n### looking for webserver vulnerabilities in searchsploit... ###")
-   os.system("searchsploit {} | tee /terminator/searchsploit.txt".format(services["http"]))
+   os.system("echo '### searchsploit results for {} ###' >> /terminator/enum.txt".format(services["http"]))
+   os.system("searchsploit {} | tee -a /terminator/searchsploit.txt".format(services["http"]))
 
-   print("\n### web enum output saved to nikto.txt, dir_walk.txt, robots.txt, and searchsploit.txt in /terminator/ ###")
+   print("\n### web enum output saved to /terminator/enum.txt ###")
 
 
 # use enum4linux and nmap to enumerate smb shares/users
 def smb(ip):
    print("\n### initiating smb enumeration... ###")
-   os.system("enum4linux -A {} | tee /terminator/smb_enum.txt".format(ip))
-   os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/smb_nmap.txt".format(ip))
-   print("\n### smb enum output saved to /terminator/smb_nmap.txt ###")
+   os.system("echo '### smb enumeration results ###' >> /terminator/enum.txt")
+   os.system("enum4linux -A {} | tee -a /terminator/enum.txt".format(ip))
+   os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/smb.txt".format(ip))
+   os.system("cat /terminator/smb.txt >> /terminator/enum.txt")
+   print("\n### smb enum output saved to /terminator/enum.txt ###")
 
 
 # use nmap to try ftp anonymous login
 def ftp(ip):
    print("\n### initiating ftp enumeration... ###")
+   os.system("echo '### ftp enumeration results ###' >> /terminator/enum.txt")
    os.system("nmap -vv -p 21 --script=ftp-anon {} -oN /terminator/ftp_nmap.txt".format(ip))
-   print("\n### ftp enum output saved to /terminator/ftp_nmap.txt ###")
+   os.system("cat /terminator/ftp_nmap.txt >> /terminator/enum.txt")
+   print("\n### ftp enum output saved to /terminator/enum.txt ###")
 
 
 # use nmap to show NFS mounts
 def nfs(ip):
    print("\n### initiating nfs enumeration... ###")
+   os.system("echo '### nfs enumeration results ###' >> /terminator/enum.txt")
    os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN /terminator/nfs_nmap.txt".format(ip))
-   print("\n### nfs enum output saved to /terminator/nfs_nmap.txt ###")
+   os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
+   print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
 # privilege escalation ###############################
@@ -610,6 +631,7 @@ if level == "enum":
          nfs(ip)
       else:
         print("\n### scan complete... view /terminator/ and continue with manual enumeration ###")
+   os.system("echo '### end of enumeration results ###' >> /terminator/enum.txt")
 elif level == "priv":
    # call privilege escalation functions
    disable_hist()
@@ -629,7 +651,6 @@ elif level == "root":
       cron_make()
       extract(username,password,local_ip,local_port)
       clear_tracks()
-
 elif level == "report":
    # call report functions
    pass
