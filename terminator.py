@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 # author: suffs811
+# Copyright (c) 2023 suffs811
 # https://github.com/suffs811/the-terminator.git
-# purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
+# read the README.md file for more details; software distributed under MIT license
+# --purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
 # initial shell will need to be done manually
 #
-# read the README.md file for more details
-#
 # <> note: for full terminator productivity, you will need to run the script *four* separate times:
-# first on your own machine, second time on the target machine after gaining initial shell, 
-# third time on target machine after gaining root privileges, and fourth time on your local machine to compile report.
+# first on your own machine for target enumeration, second time on the target machine after manually gaining initial shell, 
+# third time on target machine after terminator gains root privileges, and fourth time on your local machine to compile report.
 #
 # usage: (stage 1-enumerating target from local machine): python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
 #
