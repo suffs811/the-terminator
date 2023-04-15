@@ -70,6 +70,8 @@ stage 3 - persistence and data exfiltration
 stage 4 - report writing
 
 # credit
+the terminator was created by suffs811 / https://github.com/suffs811.
+
 directory-list.txt is taken from directory-list-2.3-small.txt.
 Copyright 2007 James Fisher.
 This work is licensed under the Creative Commons
