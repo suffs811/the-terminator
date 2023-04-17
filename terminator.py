@@ -298,6 +298,7 @@ def sudo_l():
 
    return sudo_no_pass
 
+
 # try SUID/GUID files exloitation
 def suid():
    print("\n### finding SUID files... ###")
@@ -500,6 +501,8 @@ def cron_make():
 
 
 # data exfiltration ###############################
+
+# gather target machine data and write to file, scp data files to local machine
 def extract(username,password,local_ip,local_port):
    # write data to file
    print("\n### exfiltrating data... ###")
@@ -610,6 +613,7 @@ def clear_tracks():
 
 # report ###############################
 
+# add contents from enum.txt, priv.txt, and data_exfil.txt to file with -o output file name
 def report(ip,output):
    os.system("touch /terminator/report.txt")
    os.system("echo '-+- Penetration Testing Report for {} -+-' >> /terminator/report.txt".format(ip))
@@ -678,4 +682,4 @@ elif level == "report":
    # call report function
    report(ip,output)
 else:
-   print("\n*** specify either 'enum', 'priv','root' or 'report' ***")
+   print("\n*** specify either 'enum', 'priv', 'root' or 'report' ***")
