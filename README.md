@@ -64,7 +64,7 @@ stage 3 - persistence and data exfiltration
 - cover tracks by clearing log files and history, restoring log files to the copies made during stage 2, deleting all files created by terminator, and deleting terminator.py itself
 
 stage 4 - report writing
-- add contents from data_exfil.txt (peristence and target machine data) and enum.txt (enumeration data) to .txt file; use -o input for file name
+- add contents from priv.txt (privilege escalation vector used to gain root privileges), data_exfil.txt (peristence and target machine data) and enum.txt (enumeration data) to .txt file with headings; use -o input for file name
 
 # TO DO
 - test final terminator.py script
