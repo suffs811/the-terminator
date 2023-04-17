@@ -1,17 +1,12 @@
-# the terminator!
+# the terminator
 +++ a tool for automating simple methods for the enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest +++
 
-- *terminator.py is still in testing phase; feel free to use and test it and share your suggestions in the Discussions!*
+- *terminator.py is still in testing phase; feel free to use and test it and share your suggestions in the Discussions*
 # contents
 the terminator automates every stage of pentesting except initial exploitation (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
 - terminator.py - tool for automating simple methods for enumeration, privilege escalation, persistence, exfiltration, and reporting
 
-you can also use the individual scripts instead of terminator.py (which contains all of these by itself)
-- enum.py - script for automating common enumeration techniques (nmap,web,ftp,smb,nfs)
-- priv.py - script to automate common privelege escalation techniques
-- pers.py - script for establishing persistence on compromised target machine with root permissions.
-- exfil.py - script for writing system data and /etc files to file, scp the file to local machine, and covers tracks by clearing logs.
-- report.py - script to compile pentest data from the above scripts and create a report with it
+you can also use the individual scripts in the *indiv-scripts* folder to for an individual stage of the pentest, instead of using terminator.py (which contains all of these by itself)
 
 # how to use
 terminator.py is used by itself and is comprised of enum.py, exfil.py, priv.py, pers.py, and report.py. 
@@ -69,9 +64,9 @@ stage 3 - persistence and data exfiltration
 - cover tracks by clearing log files and history, restoring log files to the copies made during stage 2, deleting all files created by terminator, and deleting terminator.py itself
 
 stage 4 - report writing
+- add contents from data_exfil.txt (peristence and target machine data) and enum.txt (enumeration data) to .txt file; use -o input for file name
 
 # TO DO
-- finish report.py script
 - test final terminator.py script
 
 # credit and license
@@ -80,5 +75,7 @@ Copyright (c) 2023 suffs811
 https://github.com/suffs811
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+directory-list.txt comes from SecLists' common.txt list of directory names. it can be found here: https://github.com/suffs811/SecLists/blob/master/Discovery/Web-Content/common.txt
 
 -+- Leave a comment if you have any questions! -+-
