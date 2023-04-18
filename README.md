@@ -40,9 +40,6 @@ terminator.py will create a .txt file and a Word (.docx) file from terminator's 
 (stage 4-create report on local machine):
 - python3 terminator.py report -o <output_file_name>
 
-doc.py
-- python3 doc.py -r <path_to_report_file>
-
 # details
 stage 1 - enumeration
 - initial nmap scan to find open ports on host
