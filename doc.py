@@ -33,9 +33,9 @@ def doc_make(report):
 	from docx import Document
 
 	# get report name
-   	rsplit = "/".split(report)
+   	rsplit = report.split("/")
    	fname = rsplit[-1]
-   	cut = fname[:-4]
+   	cut = fname[:-4].strip()
 
 	# create and fill document
 	document = Document()
@@ -60,15 +60,15 @@ def doc_make(report):
    	document.add_page_break()
    	document.add_heading("Persistence and Data Exfiltration", level=1)
    	document.add_paragraph(xx)
-   	document.save("{}.docx".format(cut.split()))
-   	os.system("mv {}.docx /terminator/{}.docx".format(cut.split(),cut.split()))
+   	document.save("{}.docx".format(cut))
+   	os.system("mv {}.docx /terminator/{}.docx".format(cut,cut))
 
    	r.close()
    	e.close()
    	p.close()
    	x.close()
 
-   	print("-+- Word document saved to /terminator/{}.docx -+-".format(cut.strip()))
+   	print("-+- Word document saved to /terminator/{}.docx -+-".format(cut))
 
 
 # call functions
