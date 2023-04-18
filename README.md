@@ -6,6 +6,7 @@
 the terminator automates every stage of pentesting except initial exploitation (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
 - terminator.py - tool for automating simple methods for enumeration, privilege escalation, persistence, exfiltration, and reporting
 - doc.py - script to create a Word (.docx) file from terminator's output containg data from each stage of the pentest (early phase)
+- directory-list.txt - wordlist of common directory names for web enumeration (use -w in 'enum' stage to specify different wordlist)
 
 you can also use the individual scripts in the *indiv-scripts* folder to for an individual stage of the pentest, instead of using terminator.py (which contains all of these by itself)
 
