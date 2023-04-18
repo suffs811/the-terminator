@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # author: suffs811
+# Copyright (c) 2023 suffs811
 # https://github.com/suffs811/the-terminator.git
+# read the README.md file for more details; software distributed under MIT license
 # purpose: script for creating report file in .txt and .docx formats from terminator findings
 #
 # usage: python3 report.py -o <output_file_name>
