@@ -35,7 +35,8 @@ def doc_make(report):
 	# get report name
    	rsplit = report.split("/")
    	fname = rsplit[-1]
-   	cut = fname[:-4].strip()
+   	fsplit = fname.split(".")
+   	cut = fsplit[0].strip()
 
 	# create and fill document
 	document = Document()
