@@ -22,9 +22,9 @@ report = args.report
 def lib_check():
 	try:
 		import docx
-      	"docx" in sys.modules
-     except:
-     	return False
+      		"docx" in sys.modules
+	except:
+     		return False
 
 
 # make Word (docx) file and fill with contents from terminator.py output
