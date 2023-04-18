@@ -24,7 +24,7 @@ def lib_check():
 		import docx
 		"docx" in sys.modules
 	except:
-     	return False
+		return False
 
 
 # make Word (docx) file and fill with contents from terminator.py output
