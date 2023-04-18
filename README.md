@@ -5,7 +5,6 @@
 # contents
 the terminator automates every stage of pentesting except initial exploitation (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
 - terminator.py - tool for automating simple methods for enumeration, privilege escalation, persistence, exfiltration, and reporting
-- doc.py - script to create a Word (.docx) file from terminator's output containg data from each stage of the pentest (early phase)
 - directory-list.txt - wordlist of common directory names for web enumeration (use -w in 'enum' stage to specify different wordlist)
 
 you can also use the individual scripts in the *indiv-scripts* folder to isolate an individual stage of the pentest, instead of using terminator.py (which contains all of these by itself)
@@ -18,9 +17,9 @@ for this reason, you can either use terminator.py by itself, or use each of the 
 - if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
 
 <>note: for full terminator productivity, you will need to run the script *four* separate times:
-first on your own machine, second time on the target machine after gaining initial shell, third time on target machine after gaining root privileges, and fourth time on your local machine to compile report.
+first on your own machine, second time on the target machine after gaining initial shell, third time on target machine after gaining root privileges, and fourth time on your local machine to compile the report.
 
-doc.py can be used after completing all four stages of terminator.py to create a Word (.docx) report from terminator's findings
+terminator.py will create a .txt file and a Word (.docx) file from terminator's findings as the report
 
 *for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)*
 
@@ -71,17 +70,10 @@ stage 3 - persistence and data exfiltration
 - cover tracks by clearing log files and history, restoring log files to the copies made during stage 2, deleting all files created by terminator, and deleting terminator.py itself
 
 stage 4 - report writing
-- add contents from enum.txt (enumeration data), priv.txt (privilege escalation vector used to gain root privileges), and data_exfil.txt (peristence and target machine data) to .txt file with headings; use -o to specify desired file name
-
-doc.py
-- import python-docx library
-- create .docx report from terminator's .txt report (-r to specify path to terminator's .txt report file)
-- add data from enum.txt, priv.txt, and data_exfil.txt to file
-- export with same name as terminator's .txt report
+- add contents from enum.txt (enumeration data), priv.txt (privilege escalation vector used to gain root privileges), and data_exfil.txt (peristence and target machine data) to .txt and .docx files with headings; use -o to specify desired file name
 
 # TO DO
 - test final terminator.py script
-- test doc.py
 
 # credit and license
 Copyright (c) 2023 suffs811
