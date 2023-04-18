@@ -8,7 +8,7 @@ the terminator automates every stage of pentesting except initial exploitation (
 - doc.py - script to create a Word (.docx) file from terminator's output containg data from each stage of the pentest (early phase)
 - directory-list.txt - wordlist of common directory names for web enumeration (use -w in 'enum' stage to specify different wordlist)
 
-you can also use the individual scripts in the *indiv-scripts* folder to for an individual stage of the pentest, instead of using terminator.py (which contains all of these by itself)
+you can also use the individual scripts in the *indiv-scripts* folder to isolate an individual stage of the pentest, instead of using terminator.py (which contains all of these by itself)
 
 # how to use
 terminator.py is used by itself and is comprised of enum.py, exfil.py, priv.py, pers.py, and report.py. 
