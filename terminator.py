@@ -622,7 +622,7 @@ def report(output):
    ip = ipsplit[-2].strip()
 
    os.system("touch /terminator/report.txt")
-   os.system("echo '-+- Penetration Testing Report for {} -+-' >> /terminator/report.txt".format(ip))
+   os.system("echo '-+- Penetration Testing Report for {} -+-' > /terminator/report.txt".format(ip))
    os.system("echo '' >> /terminator/report.txt")
    os.system("echo '+ + + Enumeration + + +' >> /terminator/report.txt")
    os.system("echo '' >> /terminator/report.txt")
