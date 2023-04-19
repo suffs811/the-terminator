@@ -1,4 +1,4 @@
-=#!/usr/bin/python3
+#!/usr/bin/python3
 # author: suffs811
 # Copyright (c) 2023 suffs811
 # https://github.com/suffs811/the-terminator.git
