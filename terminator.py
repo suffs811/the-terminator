@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+=#!/usr/bin/python3
 # author: suffs811
 # Copyright (c) 2023 suffs811
 # https://github.com/suffs811/the-terminator.git
@@ -667,12 +667,7 @@ def doc_make(output):
    ipsplit = ipf.split(" ")
    ip = ipsplit[-2].strip()
 
-   # get output name
-   rsplit = output.split("/")
-   fname = rsplit[-1]
-   fsplit = fname.split(".")
-   cut = fsplit[0].strip()
-
+   # check for .txt extension and get report name
    txt = re.search("txt\Z", output)
    dot = re.findall("[.]", output)
    if dot.len() > 1:
