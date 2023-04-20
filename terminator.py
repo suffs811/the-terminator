@@ -219,9 +219,7 @@ def disable_hist():
 
 # check for binaries that can be run as sudo and print privesc script to screen
 def sudo_l():
-   os.system("echo '### sudo-l results ###' >> /tmp/sudo_l.txt")
-   os.system("echo ' ' >> /tmp/sudo_l.txt")
-   print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
+   print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' then rerun this script to find sudoable commands ---###")
    time.sleep(5)
    print("\n### finding binaries you can run as sudo... ###")
 
@@ -274,11 +272,9 @@ def sudo_l():
 
 
    # open last line of sudo -l output to determine sudo capabilities
-   with open('/tmp/sudo_l.txt', 'r') as sudol:
+   with open('/tmp/sudo_l.txt') as sudol:
       last_line = sudol.readlines()[-1]
       lower_line = last_line.lower()
-      print(lower_line)
-      time.sleep(5)
 
       # loop through dictionaries and print cmds if need user interaction, otherwise execute
       for key in sudo_bins_print:
