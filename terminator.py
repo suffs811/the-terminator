@@ -27,7 +27,7 @@ import re
 
 # set command line flags and corresponding global variables
 parser = argparse.ArgumentParser(description="script for automating common pentesting procedures <>run four times (1st on your machine, 2nd and 3rd on target machine, and 4th on your machine)\n(stage 1-enumerating target from local machine): python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))\n(stage 2-privilege escalation after gaining shell on target machine): python3 terminator.py priv\n(stage 3-persistence/data exfiltration after gaining root privileges on target machine): python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))\n(stage 4-create report on local machine): python3 terminator.py report -o <output_file_name>")
-parser.add_argument("level", help="use terminator to enumerate target machine from local machine", required="True")
+parser.add_argument("level", help="use terminator to enumerate target machine from local machine")
 parser.add_argument("-t", "--targetip", help="(enum) specify target ip to enumerate")
 parser.add_argument("-w", "--wordlist", help="(enum) specify wordlist for directory walking (gobuster)")
 parser.add_argument("-u", "--username", help="(root) specify the username you want for the new user")
