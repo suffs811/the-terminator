@@ -394,7 +394,7 @@ def path():
       for line in lines:
          split_path = line.split("/")
          split_path_1 = split_path[-1].strip()
-         os.system("strings {} 1>/dev/null > /tmp/.path/root_{}".format(line,split_path_1))
+         os.system("strings {} > /tmp/.path/root_{} &".format(line,split_path_1))
          with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
             lines_strings = strings_file.readlines()
             for cmd in common_cmds:
@@ -427,6 +427,7 @@ def pass_shadow(username,password):
          os.system("echo '### /etc/passwd is world-writable and can be exploited for privilege excalation ###' > /tmp/passwd_res.txt")
       else:
          print("\n*** /etc/passwd is not writable ***")
+         os.system("echo '*** /etc/shadow is NOT world-writable ***' > /tmp/shad_res.txt")
 
    # check if /etc/shadow is writable and if so, add root user
    os.system("ls -l /etc/shadow > /tmp/shad.txt")
@@ -440,10 +441,17 @@ def pass_shadow(username,password):
          os.system("echo '### /etc/shadow is world-writable and can be exploited for privilege excalation ###' > /tmp/shad_res.txt")
       else:
          print("\n*** /etc/shadow is not writable ***")
+         os.system("echo '*** /etc/shadow is NOT world-writable ***' > /tmp/shad_res.txt")
+
    pass_file.close()
 
    # print results to screen
    os.system("touch /tmp/print.txt")
+   os.system("echo ''")
+   os.system("echo ''")
+   os.system("echo ''")
+   os.system("echo '### Privilege Escalation Results ###' > /tmp/print.txt")
+   os.system("echo '' >> /tmp/print.txt")
    os.system("cat /tmp/esc.txt >> /tmp/sudo_l.txt")
    os.system("cat /tmp/sudo_l.txt >> /tmp/print.txt")
    os.system("cat /tmp/suid_esc.txt >> /tmp/suid.txt")
