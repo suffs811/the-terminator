@@ -220,6 +220,7 @@ def disable_hist():
 # check for binaries that can be run as sudo and print privesc script to screen
 def sudo_l():
    os.system("echo '### sudo-l results ###' > /tmp/sudo_l.txt")
+   os.system("echo ' ' >> /tmp/sudo_l.txt")
    print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' before running this script to find sudoable commands ---###")
    time.sleep(5)
    print("\n### finding binaries you can run as sudo... ###")
@@ -231,6 +232,7 @@ def sudo_l():
      sudo_no_pass = False
    else:
       sudo_no_pass = True
+      print("\n-+- password not needed to run sudo commands -+-")
 
    # commands that will be printed to screen bc they require user interation 
    sudo_bins_print = {
@@ -381,14 +383,13 @@ def path():
 
    os.system("mkdir /tmp/.path/")
    os.system("echo '### possible undefined $PATH binary vulnerabilities ###' >> /tmp/path_res.txt")
-   os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/path.txt")
+   os.system("find / -type f -perm /4000 2>/dev/null > /tmp/path.txt")
    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
    with open("/tmp/path.txt") as root_files:
       lines = root_files.readlines()
       for line in lines:
          split_path = line.split("/")
          split_path_1 = split_path[-1].strip()
-         print(line)
          os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
          with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
             lines_strings = strings_file.readlines()
