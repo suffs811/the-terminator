@@ -45,6 +45,7 @@ password = args.password
 local_ip = args.localip
 local_port = args.localport
 output = args.output
+tot = []
 ports = []
 services = {}
 
@@ -117,8 +118,8 @@ def init_scan(ip):
          else:
             continue
 
-   #for service in services.values():
-   #   tot.append(service)
+   for service in services.values():
+      tot.append(service.lower())
 
    os.system("echo ''")
    os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
@@ -128,7 +129,7 @@ def init_scan(ip):
 
    time.sleep(3)
 
-   return ports,services
+   return ports,services,tot
 
 
 # enumerate web service with nikto, gobuster, curl, and searchsploit
@@ -751,7 +752,8 @@ def doc_make(output):
 if module == "enum":
    # call enumeration functions
    init_scan(ip)
-   for value in services.values():
+   for value in tot:
+      print(value)
       if "http" in value:
          web(ip,wordlist,services)
       elif "smb" in value or "samba" in value:
