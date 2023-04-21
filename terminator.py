@@ -45,7 +45,6 @@ password = args.password
 local_ip = args.localip
 local_port = args.localport
 output = args.output
-tot = []
 ports = []
 services = {}
 
@@ -118,17 +117,18 @@ def init_scan(ip):
          else:
             continue
 
-   for port in ports:
-      tot.append(port)
-   for service in services:
-      tot.append(service)
+   #for service in services.values():
+   #   tot.append(service)
 
+   os.system("echo ''")
    os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
    for key in services:
       join_serv = " ".join(services[key])
-      os.system("echo '{}:{}' | tee -a /terminator/enum.txt".format(services.strip(),join_serv))
+      os.system("echo '{}:{}' | tee -a /terminator/enum.txt".format(key.strip(),join_serv))
 
-   return ports,services,tot
+   time.sleep(3)
+
+   return ports,services
 
 
 # enumerate web service with nikto, gobuster, curl, and searchsploit
@@ -751,14 +751,16 @@ def doc_make(output):
 if module == "enum":
    # call enumeration functions
    init_scan(ip)
-   for item in tot:
-      if item == "80" or item == "8080" or item == "http":
+   for key in services:
+      join_serv = " ".join(services[key])
+   for item in join_serv:
+      if item == "http":
          web(ip,wordlist,services)
-      elif item == "139" or item == "445" or item == "smb" or item == "samba":
+      elif item == "smb" or item == "samba":
          smb(ip)
-      elif item == "21" or item == "ftp":
+      elif item == "ftp":
          ftp(ip)
-      elif item == "111" or item == "nfs":
+      elif item == "nfs":
          nfs(ip)
       else:
         continue
