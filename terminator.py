@@ -279,8 +279,8 @@ def sudo_l():
       # loop through dictionaries and print cmds if need user interaction, otherwise execute
       for key in sudo_bins_print:
          if key in lower_line:
-            print("{}: {}".format(key,sudo_bins_print[key]))
-            os.system("echo '{}:{} ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
+            print("{}: {}".format(key.strip()sudo_bins_print[key].strip()))
+            os.system("echo '{}:{} ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key.strip(),sudo_bins_print[key].strip()))
             continue
          else:
             continue
