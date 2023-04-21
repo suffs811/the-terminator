@@ -291,8 +291,7 @@ def sudo_l():
             os.system("echo '{}:{} < ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_exec[key]))
             sudo_cmd = sudo_bins_exec[key].strip()
             print(sudo_cmd)
-            time.sleep(5)
-            os.system("timeout -k 5 5 {}".format(sudo_cmd))
+            os.system("{}".format(sudo_cmd))
             exit()
          else:
             continue
