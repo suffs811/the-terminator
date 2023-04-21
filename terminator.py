@@ -119,7 +119,7 @@ def init_scan(ip):
             continue
 
    for service in services.values():
-      tot.append(service.lower())
+      tot.append(service)
 
    os.system("echo ''")
    os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
@@ -752,18 +752,19 @@ def doc_make(output):
 if module == "enum":
    # call enumeration functions
    init_scan(ip)
-   for value in tot:
-      print(value)
-      if "http" in value:
-         web(ip,wordlist,services)
-      elif "smb" in value or "samba" in value:
-         smb(ip)
-      elif "ftp" in value:
-         ftp(ip)
-      elif "nfs" in value:
-         nfs(ip)
-      else:
-        continue
+   for item in tot:
+      for value in item:
+         print(value)
+         if "http" in value:
+            web(ip,wordlist,services)
+         elif "smb" in value or "samba" in value:
+            smb(ip)
+         elif "ftp" in value:
+            ftp(ip)
+         elif "nfs" in value:
+            nfs(ip)
+         else:
+           continue
    imp_enum()
    os.system("echo '### end of enumeration results ###' >> /terminator/enum.txt")
 elif module == "priv":
