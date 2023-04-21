@@ -81,7 +81,7 @@ def init_scan(ip):
    # make terminator directory for output files
    os.system("mkdir /terminator/")
    os.system("touch /terminator/enum.txt")
-   os.system("echo '### enumeration details for {} ###' >> /terminator/enum.txt".format(ip))
+   os.system("echo '### enumeration details for {} ###' > /terminator/enum.txt".format(ip))
 
    # run initial port scan
    print("\n### finding open ports... ###")
@@ -96,7 +96,6 @@ def init_scan(ip):
             line_split = line.split(" ")
             first_word = line_split[0]
             ports.append(first_word[:-4].strip())
-            continue
          else:
             continue
 
@@ -115,8 +114,7 @@ def init_scan(ip):
             line_split = line.split(" ")
             service_word = line_split[2]
             vers_word = line_split[11:13]
-            services.update(service_word,vers_word)
-            continue
+            services.update({service_word:vers_word})
          else:
             continue
 
@@ -125,8 +123,10 @@ def init_scan(ip):
    for service in services:
       tot.append(service)
 
-   print("\n### services found: {}".format(services.vales()))
+   print("\n### services found: {}".format(services))
    os.system("echo '### open ports and services on {} ###' >> /terminator/enum.txt".format(ip))
+   for key in services:
+      os.system("echo '{}:{}' >> /terminator/enum.txt".format(services,services[key]))
 
    return ports,services,tot
 
@@ -193,6 +193,22 @@ def nfs(ip):
    os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN /terminator/nfs_nmap.txt".format(ip))
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
+
+
+def imp_enum():
+   os.system("touch /terminator/imp_enum_results.txt")
+   os.system("echo '### important findings: ' | tee /terminator/imp_enum_results.txt")
+   with open("/terminator/enum.txt") as enum:
+      e = enum.readlines()
+      for line in e:
+         if "interesting" in line:
+            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
+         elif "robots" in line:
+            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
+         elif "ftp-anon" in e:
+            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
+         else:
+            continue
 
 
 # privilege escalation ###############################
@@ -279,7 +295,6 @@ def sudo_l():
          if key in lower_line:
             print("{}: {}".format(key,sudo_bins_print[key]))
             os.system("echo '{}:{} < ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
-            continue
          else:
             continue
 
@@ -738,17 +753,15 @@ if module == "enum":
    for item in tot:
       if item == "80" or item == "8080" or item == "http":
          web(ip,wordlist,services)
-         continue
       elif item == "139" or item == "445" or item == "smb" or item == "samba":
          smb(ip)
-         continue
       elif item == "21" or item == "ftp":
          ftp(ip)
-         continue
       elif item == "111" or item == "nfs":
          nfs(ip)
       else:
-        print("\n### scan complete... view /terminator/ and continue with manual enumeration ###")
+        continue
+   imp_enum()
    os.system("echo '### end of enumeration results ###' >> /terminator/enum.txt")
 elif module == "priv":
    # call privilege escalation functions
