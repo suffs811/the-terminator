@@ -123,10 +123,10 @@ def init_scan(ip):
    for service in services:
       tot.append(service)
 
-   print("\n### services found: {}".format(services.values()))
-   os.system("echo '### open ports and services on {} ###' >> /terminator/enum.txt".format(ip))
+   os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
    for key in services:
-      os.system("echo '{}:{}' >> /terminator/enum.txt".format(services,services[key]))
+      join_serv = " ",join(services[key])
+      os.system("echo '{}:{}' | tee -a /terminator/enum.txt".format(services.strip(),join_serv))
 
    return ports,services,tot
 
