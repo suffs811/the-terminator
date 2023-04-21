@@ -224,7 +224,7 @@ def sudo_l():
    print("\n### finding binaries you can run as sudo... ###")
 
    # check to see if user needs password to run sudo
-   sudo_time = os.system("time timeout -k 5 5 sudo -l")
+   sudo_time = os.system("time timeout -k 5 5 sudo -l &>/dev/null")
    sudo_no_pass = None
    if sudo_time > float('1.0'):
      sudo_no_pass = False
@@ -288,7 +288,7 @@ def sudo_l():
       for key in sudo_bins_exec:
          if key in lower_line:
             print("{}: {}".format(key,sudo_bins_exec[key]))
-            os.system("echo '{}:{} ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key,sudo_bins_print[key]))
+            os.system("echo '{}:{} ### can be used for privilege escalation ###' >> /tmp/esc.txt".format(key.strip(),sudo_bins_print[key].strip()))
             sudo_cmd = sudo_bins_exec[key].strip()
             print(sudo_cmd)
             time.sleep(5)
@@ -356,14 +356,14 @@ def suid():
          for key in suid_bins_print:
             if key in suid:
                print("\n{}: {}".format(key,suid_bins_print[key]))
-               os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key,suid_bins_print[key]))
+               os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip(),suid_bins_print[key].strip()))
             else:
                continue
 
          for key in suid_bins_exec:
             if key in suid:
                print("\n{}: {}".format(key,suid_bins_exec[key]))
-               os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key))
+               os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip()))
                suid_cmd = value.strip()
                os.system("{}".format(suid_cmd))
                break
