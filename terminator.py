@@ -6,7 +6,7 @@
 # <> purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
 # initial shell will need to be done manually
 #
-# <> note: for full terminator productivity, you will need to run the script *four* separate times:
+# <> note: temrinator.py consists of four modules. for full terminator productivity, you will need to run the script *four* separate times:
 # first on your own machine for target enumeration, second time on the target machine after manually gaining initial shell, 
 # third time on target machine after terminator gains root privileges, and fourth time on your local machine to compile report.
 #
@@ -26,7 +26,7 @@ import re
 
 
 # set command line flags and corresponding global variables
-parser = argparse.ArgumentParser(description="script for automating common pentesting procedures <>run four times (1st on your machine, 2nd and 3rd on target machine, and 4th on your machine)\n(stage 1-enumerating target from local machine): python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))\n(stage 2-privilege escalation after gaining shell on target machine): python3 terminator.py priv\n(stage 3-persistence/data exfiltration after gaining root privileges on target machine): python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))\n(stage 4-create report on local machine): python3 terminator.py report -o <output_file_name>")
+parser = argparse.ArgumentParser(description="script for automating common pentesting procedures \n<>run four times (1st on your machine, 2nd and 3rd on target machine, and 4th on your machine)\n\n(stage 1-enumerating target from local machine): python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))\n\n(stage 2-privilege escalation after gaining shell on target machine): python3 terminator.py priv\n\n(stage 3-persistence/data exfiltration after gaining root privileges on target machine): python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))\n\n(stage 4-create report on local machine): python3 terminator.py report -o <output_file_name>")
 parser.add_argument("module", help="specify which module to use (enum/priv/root/report)")
 parser.add_argument("-t", "--targetip", help="(enum) specify target ip to enumerate")
 parser.add_argument("-w", "--wordlist", help="(enum) specify wordlist for directory walking (gobuster)")
