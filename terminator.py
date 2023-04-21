@@ -160,7 +160,7 @@ def web(ip,wordlist,services):
          r = rob.readlines()
          for line in r:
             if "/" in line:
-               os.system("echo '{}' >> /terminator/enum.txt")
+               os.system("echo '{}' >> /terminator/enum.txt".format(line))
             else:
                continue
 
@@ -195,7 +195,7 @@ def nfs(ip):
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
-def imp_enum():
+def imp_enum(ip,services):
    os.system("touch /terminator/imp_enum_results.txt")
    os.system("echo ''")
    os.system("echo ''")
@@ -211,6 +211,12 @@ def imp_enum():
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          else:
             continue
+
+   os.system("echo ''")
+   os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
+   for key in services:
+      join_serv = " ".join(services[key])
+      os.system("echo '{}:{}' | tee -a /terminator/imp_enum_results.txt".format(key.strip(),join_serv))
 
 
 # privilege escalation ###############################
@@ -753,8 +759,8 @@ if module == "enum":
    # call enumeration functions
    init_scan(ip)
    for item in tot:
-      for value in item:
-         print(value)
+      for valueu in item:
+         value = valueu.lower()
          if "http" in value:
             web(ip,wordlist,services)
          elif "smb" in value or "samba" in value:
@@ -765,7 +771,7 @@ if module == "enum":
             nfs(ip)
          else:
            continue
-   imp_enum()
+   imp_enum(ip,services)
    os.system("echo '### end of enumeration results ###' >> /terminator/enum.txt")
 elif module == "priv":
    # call privilege escalation functions
