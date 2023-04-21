@@ -112,8 +112,8 @@ def init_scan(ip):
          number = re.search("\A[1-9][0-9]",line)
          if number:
             line_split = line.split(" ")
-            service_word = line_split[2]
-            vers_word = line_split[11:13]
+            service_word = line_split[3]
+            vers_word = line_split[10:13]
             services.update({service_word:vers_word})
          else:
             continue
@@ -123,7 +123,7 @@ def init_scan(ip):
    for service in services:
       tot.append(service)
 
-   print("\n### services found: {}".format(services))
+   print("\n### services found: {}".format(services.values()))
    os.system("echo '### open ports and services on {} ###' >> /terminator/enum.txt".format(ip))
    for key in services:
       os.system("echo '{}:{}' >> /terminator/enum.txt".format(services,services[key]))
@@ -143,8 +143,7 @@ def web(ip,wordlist,services):
 
    print("\n### running nikto... ###")
    os.system("echo '### nikto results ###' >> /terminator/enum.txt")
-   os.system("nikto -h {} -t 3 -o /terminator/nikto.txt".format(ip))
-   os.system("cat /terminator/nikto.txt >> /terminator/enum.txt")
+   os.system("nikto -h {} -t 3 | tee -a /terminator/enum.txt".format(ip))
    print("\n### running gobuster... ###")
    if wordlist:
       os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
@@ -197,13 +196,15 @@ def nfs(ip):
 
 def imp_enum():
    os.system("touch /terminator/imp_enum_results.txt")
-   os.system("echo '### important findings: ' | tee /terminator/imp_enum_results.txt")
+   os.system("echo ''")
+   os.system("echo ''")
+   os.system("echo '-+- important findings: -+-' | tee /terminator/imp_enum_results.txt")
    with open("/terminator/enum.txt") as enum:
       e = enum.readlines()
       for line in e:
          if "interesting" in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-         elif "robots" in line:
+         elif "robots" in line and "#" not in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          elif "ftp-anon" in e:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
