@@ -195,8 +195,17 @@ def nfs(ip):
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
+# tee important findings to file and print to screen
 def imp_enum(ip,services):
    os.system("touch /terminator/imp_enum_results.txt")
+   os.system("echo ''")
+   os.system("echo ''")
+   os.system("echo '### enumeration results saved to /terminator/ directory ###")
+   os.system("echo ''")
+   os.system("echo '<> open ports and services on {} <>'' | tee -a /terminator/imp_enum_results.txt".format(ip))
+   for key in services:
+      join_serv = " ".join(services[key])
+      os.system("echo '{}:{}' | tee -a /terminator/imp_enum_results.txt".format(key.strip(),join_serv))
    os.system("echo ''")
    os.system("echo ''")
    os.system("echo '### important findings: ###' | tee /terminator/imp_enum_results.txt")
@@ -211,12 +220,6 @@ def imp_enum(ip,services):
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          else:
             continue
-
-   os.system("echo ''")
-   os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
-   for key in services:
-      join_serv = " ".join(services[key])
-      os.system("echo '{}:{}' | tee -a /terminator/imp_enum_results.txt".format(key.strip(),join_serv))
 
 
 # privilege escalation ###############################
