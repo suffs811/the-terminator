@@ -45,7 +45,9 @@ password = args.password
 local_ip = args.localip
 local_port = args.localport
 output = args.output
-
+tot = []
+ports = []
+services = {}
 
 print('''
  _______ _    _ ______ 
@@ -111,20 +113,19 @@ def init_scan(ip):
          number = re.search("\A[1-9][0-9]",line)
          if number:
             line_split = line.split(" ")
-            third_word = line_split[2]
-            fifth_word = line_split[4]
-            services.update({"third_word":"fifth_word"})
+            service_word = line_split[2]
+            vers_word = line_split[6:9]
+            services.setdefault(service_word.get_text(),vers_word)
             continue
          else:
             continue
 
-   tot = []
    for port in ports:
       tot.append(port)
    for service in services:
       tot.append(service)
 
-   print("\n### services found: {}".format(services.strip()))
+   print("\n### services found: {}".format(services))
    os.system("echo '### open ports and services on {} ###' >> /terminator/enum.txt".format(ip))
 
    return ports,services,tot
@@ -162,9 +163,6 @@ def web(ip,wordlist,services):
                os.system("echo '{}' >> /terminator/enum.txt")
             else:
                continue
-   print("\n### looking for webserver vulnerabilities in searchsploit... ###")
-   os.system("echo '### searchsploit results for {} ###' >> /terminator/enum.txt".format(services["http"]))
-   os.system("searchsploit {} | tee -a /terminator/searchsploit.txt".format(services["http"]))
 
    print("\n### web enum output saved to /terminator/enum.txt ###")
 
