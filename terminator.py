@@ -198,7 +198,7 @@ def imp_enum():
    os.system("touch /terminator/imp_enum_results.txt")
    os.system("echo ''")
    os.system("echo ''")
-   os.system("echo '-+- important findings: -+-' | tee /terminator/imp_enum_results.txt")
+   os.system("echo '### important findings: ###' | tee /terminator/imp_enum_results.txt")
    with open("/terminator/enum.txt") as enum:
       e = enum.readlines()
       for line in e:
