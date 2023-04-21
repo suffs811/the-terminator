@@ -114,8 +114,8 @@ def init_scan(ip):
          if number:
             line_split = line.split(" ")
             service_word = line_split[2]
-            vers_word = line_split[6:9]
-            services.setdefault(service_word.get_text(),vers_word)
+            vers_word = line_split[11:13]
+            services.update(service_word,vers_word)
             continue
          else:
             continue
@@ -125,7 +125,7 @@ def init_scan(ip):
    for service in services:
       tot.append(service)
 
-   print("\n### services found: {}".format(services))
+   print("\n### services found: {}".format(services.vales()))
    os.system("echo '### open ports and services on {} ###' >> /terminator/enum.txt".format(ip))
 
    return ports,services,tot
