@@ -751,9 +751,11 @@ def doc_make(output):
 if module == "enum":
    # call enumeration functions
    init_scan(ip)
+   enum_serv = []
    for key in services:
       join_serv = " ".join(services[key])
-   for item in join_serv:
+      enum_serv.append(join_serv)
+   for item in enum_serv:
       if item == "http":
          web(ip,wordlist,services)
       elif item == "smb" or item == "samba":
