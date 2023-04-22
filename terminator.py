@@ -45,7 +45,7 @@ password = args.password
 local_ip = args.localip
 local_port = args.localport
 output = args.output
-services = []
+
 
 print('''
  _______ _    _ ______ 
@@ -70,9 +70,6 @@ print('''
 
 # run nmap scans
 def init_scan(ip):
-   # get pwd
-   pwd = os.getcwd()
-
    ports = []
    services = []
 
@@ -86,7 +83,7 @@ def init_scan(ip):
    os.system("nmap -vv -sS -n -Pn -T5 -p- {} -oN /terminator/scan_1".format(ip))
 
    # get ports for next scan
-   with open("{}/terminator/scan_1".format(pwd)) as scan_1:
+   with open("/terminator/scan_1") as scan_1:
       lines_1 = scan_1.readlines()
       for line in lines_1:
          number = re.search("\A[1-9][0-9]",line)
@@ -104,7 +101,7 @@ def init_scan(ip):
    os.system("nmap -vv -A -p {} {} -oN /terminator/scan_2".format(port_scan,ip))
 
    # get services for open ports
-   with open("{}/terminator/scan_2".format(pwd)) as scan_2:
+   with open("/terminator/scan_2") as scan_2:
       lines_2 = scan_2.readlines()
       for line in lines_2:
          number = re.search("\A[1-9][0-9]",line)
@@ -120,7 +117,7 @@ def init_scan(ip):
 
    time.sleep(3)
 
-   return ports,services
+   return services
 
 
 # enumerate web service with nikto, gobuster, curl, and searchsploit
@@ -759,9 +756,10 @@ def doc_make(output):
 if module == "enum":
    # call enumeration functions
    check = 0
-   init_scan(ip)
+   services = init_scan(ip)
    for line in services:
-      for valueu in line:
+      l = line.split(" ")
+      for valueu in l:
          value = valueu.lower()
          if "http" in value:
             web(ip,wordlist,services)
