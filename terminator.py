@@ -744,7 +744,7 @@ def report(output):
    os.system("echo '' >> /terminator/report.txt")
    os.system("echo '--- END OF REPORT ---' >> /terminator/report.txt")
    os.system("mv /terminator/report.txt /terminator/{}".format(output))
-   print("### penetration test report for {} is ready at /terminator/{} ###\n### please add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section. ###\n###all reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively ###".format(ip,output))
+   print("### penetration test report for {} is ready at /terminator/{} ###\n\n### please add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section. ###\n\n###all reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively ###".format(ip,output))
    ipf.close()
 
 
@@ -774,12 +774,12 @@ def doc_make(output):
    # check for .txt extension and get report name
    txt = re.search("txt\Z", output)
    dot = re.findall("[.]", output)
-   if dot.len() > 1:
+   if len(dot) > 1:
       if txt:
          cut = output[:-4]
       else:
          cut = output
-   elif dot.len() == 1:
+   elif len(dot) == 1:
       fsplit = output.split(".")
       cut = fsplit[0].strip()
    else:
@@ -796,16 +796,16 @@ def doc_make(output):
 
    document.add_heading("Penetration Testing Report for {}".format(ip), 0)
    document.add_heading("Enumeration", level=1)
-   document.add_paragraph(ee)
+   document.add_paragraph("{}".format(ee))
    document.add_page_break()
    document.add_heading("Exploitation / Initial Shell", level=1)
-   document.add_paragraph("*** ADD YOUR EXPLOITION METHOD FOR THE INITAL SHELL HERE ***")
+   document.add_paragraph("ADD YOUR EXPLOITION METHOD FOR THE INITAL SHELL HERE")
    document.add_page_break()
    document.add_heading("Privilege Escalation", level=1)
-   document.add_paragraph(pp)
+   document.add_paragraph("{}".format(pp))
    document.add_page_break()
    document.add_heading("Persistence and Data Exfiltration", level=1)
-   document.add_paragraph(xx)
+   document.add_paragraph("{}".format(xx))
    document.save("{}.docx".format(cut))
    os.system("mv {}.docx /terminator/{}.docx".format(cut,cut))
 
@@ -884,7 +884,6 @@ elif module == "report":
    # call report functions
    report(output)
    lib = lib_check()
-   print(lib)
    if lib:
       doc_make(output)
    else:
