@@ -213,7 +213,7 @@ def imp_enum(ip):
          elif "ftp-anon" in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          elif "allows session" in line:
-            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
+            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
          else:
             continue
 
@@ -756,7 +756,10 @@ def doc_make(output):
 # call functions
 if module == "enum":
    # call enumeration functions
-   check = 0
+   # prevent rerunning functions if more than one instance of service (except http in case proxy exists)
+   smb = 0
+   ftp = 0
+   nfs = 0
    services = init_scan(ip)
    for line in services:
       l = line.split(" ")
@@ -765,13 +768,21 @@ if module == "enum":
          if "http" in value:
             web(ip,wordlist,services)
          elif "smb" in value or "samba" in value:
-            smb(ip)
+            if smb == 0:
+               smb(ip)
+               smb = 1
+            else:
+               continue
          elif "ftp" in value:
-            ftp(ip)
+            if ftp == 0:
+               ftp(ip)
+               ftp = 1
+            else:
+               continue
          elif "nfs" in value or "rpc" in value:
-            if check == 0:
+            if nfs == 0:
                nfs(ip)
-               check = 1
+               nfs = 1
             else:
                continue
          else:
