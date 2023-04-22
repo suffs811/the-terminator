@@ -126,9 +126,10 @@ def web(ip,wordlist,services):
    web_port = []
    for line in services:
       if "http" in line or "web" in line:
-         tcp = line[0]
-         port_num = tcp.split("/")
-         web_port.append(port_num[0])
+         split = line.split(" ")
+         tcp = split[0]
+         psplit = tcp.split("/")
+         web_port.append(psplit[0])
       else:
          continue
 
