@@ -45,8 +45,7 @@ password = args.password
 local_ip = args.localip
 local_port = args.localport
 output = args.output
-tot = []
-services = {}
+services = []
 
 print('''
  _______ _    _ ______ 
@@ -75,7 +74,7 @@ def init_scan(ip):
    pwd = os.getcwd()
 
    ports = []
-   services = {}
+   services = []
 
    # make terminator directory for output files
    os.system("mkdir /terminator/")
@@ -110,35 +109,29 @@ def init_scan(ip):
       for line in lines_2:
          number = re.search("\A[1-9][0-9]",line)
          if number:
-            print(line)
-            line_split = line.split(" ")
-            service_word = line_split[3]
-            vers_word = line_split[10:13]
-            services.update({service_word:vers_word})
+            services.append(line)
          else:
             continue
 
-   for service in services.values():
-      tot.append(service)
-
    os.system("echo ''")
    os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
-   for key in services:
-      join_serv = " ".join(services[key])
-      os.system("echo '{}:{}' | tee -a /terminator/enum.txt /terminator/services.txt".format(key.strip(),join_serv))
+   for item in services:
+      os.system("echo '{}' | tee -a /terminator/enum.txt /terminator/services.txt".format(item))
 
    time.sleep(3)
 
-   return ports,services,tot
+   return ports,services
 
 
 # enumerate web service with nikto, gobuster, curl, and searchsploit
 def web(ip,wordlist,services):
    print("\n### initiating web enumeration... ###")
    web_port = []
-   for value in services:
-      if "http" in value or "web" in value:
-         web_port.append(services[value.key()])
+   for line in services:
+      if "http" in line or "web" in line:
+         tcp = line[0]
+         port_num = tcp.split("/")
+         web_port.append(port_num[0])
       else:
          continue
 
@@ -196,7 +189,7 @@ def nfs(ip):
 
 
 # tee important findings to file and print to screen
-def imp_enum(ip,services):
+def imp_enum(ip):
    os.system("touch /terminator/imp_enum_results.txt")
    os.system("echo ''")
    os.system("echo ''")
@@ -763,9 +756,10 @@ def doc_make(output):
 # call functions
 if module == "enum":
    # call enumeration functions
+   check = 0
    init_scan(ip)
-   for item in tot:
-      for valueu in item:
+   for line in services:
+      for valueu in line:
          value = valueu.lower()
          if "http" in value:
             web(ip,wordlist,services)
@@ -773,11 +767,15 @@ if module == "enum":
             smb(ip)
          elif "ftp" in value:
             ftp(ip)
-         elif "nfs" in value:
-            nfs(ip)
+         elif "nfs" in value or "rpc" in value:
+            if check = 0:
+               nfs(ip)
+               check = 1
+            else:
+               continue
          else:
            continue
-   imp_enum(ip,services)
+   imp_enum(ip)
    os.system("echo ''")
    os.system("echo ''")
    os.system("echo '### end of enumeration ###' | tee -a /terminator/enum.txt")
