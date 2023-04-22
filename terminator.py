@@ -262,6 +262,7 @@ def disable_hist():
 
 # check for binaries that can be run as sudo and print privesc script to screen
 def sudo_l():
+   os.system("echo 'suid files' > /tmp/sudo_l.txt")
    print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' then rerun this script to find sudoable commands ---###")
    time.sleep(5)
    print("\n### finding binaries you can run as sudo... ###")
