@@ -757,9 +757,9 @@ def doc_make(output):
 if module == "enum":
    # call enumeration functions
    # prevent rerunning functions if more than one instance of service (except http in case proxy exists)
-   smb = 0
-   ftp = 0
-   nfs = 0
+   smbc = 0
+   ftpc = 0
+   nfsc = 0
    services = init_scan(ip)
    for line in services:
       l = line.split(" ")
@@ -768,21 +768,21 @@ if module == "enum":
          if "http" in value:
             web(ip,wordlist,services)
          elif "smb" in value or "samba" in value:
-            if smb == 0:
+            if smbc == 0:
                smb(ip)
-               smb = 1
+               smbc = 1
             else:
                continue
          elif "ftp" in value:
-            if ftp == 0:
+            if ftpc == 0:
                ftp(ip)
-               ftp = 1
+               ftpc = 1
             else:
                continue
          elif "nfs" in value or "rpc" in value:
-            if nfs == 0:
+            if nfsc == 0:
                nfs(ip)
-               nfs = 1
+               nfsc = 1
             else:
                continue
          else:
