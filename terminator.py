@@ -111,6 +111,7 @@ def init_scan(ip):
          number = re.search("\A[1-9][0-9]",line)
          if number:
             line_split = line.split(" ")
+            print(line_split)
             service_word = line_split[3]
             vers_word = line_split[10:13]
             services.update({service_word:vers_word})
