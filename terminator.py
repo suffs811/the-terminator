@@ -152,6 +152,7 @@ def web(ip,wordlist,services):
          for line in r:
             if "/" in line:
                os.system("echo '{}' >> /terminator/enum.txt".format(line))
+               os.system("echo '{}' >> /terminator/robots_dir.txt".format(line))
             else:
                continue
 
@@ -183,6 +184,9 @@ def nfs(ip):
    os.system("echo '### nfs enumeration results ###' >> /terminator/enum.txt")
    os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN /terminator/nfs_nmap.txt".format(ip))
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
+   os.system("echo ''")
+   os.system("echo '### NFS mounts ### | tee -a /terminator/enum.txt'")
+   os.system("/usr/sbin/showmount -e {} | tee -a /terminator/enum.txt".format(ip))
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
@@ -208,14 +212,19 @@ def imp_enum(ip):
       for line in e:
          if "interesting" in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
+            os.system("echo ''")
          elif "robots" in line and "#" not in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-         elif "ftp-anon" in line:
+            os.system("echo ''")
+         elif "Anonymous" in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
+            os.system("echo ''")
          elif "allows session" in line:
             os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
+            os.system("echo ''")
          else:
             continue
+   os.system("cat /terminator/robots_dir.txt 2>/dev/null")
 
 
 # privilege escalation ###############################
@@ -756,7 +765,8 @@ def doc_make(output):
 # call functions
 if module == "enum":
    # call enumeration functions
-   # prevent rerunning functions if more than one instance of service (except http in case proxy exists)
+   # prevent rerunning functions if more than one instance of service
+   webc = 0
    smbc = 0
    ftpc = 0
    nfsc = 0
@@ -766,7 +776,11 @@ if module == "enum":
       for valueu in l:
          value = valueu.lower()
          if "http" in value:
-            web(ip,wordlist,services)
+            if webc == 0:
+               web(ip,wordlist,services)
+               webc = 1
+            else:
+               continue
          elif "smb" in value or "samba" in value:
             if smbc == 0:
                smb(ip)
