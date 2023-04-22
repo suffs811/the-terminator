@@ -218,7 +218,7 @@ def imp_enum(ip,services):
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          elif "robots" in line and "#" not in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-         elif "ftp-anon" in e:
+         elif "ftp-anon" in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          else:
             continue
