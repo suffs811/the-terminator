@@ -270,7 +270,7 @@ def pass_check():
       s = ss[0].strip()
       if s == "0":
          sudo_no_pass = True
-         sprint("\n-+- password not needed to run sudo commands -+-")
+         print("\n-+- password not needed to run sudo commands -+-")
       else:   
          sudo_no_pass = False
    return sudo_no_pass
