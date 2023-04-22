@@ -164,7 +164,7 @@ def web(ip,wordlist,services):
 def smb(ip):
    print("\n### initiating smb enumeration... ###")
    os.system("echo '### smb enumeration results ###' >> /terminator/enum.txt")
-   os.system("enum4linux -A {} | tee -a /terminator/enum.txt".format(ip))
+   os.system("enum4linux -A {} | tee -a /terminator/enum.txt /terminator/enum4lin.txt".format(ip))
    os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/smb.txt".format(ip))
    os.system("cat /terminator/smb.txt >> /terminator/enum.txt")
    print("\n### smb enum output saved to /terminator/enum.txt ###")
@@ -213,6 +213,8 @@ def imp_enum(ip):
          elif "robots" in line and "#" not in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          elif "ftp-anon" in line:
+            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
+         elif "allows session" in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
          else:
             continue
