@@ -720,7 +720,7 @@ def report(output):
    # get target ip from enum.txt
    ipf = open("/terminator/enum.txt")
    ipread = ipf.readline()
-   ipsplit = ipf.split(" ")
+   ipsplit = ipread.split(" ")
    ip = ipsplit[-2].strip()
 
    os.system("touch /terminator/report.txt")
@@ -744,7 +744,7 @@ def report(output):
    os.system("echo '' >> /terminator/report.txt")
    os.system("echo '--- END OF REPORT ---' >> /terminator/report.txt")
    os.system("mv /terminator/report.txt /terminator/{}".format(output))
-   print("### penetration test report for {} is ready at /terminator/{} ###\nplease add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section.\nall reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively.".format(ip,output))
+   print("### penetration test report for {} is ready at /terminator/{} ###\n### please add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section. ###\n###all reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively ###".format(ip,output))
    ipf.close()
 
 
@@ -883,10 +883,11 @@ elif module == "report":
    # call report functions
    report(output)
    lib = lib_check()
+   print(lib)
    if lib:
       doc_make(output)
    else:
       print("\n*** 'python-docx' is not installed on your machine; please run 'pip install python-docx' in your terminal ***")
-   print("\n\n-+- {} has been terminated -+-".format(ip))
+   print("\n\n-+- target has been terminated -+-")
 else:
    print("\n*** specify either 'enum', 'priv', 'root' or 'report' ***")
