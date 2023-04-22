@@ -63,13 +63,13 @@ stage 2 - privilege escalation
 - check if /etc/passwd or /etc/shadow are world-writable; if either one is, create password from user input and append new root user to the file; su user for root
 - check for root permissions; if not root, suggest manually finding privesc vector
 
-stage 3 - persistence and data exfiltration
+stage 3 - persistence and data exfiltration (ensure ssh is active on local machine)
 - check for root permissions and suggest -f to bypass root check
 - if root permissions is true, create password from user input, add new root user to /etc/passwd, /etc/shadow files and add to root group
 - create shell script at /dev/shm/.data/data_log containing netcat reverse shell at ip:port from user input
 - create cronjob in /etc/crontab to execute the shell script every 5 minutes
 
-- write id,whoami,netstat and /etc/passwd,/etc/shadow,/etc/hosts,/etc/crontab,/etc/exports, and suid files to single file and scp the file to local machine using ip from user input; *scp will prompt for user's root password on local machine*
+- write id,whoami,netstat and /etc/passwd,/etc/shadow,/etc/hosts,/etc/crontab,/etc/exports, and suid files to single file and scp the file to local machine using ip from user input to local 'root' user; *scp will prompt for local user's root password on local machine*
 - cover tracks by clearing log files and history, restoring log files to the copies made during stage 2, deleting all files created by terminator, and deleting terminator.py itself
 
 stage 4 - report writing
