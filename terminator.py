@@ -385,14 +385,14 @@ def suid():
             os.system("echo '### {} is a suid binary and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(line))
          else:
             continue
-
+      for line in suid:
          for key in suid_bins_print:
             if key in line:
                print("\n{}: {}".format(key,suid_bins_print[key]))
                os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip(),suid_bins_print[key].strip()))
             else:
                continue
-
+      for line in suid:
          for key in suid_bins_exec:
             if key in line:
                print("\n{}: {}".format(key,suid_bins_exec[key]))
