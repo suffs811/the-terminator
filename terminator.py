@@ -186,7 +186,7 @@ def nfs(ip):
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
    os.system("echo ''")
    os.system("echo '### NFS mounts ###' | tee -a /terminator/enum.txt")
-   os.system("/usr/sbin/showmount -e {} | tee -a /terminator/enum.txt".format(ip))
+   os.system("/usr/sbin/showmount -e {} | tee -a /terminator/enum.txt /terminator/nfs.txt".format(ip))
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
@@ -212,26 +212,31 @@ def imp_enum(ip):
       e = enum.readlines()
       for line in e:
          if "interesting" in line:
+            os.system("echo 'web:'")
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
             os.system("echo ''")
          elif "robots" in line and "#" not in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
             os.system("echo ''")
          elif "Anonymous" in line:
+            os.system("echo 'ftp anonymous login:'")
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
             os.system("echo ''")
          elif "allows session" in line:
-            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
-            os.system("echo ''")
-         elif "nfs-showmount" in line:
+            os.system("echo 'nfs user-less login:'")
             os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
             os.system("echo ''")
          else:
             continue
+
+   os.system("echo 'nfs mounts:'")
+   os.system("cat nfs.txt 2>/dev/null")
+   os.system("echo ''")
    os.system("echo 'robots.txt:'")
    os.system("cat /terminator/robots_dir.txt 2>/dev/null")
 
    os.system("rm -f /terminator/robots_dir.txt 2>/dev/null")
+   os.system("rm -f /terminator/nfs.txt 2>/dev/null")
 
 
 # privilege escalation ###############################
