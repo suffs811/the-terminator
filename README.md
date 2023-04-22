@@ -87,4 +87,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 directory-list.txt comes from SecLists' common.txt list of directory names. it can be found here: https://github.com/suffs811/SecLists/blob/master/Discovery/Web-Content/common.txt
 
+*terminator has been tested on kali linux 2022.4 (local machine) and ubuntu unity 22.10 (target machine)*
+
 -+- Leave a comment if you have any questions! -+-
