@@ -752,6 +752,7 @@ def report(output):
 def lib_check():
    try:
       import docx
+      import sys
       "docx" in sys.modules
    except:
       return False
