@@ -185,7 +185,7 @@ def nfs(ip):
    os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN /terminator/nfs_nmap.txt".format(ip))
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
    os.system("echo ''")
-   os.system("echo '### NFS mounts ### | tee -a /terminator/enum.txt'")
+   os.system("echo '### NFS mounts ###' | tee -a /terminator/enum.txt")
    os.system("/usr/sbin/showmount -e {} | tee -a /terminator/enum.txt".format(ip))
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
@@ -224,6 +224,7 @@ def imp_enum(ip):
             os.system("echo ''")
          else:
             continue
+   os.system("echo 'robots.txt:'")
    os.system("cat /terminator/robots_dir.txt 2>/dev/null")
 
 
