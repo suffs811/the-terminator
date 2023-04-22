@@ -207,6 +207,7 @@ def imp_enum(ip):
    os.system("echo ''")
    os.system("echo ''")
    os.system("echo '### important findings: ###' | tee -a /terminator/imp_enum_results.txt")
+   os.system("echo ''")
    with open("/terminator/enum.txt") as enum:
       e = enum.readlines()
       for line in e:
@@ -222,10 +223,15 @@ def imp_enum(ip):
          elif "allows session" in line:
             os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
             os.system("echo ''")
+         elif "nfs-showmount" in line:
+            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
+            os.system("echo ''")
          else:
             continue
    os.system("echo 'robots.txt:'")
    os.system("cat /terminator/robots_dir.txt 2>/dev/null")
+
+   os.system("rm -f /terminator/robots_dir.txt 2>/dev/null")
 
 
 # privilege escalation ###############################
