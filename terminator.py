@@ -770,7 +770,7 @@ if module == "enum":
          elif "ftp" in value:
             ftp(ip)
          elif "nfs" in value or "rpc" in value:
-            if check = 0:
+            if check == 0:
                nfs(ip)
                check = 1
             else:
