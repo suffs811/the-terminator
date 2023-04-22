@@ -378,21 +378,25 @@ def suid():
    os.system("find / -type f -perm /4000 2>/dev/null >> /tmp/suid.txt")
    with open("/tmp/suid.txt") as suid_file:
       suid = suid_file.readlines()
+
       for line in suid:
+         susplit = suid.split("/")
+         subin = susplit[-1]
          if ".sh" in line:
             print(line)
             os.system("echo '### {} is a suid binary and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(line))
          else:
             continue
+
          for key in suid_bins_print:
-            if key in suid:
+            if key == subin:
                print("\n{}: {}".format(key,suid_bins_print[key]))
                os.system("echo '### {}:{} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip(),suid_bins_print[key].strip()))
             else:
                continue
 
          for key in suid_bins_exec:
-            if key in suid:
+            if key == subin:
                print("\n{}: {}".format(key,suid_bins_exec[key]))
                os.system("echo '### {} is a suid file and can be used for privilege escalation ###' >> /tmp/suid_esc.txt".format(key.strip()))
                suid_cmd = value.strip()
