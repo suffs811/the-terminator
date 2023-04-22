@@ -198,6 +198,8 @@ def nfs(ip):
 def imp_enum(ip,services):
    os.system("touch /terminator/imp_enum_results.txt")
    os.system("echo ''")
+   os.system("echo ''")
+   os.system("echo ''")
    os.system("echo '***********************************************************'")
    os.system("echo ''")
    os.system("echo '### enumeration results saved to /terminator/ directory ###'")
@@ -775,7 +777,9 @@ if module == "enum":
          else:
            continue
    imp_enum(ip,services)
-   os.system("echo '### end of enumeration results ###' >> /terminator/enum.txt")
+   os.system("echo ''")
+   os.system("echo ''")
+   os.system("echo '### end of enumeration ###' | tee -a /terminator/enum.txt")
 elif module == "priv":
    # call privilege escalation functions
    disable_hist()
