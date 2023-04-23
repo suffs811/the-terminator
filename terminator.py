@@ -469,7 +469,7 @@ def pass_shadow(username,password):
          os.system("echo ''")
          os.system("echo '###!!! root user {}:{} created... run *su {}* for root privileges ###' > /tmp/passwd_res.txt".format(username,password,username))
          os.system("echo ''")
-         os.system("<> newer systems may prevent unprivileged users from adding new users to system <>\n<> if you cannot login to newly created user, you will need to find another way to privesc <>")
+         os.system("<> newer systems may prevent unprivileged users from logging into a new account if it wasn't added using 'useradd' (which requires root access) <>\n\n<> if you cannot login to newly created user, you will need to find another way to privesc <>")
          os.system("echo ''")
       else:
          os.system("echo ''")
@@ -488,7 +488,7 @@ def pass_shadow(username,password):
          os.system("echo ''")
          os.system("echo '###!!! root user {}:{} created... run *su {}* for root privileges ###' > /tmp/shad_res.txt".format(username,password,username))
          os.system("echo ''")
-         os.system("<> newer systems may prevent unprivileged users from adding new users to system <>\n<> if you cannot login to newly created user, you will need to find another way to privesc <>")
+         os.system("<> newer systems may prevent unprivileged users from logging into a new account if it wasn't added using 'useradd' (which requires root access) <>\n\n<> if you cannot login to newly created user, you will need to find another way to privesc <>")
          os.system("echo ''")
       else:
          os.system("echo ''")
