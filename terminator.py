@@ -193,7 +193,7 @@ def nfs(ip):
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
-# tee important findings to file and print to screen
+# save important findings to file and print to screen
 def imp_enum(ip):
    os.system("touch /terminator/imp_enum_results.txt")
    os.system("echo ''")
@@ -211,35 +211,8 @@ def imp_enum(ip):
    os.system("echo ''")
    os.system("echo '### important findings: ###' | tee -a /terminator/imp_enum_results.txt")
    os.system("echo ''")
-   with open("/terminator/enum.txt") as enum:
-      e = enum.readlines()
-      for line in e:
-         if "interesting" in line:
-            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
-         elif "robots" in line and "#" not in line:
-            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
-         elif "Anonymous" in line:
-            os.system("echo '-- ftp anonymous login:' | tee -a /terminator/imp_enum_results.txt")
-            os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
-         elif "allows session" in line:
-            os.system("echo '-- smb no-auth login:' | tee -a /terminator/imp_enum_results.txt")
-            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
-            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
-         elif "Local User" in line:
-            os.system("echo '-- local smb user:' | tee -a /terminator/imp_enum_results.txt")
-            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
-            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
-         elif "Disk" in line:
-            os.system("echo '-- local smb share:' | tee -a /terminator/imp_enum_results.txt")
-            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
-            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
-         else:
-            continue
 
-
+   # get important enum results
    with open("/terminator/enum.txt") as enum:
       e = enum.readlines()
       for line in e:
