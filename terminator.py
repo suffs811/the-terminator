@@ -790,15 +790,21 @@ def doc_make(output):
    else:
       cut = output
 
-   # create and fill document
+   # create document, open termiantor data files, and fill document
    document = Document()
    e = open("/terminator/enum.txt")
    p = open("/terminator/priv.txt")
    x = open("/terminator/data_exfil.txt")
-   ee = e.read()
-   pp = p.read()
-   xx = x.read()
+   eee = e.read()
+   ppp = p.read()
+   xxx = x.read()
 
+   # take out non-unicode characters so it can be parsed into xml
+   ee = re.sub(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+', '', eee)
+   pp = re.sub(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+', '', ppp)
+   xx = re.sub(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+', '', xxx)
+
+   # add data to document, format, and save to /terminator/<output>.docx
    document.add_heading("Penetration Testing Report for {}".format(ip), 0)
    document.add_heading("Enumeration", level=1)
    document.add_paragraph(ee)
@@ -819,7 +825,7 @@ def doc_make(output):
    x.close()
    ipf.close()
 
-   print("-+- Word document saved to /terminator/{}.docx -+-".format(cut))
+   print("\n-+- Word document saved to /terminator/{}.docx -+-".format(cut))
 
 
 # call functions
