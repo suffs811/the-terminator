@@ -171,7 +171,7 @@ def smb(ip):
    os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/nmap_smb.txt".format(ip))
    os.system("echo '' >> /terminator/smb.txt")
    os.system("cat /terminator/nmap_smb.txt >> /terminator/smb.txt")
-   
+'''
    es = open("/terminator/smb.txt")
    enum_smb = re.sub("\\", "/", es)
 
@@ -181,8 +181,8 @@ def smb(ip):
 
    es.close()
    nsmb.close()
-
-   os.system("cat /terminator/nsmb.txt >> /terminator/enum.txt")
+'''
+   os.system("cat /terminator/smb.txt >> /terminator/enum.txt")
    print("\n### smb enum output saved to /terminator/enum.txt ###")
 
 
@@ -228,7 +228,7 @@ def imp_enum(ip):
    os.system("echo ''")
 
    # get important enum results
-   with open("/terminator/enum.txt") as enum:
+   with open(r"/terminator/enum.txt") as enum:
       e = enum.readlines()
       for line in e:
          if "interesting" in line:
