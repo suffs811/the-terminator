@@ -216,18 +216,26 @@ def imp_enum(ip):
       for line in e:
          if "interesting" in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-            os.system("echo ''")
+            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
          elif "robots" in line and "#" not in line:
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-            os.system("echo ''")
+            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
          elif "Anonymous" in line:
-            os.system("echo '-- ftp anonymous login:'")
+            os.system("echo '-- ftp anonymous login:' | tee -a /terminator/imp_enum_results.txt")
             os.system("echo '{}' | tee -a /terminator/imp_enum_results.txt".format(line.strip()))
-            os.system("echo ''")
+            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
          elif "allows session" in line:
-            os.system("echo '-- smb no-auth login:'")
+            os.system("echo '-- smb no-auth login:' | tee -a /terminator/imp_enum_results.txt")
             os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
-            os.system("echo ''")
+            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
+         elif "Local User" in line:
+            os.system("echo '-- local smb user:' | tee -a /terminator/imp_enum_results.txt")
+            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
+            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
+         elif "Disk" in line:
+            os.system("echo '-- local smb share:' | tee -a /terminator/imp_enum_results.txt")
+            os.system('echo "{}" | tee -a /terminator/imp_enum_results.txt'.format(line.strip()))
+            os.system("echo '' | tee -a /terminator/imp_enum_results.txt")
          else:
             continue
 
