@@ -239,13 +239,54 @@ def imp_enum(ip):
          else:
             continue
 
-   os.system("echo '-- nfs mounts:'")
-   os.system("cat /terminator/nfs.txt 2>/dev/null")
-   os.system("echo ''")
-   os.system("echo 'robots.txt:'")
-   os.system("cat /terminator/robots_dir.txt 2>/dev/null")
 
+   with open("/terminator/enum.txt") as enum:
+      e = enum.readlines()
+      for line in e:
+         if "interesting" in line:
+            os.system("echo '{}' | tee -a /terminator/web_enum.txt".format(line.strip()))
+            os.system("echo '' | tee -a /terminator/web_enum.txt")
+         elif "robots" in line and "#" not in line:
+            os.system("echo '{}' | tee -a /terminator/web_enum.txt".format(line.strip()))
+            os.system("echo '' | tee -a /terminator/web_enum.txt")
+         elif "Anonymous" in line:
+            os.system("echo '-- ftp anonymous login:' | tee -a /terminator/ftp_enum.txt")
+            os.system("echo '{}' | tee -a /terminator/ftp_enum.txt".format(line.strip()))
+            os.system("echo '' | tee -a /terminator/ftp_enum.txt")
+         elif "allows session" in line:
+            os.system("echo '-- smb no-auth login:' | tee -a /terminator/smb_enum.txt")
+            os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
+            os.system("echo '' | tee -a /terminator/smb_enum.txt")
+         elif "Local User" in line:
+            os.system("echo '-- local smb user:' | tee -a /terminator/smb_enum.txt")
+            os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
+            os.system("echo '' | tee -a /terminator/smb_enum.txt")
+         elif "Disk" in line:
+            os.system("echo '-- local smb share:' | tee -a /terminator/smb_enum.txt")
+            os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
+            os.system("echo '' | tee -a /terminator/smb_enum.txt")
+         else:
+            continue
+
+   # save important enum results to /terminator/imp_enum_results.txt and print to screen
+   os.system("cat /terminator/web_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("echo '' >> /terminator/imp_enum_results.txt")
+   os.system("echo 'robots.txt:' >> /terminator/imp_enum_results.txt")
+   os.system("cat /terminator/robots_dir.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("cat /terminator/ftp_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("echo '' >> /terminator/imp_enum_results.txt")
+   os.system("cat /terminator/smb_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("echo '' >> /terminator/imp_enum_results.txt")
+   os.system("echo '-- nfs mounts:' >> /terminator/imp_enum_results.txt")
+   os.system("cat /terminator/nfs.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("echo '' >> /terminator/imp_enum_results.txt")
+   os.system("cat /terminator/imp_enum_results.txt")
+
+   # delete temp enum files
    os.system("rm -f /terminator/robots_dir.txt 2>/dev/null")
+   os.system("rm -f /terminator/web_enum.txt 2>/dev/null")
+   os.system("rm -f /terminator/ftp_enum.txt 2>/dev/null")
+   os.system("rm -f /terminator/smb_enum.txt 2>/dev/null")
    os.system("rm -f /terminator/nfs.txt 2>/dev/null")
 
 
