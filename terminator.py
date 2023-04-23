@@ -6,7 +6,7 @@
 # <> purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
 # initial shell will need to be done manually
 #
-# <> note: temrinator.py consists of four modules. for full terminator productivity, you will need to run the script *four* separate times:
+# <> note: terminator.py consists of four modules. for full terminator productivity, you will need to run the script *four* separate times:
 # first on your own machine for target enumeration, second time on the target machine after manually gaining initial shell, 
 # third time on target machine after terminator gains root privileges, and fourth time on your local machine to compile report.
 #
@@ -166,11 +166,23 @@ def web(ip,wordlist,services):
 def smb(ip):
    print("\n### initiating smb enumeration... ###")
    os.system("echo '### smb enumeration results ###' >> /terminator/enum.txt")
-   os.system("enum4linux -A {} | tee -a /terminator/enum.txt /terminator/enum4lin.txt".format(ip))
-   os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/smb.txt".format(ip))
+   os.system("enum4linux -a {} | tee -a /terminator/smb.txt /terminator/smb_enum4lin.txt".format(ip))
+   os.system("echo '' >> /terminator/enum.txt")
+   os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/nmap_smb.txt".format(ip))
    os.system("echo '' >> /terminator/smb.txt")
-   os.system("cat /terminator/enum4lin.txt >> /terminator/smb.txt")
-   os.system("cat /terminator/smb.txt >> /terminator/enum.txt")
+   os.system("cat /terminator/nmap_smb.txt >> /terminator/smb.txt")
+   
+   es = open("/terminator/smb.txt")
+   enum_smb = re.sub("\\", "/", es)
+
+   os.system("touch /terminator/nsmb.txt")
+   nsmb = open(r"/terminator/nsmb.txt", "w")
+   nsmb.writelines(enum_smb)
+
+   es.close()
+   nsmb.close()
+
+   os.system("cat /terminator/nsmb.txt >> /terminator/enum.txt")
    print("\n### smb enum output saved to /terminator/enum.txt ###")
 
 
