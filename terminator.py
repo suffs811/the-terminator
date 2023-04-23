@@ -168,6 +168,8 @@ def smb(ip):
    os.system("echo '### smb enumeration results ###' >> /terminator/enum.txt")
    os.system("enum4linux -A {} | tee -a /terminator/enum.txt /terminator/enum4lin.txt".format(ip))
    os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/smb.txt".format(ip))
+   os.system("echo '' >> /terminator/smb.txt")
+   os.system("cat /terminator/enum4lin.txt >> /terminator/smb.txt")
    os.system("cat /terminator/smb.txt >> /terminator/enum.txt")
    print("\n### smb enum output saved to /terminator/enum.txt ###")
 
@@ -187,7 +189,7 @@ def nfs(ip):
    os.system("echo '### nfs enumeration results ###' >> /terminator/enum.txt")
    os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN /terminator/nfs_nmap.txt".format(ip))
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
-   os.system("echo ''")
+   os.system("echo '' | tee -a /terminator/enum.txt")
    os.system("echo '### NFS mounts ###' | tee -a /terminator/enum.txt")
    os.system("/usr/sbin/showmount -e {} | tee -a /terminator/enum.txt /terminator/nfs.txt".format(ip))
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
@@ -209,6 +211,7 @@ def imp_enum(ip):
    os.system("rm -f /terminator/services.txt")
    os.system("echo ''")
    os.system("echo ''")
+   os.system("echo ''")
    os.system("echo '### important findings: ###' | tee -a /terminator/imp_enum_results.txt")
    os.system("echo ''")
 
@@ -226,7 +229,7 @@ def imp_enum(ip):
             os.system("echo '-- ftp anonymous login:' | tee -a /terminator/ftp_enum.txt")
             os.system("echo '{}' | tee -a /terminator/ftp_enum.txt".format(line.strip()))
             os.system("echo '' | tee -a /terminator/ftp_enum.txt")
-         elif "allows session" in line:
+         elif "allows session" in line or "allow session" in line:
             os.system("echo '-- smb no-auth login:' | tee -a /terminator/smb_enum.txt")
             os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
             os.system("echo '' | tee -a /terminator/smb_enum.txt")
