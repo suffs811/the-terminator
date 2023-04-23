@@ -77,6 +77,7 @@ def init_scan(ip):
 
    # make terminator directory for output files
    os.system("mkdir /terminator/")
+   os.system("chmod 777 /terminator/")
    os.system("touch /terminator/enum.txt")
    os.system("echo '### enumeration details for {} ###' > /terminator/enum.txt".format(ip))
 
