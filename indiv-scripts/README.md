@@ -1,7 +1,7 @@
 # hello! welcome to the terminator's individual scripts
 - you can use these to isolate an individual stage of the penetration test, instead of using terminator.py.
 
-<> note: terminator.py contains all the indiv scripts and is the primary method for using the terminator tool; therefore, the individual scripts might not be as up to date or production ready! 
+<> note: terminator.py contains all the indiv scripts and is the primary method for using the terminator tool; therefore, these individual scripts might not be as up to date or production ready! 
 - feel free to leave a comment or suggestion for making the tool better
 
 - enum.py - script for automating common enumeration techniques (nmap,web,ftp,smb,nfs)
