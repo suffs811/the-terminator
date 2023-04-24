@@ -1,13 +1,13 @@
 # the terminator
 +++ a tool for automating simple methods for the enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest +++
 
-- *terminator.py is still in testing phase; feel free to use and test it and share your suggestions in the Discussions*
+- *feel free to use and test the terminator and share your suggestions in the Discussions*
 # contents
-the terminator automates every stage of pentesting *except* initial exploitation (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
+the terminator automates every stage of a penetration test *except* gaining the initial shell (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
 - terminator.py - tool for automating simple methods for enumeration, privilege escalation, persistence, exfiltration, and reporting
-- directory-list.txt - wordlist of common directory names for web enumeration (use -w in 'enum' stage to specify different wordlist)
+- directory-list.txt - default wordlist of common directory names for web enumeration (use -w in 'enum' module to specify a different wordlist)
 
-you can also use the individual scripts in the *indiv-scripts* folder to isolate an individual stage of the pentest, instead of using terminator.py (which contains all of these by itself)
+you can also use the individual scripts in the *indiv-scripts* folder to isolate an individual stage of the pentest
 
 # how to use
 terminator.py has four modules:
@@ -16,8 +16,7 @@ terminator.py has four modules:
 - root - with root privileges, esetablish persistence and exfiltrate system data to local machine
 - report - create .txt and .docx report files on local machine from data gathered using the previous modules
 
-terminator.py is used by itself and is comprised of the enum.py, exfil.py, priv.py, pers.py, and report.py individual scripts. 
-for this reason, you can either use terminator.py by itself, or use each of the other scripts individually. because terminator only automates the most common and simple penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
+because terminator only automates the most common and simple penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
 
 - clone the repository to your computer with "git clone https://github.com/suffs811/the-terminator.git"
 - if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
@@ -61,7 +60,6 @@ stage 2 - privilege escalation
 - find files with suid bitset and if the binary exists in terminator's dictionary, execute the code; if it needs user interaction, print to screen
 - run strings on suid files to find commands that do not specify command's full path, then create binary file in /tmp, echo '/bin/bash -p' to file, add /tmp to $PATH, execute binary
 - check if /etc/passwd or /etc/shadow are world-writable; if either one is, create password from user input and append new root user to the file; su user for root
-- check for root permissions; if not root, suggest manually finding privesc vector
 
 stage 3 - persistence and data exfiltration (ensure ssh is active on local machine)
 - check for root permissions and suggest -f to bypass root check
@@ -76,7 +74,7 @@ stage 4 - report writing
 - add contents from enum.txt (enumeration data), priv.txt (privilege escalation vector used to gain root privileges), and data_exfil.txt (peristence and target machine data) to .txt and .docx files with headings; use -o to specify desired file name
 
 # TO DO
-- test final terminator.py script
+- create vm for learning terminator
 
 # credit and license
 Copyright (c) 2023 suffs811
