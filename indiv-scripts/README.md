@@ -2,7 +2,7 @@
 - you can use these to isolate an individual stage of the penetration test, instead of using terminator.py.
 
 <> note: terminator.py contains all the indiv scripts and is the primary method for using the terminator tool; therefore, these individual scripts might not be as up to date or production ready! 
-- feel free to leave a comment or suggestion for making the tool better
+- feel free to leave a comment or suggestion for making the terminator better
 
 - enum.py - script for automating common enumeration techniques (nmap,web,ftp,smb,nfs)
 - priv.py - script to automate common privelege escalation techniques
