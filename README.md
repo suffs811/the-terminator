@@ -74,7 +74,7 @@ stage 4 - report writing
 - add contents from enum.txt (enumeration data), priv.txt (privilege escalation vector used to gain root privileges), and data_exfil.txt (peristence and target machine data) to .txt and .docx files with headings; use -o to specify desired file name
 
 # TO DO
-- create vm for learning terminator
+- create vm to help people learn how to use the terminator
 
 # credit and license
 Copyright (c) 2023 suffs811
