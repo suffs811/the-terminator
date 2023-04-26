@@ -1,5 +1,5 @@
 # the terminator
-+++ a tool for automating simple methods for the enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest +++
++++ a tool for automating common techniques for the enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest +++
 
 - *feel free to use and test the terminator and share your suggestions in the Discussions*
 # contents
