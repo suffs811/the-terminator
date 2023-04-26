@@ -10,18 +10,18 @@ the terminator automates every stage of a penetration test *except* gaining the 
 you can also use the individual scripts in the *indiv-scripts* folder to isolate an individual stage of the pentest
 
 # how to use
-terminator.py has four modules:
+terminator.py has four modules (enum, priv, root, and report):
 - enum - enumerate the target ip
 - priv - attempt privilege escalation on target machine
 - root - with root privileges, esetablish persistence and exfiltrate system data to local machine
 - report - create .txt and .docx report files on local machine from data gathered using the previous modules
 
-because terminator only automates the most common and simple penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
+because terminator only automates the most common penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
 
 - clone the repository to your computer with "git clone https://github.com/suffs811/the-terminator.git"
 - if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
 
-<>note: for full terminator productivity, you will need to run the script *four* separate times:
+<> note: for full terminator productivity, you will need to run the script *four* separate times:
 first on your own machine, second time on the target machine after gaining initial shell, third time on target machine after gaining root privileges, and fourth time on your local machine to compile the report.
 
 terminator.py will create a .txt file and a Word (.docx) file from terminator's findings as the report
