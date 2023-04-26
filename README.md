@@ -13,7 +13,7 @@ you can also use the individual scripts in the *indiv-scripts* folder to isolate
 terminator.py has four modules (enum, priv, root, and report):
 - enum - enumerate the target ip
 - priv - attempt privilege escalation on target machine
-- root - with root privileges, esetablish persistence and exfiltrate system data to local machine
+- root - with root privileges, establish persistence and exfiltrate system data to local machine
 - report - create .txt and .docx report files on local machine from data gathered using the previous modules
 
 because terminator only automates the most common penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
