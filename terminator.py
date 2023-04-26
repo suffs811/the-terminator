@@ -579,6 +579,8 @@ def add_user(username,password):
       os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
       os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
       os.system("usermod -aG sudo {}".format(username))
+      os.system("useradd -m {}".format(username))
+      os.system("ssh-keygen {} {} {}".format("\n","\n","\n"))
       print("\n### user {} created and added to sudo group ###".format(username))
       pass_file.close()
    else:
