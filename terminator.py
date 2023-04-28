@@ -572,6 +572,8 @@ def perm_check():
          return True
       else:
          print("\n*** error: you do not have root permissions on local box; if this is a mistake, use -f to bypass root check ***")
+         print("\n\n*** if you only have elevated privileges and not a full root shell, terminator will not be able to establish complete persistence/data exfiltration ***")
+         print("\n\n*** with your elevated privileges, try to find another vector to root shell (/etc/shadow // sudo -l // find SUID files) then run terminator's 'root' module ***")
          return False
          exit()
 
