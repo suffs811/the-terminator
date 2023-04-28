@@ -7,8 +7,6 @@ the terminator automates every stage of a penetration test *except* gaining the 
 - terminator.py - tool for automating simple methods for enumeration, privilege escalation, persistence, exfiltration, and reporting
 - directory-list.txt - default wordlist of common directory names for web enumeration (use -w in 'enum' module to specify a different wordlist)
 
-you can also use the individual scripts in the *indiv-scripts* folder to isolate an individual stage of the pentest
-
 # how to use
 terminator.py has four modules (enum, priv, root, and report):
 - enum - enumerate the target ip
