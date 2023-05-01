@@ -3,26 +3,25 @@
 
 - *feel free to use and test the terminator and share your suggestions in the Discussions*
 # contents
-the terminator automates every stage of a penetration test *except* gaining the initial shell (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
 - terminator.py - tool for automating common techniques for enumeration, privilege escalation, persistence, exfiltration, and reporting
 - directory-list.txt - default wordlist of common directory names for web enumeration (use -w in 'enum' module to specify a different wordlist)
 
+<> the terminator automates every stage of a penetration test *except* gaining the initial shell (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
+
 # how to use
-terminator.py has four modules (enum, priv, root, and report):
+1) clone the repository to your computer
+- "git clone https://github.com/suffs811/the-terminator.git"
+- note: if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
+
+2) deploy the terminator
+- the terminator has four modules:
 - enum - enumerate the target ip
 - priv - attempt privilege escalation on target machine
 - root - with root privileges, establish persistence and exfiltrate system data to local machine
 - report - create .txt and .docx report files on local machine from data gathered using the previous modules
 
-because terminator only automates the most common penetration testing procedures, you will still need to put in some manual work if terminator is not successful. this tool is simply to speed up and automate the simple tasks.
-
-- clone the repository to your computer with "git clone https://github.com/suffs811/the-terminator.git"
-- if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
-
-<> note: for full terminator productivity, you will need to run the script *four* separate times:
+<> for full terminator productivity, you will need to run the script *four* separate times:
 first on your own machine, second time on the target machine after gaining initial shell, third time on target machine after gaining root privileges, and fourth time on your local machine to compile the report.
-
-terminator.py will create a .txt file and a Word (.docx) file from terminator's findings as the report
 
 *for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)*
 
@@ -58,6 +57,7 @@ stage 2 - privilege escalation
 - find files with suid bitset and if the binary exists in terminator's dictionary, execute the code; if it needs user interaction, print to screen
 - run strings on suid files to find commands that do not specify command's full path, then create binary file in /tmp, echo '/bin/bash -p' to file, add /tmp to $PATH, execute binary
 - check if /etc/passwd or /etc/shadow are world-writable; if either one is, create password from user input and append new root user to the file; su user for root
+- <> note: some privilege escalation vectors only provide you with escalated user privileges and not a full root shell; however, you can use your new escalated privileges to find another privilege escalation vector to gain a root shell (such as looking in /root or looking at root's password hash in /etc/shadow)
 
 stage 3 - persistence and data exfiltration (ensure ssh is active on local machine)
 - check for root permissions and suggest -f to bypass root check
