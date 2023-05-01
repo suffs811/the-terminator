@@ -73,6 +73,7 @@ stage 4 - report writing
 
 # TO DO
 - create vm to help people learn how to use the terminator
+- add web enumeration function that scans web page images for hidden stego files & searches for usernames/passwords in source code
 
 # credit and license
 Copyright (c) 2023 suffs811
@@ -83,6 +84,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 directory-list.txt comes from SecLists' common.txt list of directory names. it can be found here: https://github.com/suffs811/SecLists/blob/master/Discovery/Web-Content/common.txt
 
-*terminator has been tested on kali linux 2022.4 (local machine) and ubuntu unity 22.10 (target machine)*
+*terminator has been tested on kali linux 2022.4 (local machine) and ubuntu unity 22.10 / Ubuntu 20.04.6 / Ubuntu 18.04.6 (target machine)*
 
 -+- Leave a comment if you have any questions! -+-
