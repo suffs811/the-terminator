@@ -14,14 +14,14 @@
 - note: if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
 
 2) deploy the terminator
-- the terminator has four modules:
+<> the terminator has four modules. for full terminator productivity, you will need to run the script *four* separate times:
+first on your own machine (enum), second time on the target machine after gaining initial shell (priv), third time on target machine after gaining root privileges (root), and fourth time on your local machine to compile the report (report).
 - enum - enumerate the target ip
 - priv - attempt privilege escalation on target machine
 - root - with root privileges, establish persistence and exfiltrate system data to local machine
 - report - create .txt and .docx report files on local machine from data gathered using the previous modules
 
-<> for full terminator productivity, you will need to run the script *four* separate times:
-first on your own machine, second time on the target machine after gaining initial shell, third time on target machine after gaining root privileges, and fourth time on your local machine to compile the report.
+*see the [syntax](#syntax) section below for help on how to use each module*
 
 *for help with usage, use the -h flag or grep for 'usage' in the script (grep "usage" terminator.py)*
 
