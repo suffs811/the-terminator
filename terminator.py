@@ -218,6 +218,7 @@ def smb(ip):
 def ftp(ip):
    print("\n### initiating ftp enumeration... ###")
    os.system("echo '### ftp enumeration results ###' >> /terminator/enum.txt")
+   os.system("echo '-- ftp anonymous login:' >> /terminator/ftp_enum.txt")
    os.system("nmap -vv -p 21 --script=ftp-anon {} -oN /terminator/ftp_nmap.txt".format(ip))
    os.system("cat /terminator/ftp_nmap.txt >> /terminator/enum.txt")
    print("\n### ftp enum output saved to /terminator/enum.txt ###")
@@ -246,12 +247,10 @@ def imp_enum(ip):
    os.system("echo ''")
    os.system("echo '### enumeration results saved to /terminator/ directory ###'")
    os.system("echo ''")
-   os.system("echo ''")
+   os.system("echo '***********************************************************'")
    os.system("echo '<> open ports and services on {} <>' >> /terminator/imp_enum_results.txt".format(ip))
    os.system("cat /terminator/services.txt >> /terminator/imp_enum_results.txt")
    os.system("rm -f /terminator/services.txt")
-   os.system("echo ''")
-   os.system("echo ''")
    os.system("echo ''")
    os.system("echo '### important findings: ###' >> /terminator/imp_enum_results.txt")
    os.system("echo ''")
@@ -267,8 +266,7 @@ def imp_enum(ip):
          elif "robots" in line and "#" not in line:
             os.system("echo '{}' >> /terminator/web_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/web_enum.txt")
-         elif "Anonymous" in line:
-            os.system("echo '-- ftp anonymous login:' >> /terminator/ftp_enum.txt")
+         elif "Anonymous FTP" in line:
             os.system("echo '{}' >> /terminator/ftp_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/ftp_enum.txt")
          elif "allows session" in line or "allow session" in line:
@@ -951,8 +949,6 @@ if module == "enum":
          else:
            continue
    imp_enum(ip)
-   os.system("echo ''")
-   os.system("echo ''")
    os.system("echo '### end of enumeration ###' | tee -a /terminator/enum.txt")
 elif module == "priv":
    # call privilege escalation functions
