@@ -184,12 +184,12 @@ def web(ip,wordlist,services):
 def smb(ip):
    print("\n### initiating smb enumeration... ###")
    os.system("echo '### smb enumeration results ###' >> /terminator/smb.txt")
-   os.system("locate enum4linux > /terminator/whereissmb.txt")
-   wheresmb = open("/terminator/whereissmb.txt")
+   os.system("locate enum4linux > /terminator/wheresmb.txt")
+   wheresmb = open("/terminator/wheresmb.txt")
    smbloc = wheresmb.readline()
-   os.system("{} -a {} >> /terminator/smb.txt".format(smbloc,ip))
-   os.system("{} -U {} | grep -i 'user' >> /terminator/smb_plus.txt".format(smbloc,ip))
-   os.system("{} -S {} | grep -i 'disk' >> /terminator/smb_plus.txt".format(smbloc,ip))
+   os.system("{} -a {} >> /terminator/smb.txt".format(smbloc.strip(),ip))
+   os.system("{} -U {} | grep -i 'user' >> /terminator/smb_plus.txt".format(smblocstrip(),ip))
+   os.system("{} -S {} | grep -i 'disk' >> /terminator/smb_plus.txt".format(smblocstrip(),ip))
    os.system("cat smb_plus.txt >> /terminator/smb.txt")
    os.system("echo '' >> /terminator/smb.txt")
    os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/nmap_smb.txt".format(ip))
@@ -206,7 +206,7 @@ def smb(ip):
 
    es.close()
    nsmb.close()
-   where.close()
+   wheresmb.close()
 
    os.system("cat /terminator/nsmb.txt >> /terminator/enum.txt")
    print("\n### smb enum output saved to /terminator/enum.txt ###")
@@ -259,19 +259,19 @@ def imp_enum(ip):
       for line in e:
          smb_check = re.search("//{}/.".format(ip),line)
          if "interesting" in line:
-            os.system("echo '{}' | tee -a /terminator/web_enum.txt".format(line.strip()))
-            os.system("echo '' | tee -a /terminator/web_enum.txt")
+            os.system("echo '{}' >> /terminator/web_enum.txt".format(line.strip()))
+            os.system("echo '' >> /terminator/web_enum.txt")
          elif "robots" in line and "#" not in line:
-            os.system("echo '{}' | tee -a /terminator/web_enum.txt".format(line.strip()))
-            os.system("echo '' | tee -a /terminator/web_enum.txt")
+            os.system("echo '{}' >> /terminator/web_enum.txt".format(line.strip()))
+            os.system("echo '' >> /terminator/web_enum.txt")
          elif "Anonymous" in line:
             os.system("echo '-- ftp anonymous login:' | tee -a /terminator/ftp_enum.txt")
-            os.system("echo '{}' | tee -a /terminator/ftp_enum.txt".format(line.strip()))
-            os.system("echo '' | tee -a /terminator/ftp_enum.txt")
+            os.system("echo '{}' >> /terminator/ftp_enum.txt".format(line.strip()))
+            os.system("echo '' >> /terminator/ftp_enum.txt")
          elif "allows session" in line or "allow session" in line:
             os.system("echo '-- smb no-auth login:' | tee -a /terminator/smb_enum.txt")
-            os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
-            os.system("echo '' | tee -a /terminator/smb_enum.txt")
+            os.system('echo "{}" >> /terminator/smb_enum.txt'.format(line.strip()))
+            os.system("echo '' >> /terminator/smb_enum.txt")
          else:
             continue
 
