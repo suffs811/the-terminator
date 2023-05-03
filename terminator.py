@@ -166,29 +166,27 @@ def web(ip,wordlist,services):
       curl = open("/terminator/curl.txt")
       c = curl.readlines()
       for line in c:
-         x = re.sub("\"",line)
+         x = line.split("\\\"")
          for sec in x:
-            if "html" in line or "htm" in line or "php" in line or "css" in line:
-               os.system("curl http://{}:{}/{} > /terminator/curl_find.txt".format(ip,port.strip(),sec))
-               curl_find = open("/terminator/curl_find.txt")
-               c_find = curl_find.readlines()
-               for lin in c_find:
-                  if "password" in lin or "username" in lin:
-                     os.system("echo '{} #found in {}#' | tee -a /terminator/enum.txt /terminator/curl_pass.txt".format(lin,sec))
-               curl_find.close()
+            if "html" in sec or "htm" in sec or "php" in sec or "css" in sec:
+               os.system("echo '### possible username/password from webpages: ###' >> /terminator/curl_find.txt")
+               os.system("curl http://{}:{}/{} | grep 'username\|password' >> /terminator/curl_find.txt".format(ip,port.strip(),sec.strip()))
       curl.close()
+
 
    print("\n### web enum output saved to /terminator/enum.txt ###")
    os.system("rm -f /terminator/curl.txt")
-   os.system("rm -f /terminator/curl_find.txt")
 
 
 # use enum4linux and nmap to enumerate smb shares/users
 def smb(ip):
    print("\n### initiating smb enumeration... ###")
-   os.system("echo '### smb enumeration results ###' >> /terminator/enum.txt")
-   os.system("enum4linux -a {} | tee -a /terminator/smb.txt /terminator/smb_enum4lin.txt".format(ip))
-   os.system("echo '' >> /terminator/enum.txt")
+   os.system("echo '### smb enumeration results ###' >> /terminator/smb.txt")
+   os.system("enum4linux -U {} >> /terminator/smb_plus.txt".format(ip))
+   os.system("enum4linux -S {} >> /terminator/smb_plus.txt".format(ip))
+   os.system("cat smb_plus.txt >> /terminator/smb.txt")
+   #os.system("enum4linux -a {} >> /terminator/smb.txt".format(ip))
+   os.system("echo '' >> /terminator/smb.txt")
    os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/nmap_smb.txt".format(ip))
    os.system("echo '' >> /terminator/smb.txt")
    os.system("cat /terminator/nmap_smb.txt >> /terminator/smb.txt")
@@ -223,9 +221,9 @@ def nfs(ip):
    os.system("echo '### nfs enumeration results ###' >> /terminator/enum.txt")
    os.system("nmap -vv -p 111 --script=nfs-ls,nfs-statfs,nfs-showmount {} -oN /terminator/nfs_nmap.txt".format(ip))
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
-   os.system("echo '' | tee -a /terminator/enum.txt")
-   os.system("echo '### NFS mounts ###' | tee -a /terminator/enum.txt")
-   os.system("/usr/sbin/showmount -e {} | tee -a /terminator/enum.txt /terminator/nfs.txt".format(ip))
+   os.system("echo '' >> /terminator/enum.txt")
+   os.system("echo '### NFS mounts ###' >> /terminator/enum.txt")
+   os.system("/usr/sbin/showmount -e {} >> /terminator/enum.txt /terminator/nfs.txt".format(ip))
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
@@ -240,8 +238,8 @@ def imp_enum(ip):
    os.system("echo '### enumeration results saved to /terminator/ directory ###'")
    os.system("echo ''")
    os.system("echo ''")
-   os.system("echo '<> open ports and services on {} <>' | tee -a /terminator/imp_enum_results.txt".format(ip))
-   os.system("cat /terminator/services.txt | tee -a /terminator/imp_enum_results.txt")
+   os.system("echo '<> open ports and services on {} <>' >> /terminator/imp_enum_results.txt".format(ip))
+   os.system("cat /terminator/services.txt >> /terminator/imp_enum_results.txt")
    os.system("rm -f /terminator/services.txt")
    os.system("echo ''")
    os.system("echo ''")
@@ -253,6 +251,7 @@ def imp_enum(ip):
    with open("/terminator/enum.txt") as enum:
       e = enum.readlines()
       for line in e:
+         smb_check = re.search("//{}/.".format(ip),line)
          if "interesting" in line:
             os.system("echo '{}' | tee -a /terminator/web_enum.txt".format(line.strip()))
             os.system("echo '' | tee -a /terminator/web_enum.txt")
@@ -267,11 +266,11 @@ def imp_enum(ip):
             os.system("echo '-- smb no-auth login:' | tee -a /terminator/smb_enum.txt")
             os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
             os.system("echo '' | tee -a /terminator/smb_enum.txt")
-         elif "Local User" in line:
+         elif "Local User" in line or "RID" in line:
             os.system("echo '-- local smb user:' | tee -a /terminator/smb_enum.txt")
             os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
             os.system("echo '' | tee -a /terminator/smb_enum.txt")
-         elif "Disk" in line:
+         elif "Disk" in line or smb_check:
             os.system("echo '-- local smb share:' | tee -a /terminator/smb_enum.txt")
             os.system('echo "{}" | tee -a /terminator/smb_enum.txt'.format(line.strip()))
             os.system("echo '' | tee -a /terminator/smb_enum.txt")
@@ -284,12 +283,11 @@ def imp_enum(ip):
    os.system("echo 'robots.txt:' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/robots_dir.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
-   os.system("echo 'possible user/pass from web pages:' >> /terminator/imp_enum_results.txt")
-   os.system("cat /terminator/curl_pass.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("cat /terminator/curl_find.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/ftp_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
-   os.system("cat /terminator/smb_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("cat /terminator/nsmb.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("echo '-- nfs mounts:' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/nfs.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
@@ -299,9 +297,9 @@ def imp_enum(ip):
    # delete temp enum files
    os.system("rm -f /terminator/robots_dir.txt 2>/dev/null")
    os.system("rm -f /terminator/web_enum.txt 2>/dev/null")
-   os.system("rm -f /terminator/curl_pass.txt 2>/dev/null")
+   os.system("rm -f /terminator/curl_find.txt 2>/dev/null")
    os.system("rm -f /terminator/ftp_enum.txt 2>/dev/null")
-   os.system("rm -f /terminator/smb_enum.txt 2>/dev/null")
+   os.system("rm -f /terminator/nsmb.txt 2>/dev/null")
    os.system("rm -f /terminator/nfs.txt 2>/dev/null")
 
 
