@@ -167,11 +167,12 @@ def web(ip,wordlist,services):
       c = curl.readlines()
       os.system("echo '# possible username/password from webpages: #' >> /terminator/curl_find.txt")
       for line in c:
-         x = line.split("\\\"")
+         x = line.split('"')
          for sec in x:
             if "html" in sec or "htm" in sec or "php" in sec or "css" in sec:
-               os.system("curl http://{}:{}/{} >> /terminator/curltmp.txt".format(ip,port.strip(),sec.strip()))
+               os.system("curl http://{}:{}/{} > /terminator/curltmp.txt".format(ip,port.strip(),sec.strip()))
                os.system("grep -e 'username' -e 'password' /terminator/curltmp.txt >> /terminator/curl_find.txt")
+               os.system("echo '' > /terminator/curltmp.txt")
             else:
                continue
       curl.close()
@@ -252,7 +253,7 @@ def imp_enum(ip):
    os.system("echo ''")
    os.system("echo ''")
    os.system("echo ''")
-   os.system("echo '### important findings: ###' | tee -a /terminator/imp_enum_results.txt")
+   os.system("echo '### important findings: ###' >> /terminator/imp_enum_results.txt")
    os.system("echo ''")
 
    # get important enum results
@@ -267,11 +268,11 @@ def imp_enum(ip):
             os.system("echo '{}' >> /terminator/web_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/web_enum.txt")
          elif "Anonymous" in line:
-            os.system("echo '-- ftp anonymous login:' | tee -a /terminator/ftp_enum.txt")
+            os.system("echo '-- ftp anonymous login:' >> /terminator/ftp_enum.txt")
             os.system("echo '{}' >> /terminator/ftp_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/ftp_enum.txt")
          elif "allows session" in line or "allow session" in line:
-            os.system("echo '-- smb no-auth login:' | tee -a /terminator/smb_enum.txt")
+            os.system("echo '-- smb no-auth login:' >> /terminator/smb_enum.txt")
             os.system('echo "{}" >> /terminator/smb_enum.txt'.format(line.strip()))
             os.system("echo '' >> /terminator/smb_enum.txt")
          else:
@@ -303,6 +304,8 @@ def imp_enum(ip):
    os.system("rm -f /terminator/nsmb.txt 2>/dev/null")
    os.system("rm -f /terminator/smb_plus.txt 2>/dev/null")
    os.system("rm -f /terminator/nfs.txt 2>/dev/null")
+   os.system("rm -f /terminator/wheresmb.txt 2>/dev/null")
+   os.system("rm -f /terminator/smb_enum.txt 2>/dev/null")
 
 
 # privilege escalation ###############################
