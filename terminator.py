@@ -165,12 +165,14 @@ def web(ip,wordlist,services):
       os.system("curl http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
       curl = open("/terminator/curl.txt")
       c = curl.readlines()
+      os.system("echo '# possible username/password from webpages: #' >> /terminator/curl_find.txt")
       for line in c:
          x = line.split("\\\"")
          for sec in x:
             if "html" in sec or "htm" in sec or "php" in sec or "css" in sec:
-               os.system("echo '### possible username/password from webpages: ###' >> /terminator/curl_find.txt")
-               os.system("curl http://{}:{}/{} | grep 'username\|password' >> /terminator/curl_find.txt".format(ip,port.strip(),sec.strip()))
+               os.system("curl http://{}:{}/{} | grep -e 'username' -e 'password' >> /terminator/curl_find.txt".format(ip,port.strip(),sec.strip()))
+            else:
+               continue
       curl.close()
 
 
@@ -182,9 +184,12 @@ def web(ip,wordlist,services):
 def smb(ip):
    print("\n### initiating smb enumeration... ###")
    os.system("echo '### smb enumeration results ###' >> /terminator/smb.txt")
-   os.system("enum4linux -a {} >> /terminator/smb.txt".format(ip))
-   os.system("enum4linux -U {} | grep -i 'user' >> /terminator/smb_plus.txt".format(ip))
-   os.system("enum4linux -S {} | grep -i 'disk' >> /terminator/smb_plus.txt".format(ip))
+   os.system("locate enum4linux > /terminator/whereissmb.txt")
+   wheresmb = open("/terminator/whereissmb.txt")
+   smbloc = wheresmb.readline()
+   os.system("{} -a {} >> /terminator/smb.txt".format(smbloc,ip))
+   os.system("{} -U {} | grep -i 'user' >> /terminator/smb_plus.txt".format(smbloc,ip))
+   os.system("{} -S {} | grep -i 'disk' >> /terminator/smb_plus.txt".format(smbloc,ip))
    os.system("cat smb_plus.txt >> /terminator/smb.txt")
    os.system("echo '' >> /terminator/smb.txt")
    os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/nmap_smb.txt".format(ip))
@@ -201,6 +206,7 @@ def smb(ip):
 
    es.close()
    nsmb.close()
+   where.close()
 
    os.system("cat /terminator/nsmb.txt >> /terminator/enum.txt")
    print("\n### smb enum output saved to /terminator/enum.txt ###")
