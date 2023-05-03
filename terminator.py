@@ -806,6 +806,20 @@ def report(output):
    ipsplit = ipread.split(" ")
    ip = ipsplit[-2].strip()
 
+   # check for extension
+   txt = re.search("txt\Z", output)
+   dot = re.findall("[.]", output)
+   if len(dot) > 1:
+      if txt:
+         cut = output[:-4]
+      else:
+         cut = output
+   elif len(dot) == 1:
+      fsplit = output.split(".")
+      cut = fsplit[0].strip()
+   else:
+      cut = output
+
    os.system("touch /terminator/report.txt")
    os.system("echo '-+- Penetration Testing Report for {} -+-' > /terminator/report.txt".format(ip))
    os.system("echo '' >> /terminator/report.txt")
@@ -826,16 +840,16 @@ def report(output):
    os.system("echo '' >> /terminator/report.txt")
    os.system("echo '' >> /terminator/report.txt")
    os.system("echo '--- END OF REPORT ---' >> /terminator/report.txt")
-   os.system("mv /terminator/report.txt /terminator/{}.txt".format(output))
-   print("### penetration test report for {} is ready at /terminator/{}.txt ###\n\n### please add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section. ###\n\n###all reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively ###".format(ip,output))
+   os.system("mv /terminator/report.txt /terminator/{}.txt".format(cut))
+   print("### penetration test report for {} is ready at /terminator/{}.txt ###\n\n### please add your method for gaining the initial shell in the '+ + + Stage 2 - Exploitation / Initial Shell + + +' section. ###\n\n### all reference data for enumeration, privilege escalation, and persistence/data exfiltration are located in /terminator/ as enum.txt, priv.txt, and data_exfil.txt, respectively ###".format(ip,cut))
    ipf.close()
 
 
 # check if docx is installed on machine
 def lib_check():
    try:
-      import docx
       import sys
+      import docx
       "docx" in sys.modules
    except:
       return False
@@ -975,8 +989,8 @@ elif module == "report":
    lib = lib_check()
    if lib:
       doc_make(output)
+      print("\n\n-+- target has been terminated -+-")
    else:
       print("\n*** 'python-docx' is not installed on your machine; please run 'pip install python-docx' in your terminal ***")
-   print("\n\n-+- target has been terminated -+-")
 else:
    print("\n*** specify either 'enum', 'priv', 'root' or 'report' ***")
