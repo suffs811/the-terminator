@@ -170,7 +170,8 @@ def web(ip,wordlist,services):
          x = line.split("\\\"")
          for sec in x:
             if "html" in sec or "htm" in sec or "php" in sec or "css" in sec:
-               os.system("curl http://{}:{}/{} | grep -e 'username' -e 'password' >> /terminator/curl_find.txt".format(ip,port.strip(),sec.strip()))
+               os.system("curl http://{}:{}/{} >> /terminator/curltmp.txt".format(ip,port.strip(),sec.strip()))
+               os.system("grep -e 'username' -e 'password' /terminator/curltmp.txt >> /terminator/curl_find.txt")
             else:
                continue
       curl.close()
@@ -188,8 +189,8 @@ def smb(ip):
    wheresmb = open("/terminator/wheresmb.txt")
    smbloc = wheresmb.readline()
    os.system("{} -a {} >> /terminator/smb.txt".format(smbloc.strip(),ip))
-   os.system("{} -U {} | grep -i 'user' >> /terminator/smb_plus.txt".format(smblocstrip(),ip))
-   os.system("{} -S {} | grep -i 'disk' >> /terminator/smb_plus.txt".format(smblocstrip(),ip))
+   os.system("{} -U {} | grep 'user' >> /terminator/smb_plus.txt".format(smbloc.strip(),ip))
+   os.system("{} -S {} | grep 'Disk' >> /terminator/smb_plus.txt".format(smbloc.strip(),ip))
    os.system("cat smb_plus.txt >> /terminator/smb.txt")
    os.system("echo '' >> /terminator/smb.txt")
    os.system("nmap -vv -p 445 --script=smb-enum-shares.nse,smb-enum-users.nse {} -oN /terminator/nmap_smb.txt".format(ip))
@@ -229,7 +230,8 @@ def nfs(ip):
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
    os.system("echo '' >> /terminator/enum.txt")
    os.system("echo '### NFS mounts ###' >> /terminator/enum.txt")
-   os.system("/usr/sbin/showmount -e {} >> /terminator/enum.txt /terminator/nfs.txt".format(ip))
+   os.system("/usr/sbin/showmount -e {} >> /terminator/enum.txt".format(ip))
+   os.system("/usr/sbin/showmount -e {} >> /terminator/nfs.txt".format(ip))
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
 
 
