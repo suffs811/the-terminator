@@ -992,5 +992,6 @@ elif module == "report":
       print("\n\n-+- target has been terminated -+-")
    else:
       print("\n*** 'python-docx' is not installed on your machine; please run 'pip install python-docx' in your terminal ***")
+      print("\n*** you might also need to specify the version of python i.e. 'python3.9 terminator.py report -o report' ***")
 else:
    print("\n*** specify either 'enum', 'priv', 'root' or 'report' ***")
