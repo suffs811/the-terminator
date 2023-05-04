@@ -639,7 +639,7 @@ def callback(local_ip, local_port):
 def cron_make():
    print("\n### creating cronjob to execute callback every 5 min... ###")
    os.system("crontab -l > /tmp/mycron")
-   os.system("echo '5 * * * * /dev/shm/.data/data_log' >> /tmp/mycron")
+   os.system("echo '5 * * * * /dev/shm/.data/data_log >/dev/null 2>&1' >> /tmp/mycron")
    os.system("crontab /tmp/mycron")
    os.system("rm -f /tmp/mycron")
    print("\n### cronjob created ###")
