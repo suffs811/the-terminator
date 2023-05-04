@@ -989,7 +989,7 @@ elif module == "report":
    lib = lib_check()
    if lib:
       doc_make(output)
-      print("\n\n-+- target has been terminated -+-")
+      print("\n\n-+- TARGET TERMINATED -+-")
    else:
       print("\n*** 'python-docx' is not installed on your machine; please run 'pip install python-docx' in your terminal ***")
       print("\n*** you might also need to specify the version of python i.e. 'python3.9 terminator.py report -o report' ***")
