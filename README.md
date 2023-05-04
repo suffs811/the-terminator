@@ -47,7 +47,7 @@ first on your own machine (enum), second time on the target machine after gainin
 stage 1 - enumeration
 - initial nmap scan to find open ports on host
 - secondary nmap scan to identify services running on open ports
-- if http in use, run nikto, gobuster, curl robots.txt, and searchsploit for service version exploits
+- if http in use, run nikto, gobuster, curl robots.txt, and search web page source code for 'username' and 'password'
 - if smb in use, run enum4linux and nmap scripts to scan smb shares and users
 - if ftp in use, run nmap scripts to determine if ftp allows 'anonymous' logon
 - if nfs in use, run nmap scripts to identify service status and mounted shares
