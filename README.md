@@ -67,7 +67,9 @@ stage 3 - persistence and data exfiltration (ensure ssh is active on local machi
 - check for root permissions and suggest -f to bypass root check
 - if root permissions is true, create password from user input, add new root user to /etc/passwd, /etc/shadow files and add to root group
 - create shell script at /dev/shm/.data/data_log containing netcat reverse shell at ip:port from user input
-- create cronjob in /etc/crontab to execute the shell script every 5 minutes
+- create cronjob in /etc/crontab to execute the shell script every minute
+
+*if cronjob is not working, you might need to run 'crontab -e' then just add a space under the cronjob, and exit the file with 'Ctrl+x', 'y', 'enter'*
 
 - write id,whoami,netstat and /etc/passwd,/etc/shadow,/etc/hosts,/etc/crontab,/etc/exports, and suid files to single file and scp the file to local machine using ip from user input to local 'root' user; *scp will prompt for local user's root password on local machine*
 - cover tracks by clearing log files and history, restoring log files to the copies made during stage 2, deleting all files created by terminator, and deleting terminator.py itself
