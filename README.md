@@ -1,7 +1,9 @@
 # the terminator
 +++ a tool for automating common techniques for the enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest +++
 
-- *feel free to use and test the terminator and share your suggestions in the Discussions*
+>check out the terminator's TryHackMe [room](https://tryhackme.com/room/theterminator) to learn how to use this powerful tool!
+
+>*feel free to use and test the terminator and share your suggestions in the Discussions*
 # contents
 - terminator.py - tool for automating common techniques for enumeration, privilege escalation, persistence, exfiltration, and reporting
 - directory-list.txt - default wordlist of common directory names for web enumeration (use -w in 'enum' module to specify a different wordlist)
@@ -71,10 +73,6 @@ stage 3 - persistence and data exfiltration (ensure ssh is active on local machi
 
 stage 4 - report writing
 - add contents from enum.txt (enumeration data), priv.txt (privilege escalation vector used to gain root privileges), and data_exfil.txt (peristence and target machine data) to .txt and .docx files with headings; use -o to specify desired file name
-
-# TO DO
-- create vm to help people learn how to use the terminator
-- add web enumeration function that scans web page images for hidden stego files & searches for usernames/passwords in source code
 
 # credit and license
 Copyright (c) 2023 suffs811
