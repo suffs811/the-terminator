@@ -1,3 +1,4 @@
+![terminator-logo](https://github.com/suffs811/writeups/blob/main/terminator-img/small-terminator.png)
 # the terminator
 +++ a tool for automating common techniques for the enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest +++
 
