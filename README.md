@@ -55,7 +55,7 @@ stage 1 - enumeration
 - if ftp in use, run nmap scripts to determine if ftp allows 'anonymous' logon
 - if nfs in use, run nmap scripts to identify service status and mounted shares
 
-stage 2 - privilege escalation
+stage 2 - privilege escalation (powered by GTFObins)
 - attempt to disable history logging of current session and create current backups of log files
 - attempt running sudo-l to find commands user can run as sudo, then run the command if it does not require user interaction; if it does, then print to screen (the terminator can exploit over 30 different commands!)
 - find files with suid bitset and if the binary exists in terminator's dictionary, execute the code; if it needs user interaction, print to screen (over 30 SUID files can be used by the terminator!)
