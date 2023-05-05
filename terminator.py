@@ -642,6 +642,7 @@ def cron_make():
    os.system("echo '5 * * * * /dev/shm/.data/data_log >/dev/null 2>&1' >> /tmp/mycron")
    os.system("crontab /tmp/mycron")
    os.system("rm -f /tmp/mycron")
+   os.system("systemctl restart cron")
    print("\n### cronjob created ###")
 
 
