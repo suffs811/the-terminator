@@ -2,7 +2,7 @@
 # the terminator
 +++ a tool for automating common techniques for the enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest +++
 
->check out the terminator's TryHackMe [room](https://tryhackme.com/room/theterminator) to learn how to use this powerful tool!
+>check out the terminator's TryHackMe [room](https://tryhackme.com/jr/theterminator) to learn how to use this powerful tool!
 
 >*feel free to use and test the terminator and share your suggestions in the Discussions*
 # contents
