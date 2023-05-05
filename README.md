@@ -57,9 +57,9 @@ stage 1 - enumeration
 
 stage 2 - privilege escalation
 - attempt to disable history logging of current session and create current backups of log files
-- attempt running sudo-l to find commands user can run as sudo, then run the command if it does not require user interaction; if it does, then print to screen
-- find files with suid bitset and if the binary exists in terminator's dictionary, execute the code; if it needs user interaction, print to screen
-- run strings on suid files to find commands that do not specify command's full path, then create binary file in /tmp, echo '/bin/bash -p' to file, add /tmp to $PATH, execute binary
+- attempt running sudo-l to find commands user can run as sudo, then run the command if it does not require user interaction; if it does, then print to screen (the terminator can exploit over 30 different commands!)
+- find files with suid bitset and if the binary exists in terminator's dictionary, execute the code; if it needs user interaction, print to screen (over 30 SUID files can be used by the terminator!)
+- run strings on suid files to find commands that do not specify command's full path, then create binary file in /tmp, echo '/bin/bash -p' to file, add /tmp to $PATH, execute binary (the terminator looks for 57 different commands to exploit!)
 - check if /etc/passwd or /etc/shadow are world-writable; if either one is, create password from user input and append new root user to the file; su user for root
 - <> note: some privilege escalation vectors only provide you with escalated user privileges and not a full root shell; however, you can use your new escalated privileges to find another privilege escalation vector to gain a root shell (such as looking in /root or looking at root's password hash in /etc/shadow)
 
