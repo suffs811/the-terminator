@@ -1,0 +1,2 @@
+1. Consider replacing calls to os.system() with subprocess. os.system creates a new process each time it is called and can be expensive. subprocess can be more efficient
+2. consider adding AI functionality to report writing and tool syntax suggestions
