@@ -4,7 +4,7 @@
 
 >check out the terminator's TryHackMe [room](https://tryhackme.com/jr/theterminator) to learn how to use this powerful tool!
 
->*feel free to use and test the terminator and share your suggestions in the Discussions*
+>*feel free to use and test the terminator and share your suggestions in the [Discussions](https://github.com/suffs811/the-terminator/discussions/1)*
 # contents
 - terminator.py - tool for automating common techniques for enumeration, privilege escalation, persistence, exfiltration, and reporting
 - directory-list.txt - default wordlist of common directory names for web enumeration (use -w in 'enum' module to specify a different wordlist)
