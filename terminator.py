@@ -2,7 +2,7 @@
 # author: suffs811
 # Copyright (c) 2023 suffs811
 # https://github.com/suffs811/the-terminator.git
-# read the README.md file for more details; software distributed under MIT license
+# read the README.md file for more details; software distributed under MIT license; for personal, legal use only.
 #
 # <> purpose: automate enumeration, privilege escalation, persistence, exfiltration, and reporting stages of a pentest
 # initial shell will need to be done manually
