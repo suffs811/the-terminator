@@ -88,4 +88,6 @@ directory-list.txt comes from SecLists' common.txt list of directory names. it c
 
 *terminator has been tested on kali linux 2022.4 (local machine) and ubuntu unity 22.10 / Ubuntu 20.04.6 / Ubuntu 18.04.6 (target machine)*
 
+*NOTE: the terminator is only intended to be used for personal, legal activities. DO NOT use the terminator for illegal hacking activities. I am not liable for any damages caused by unlawful use of this tool by another person.*
+
 -+- Leave a comment if you have any questions! -+-
