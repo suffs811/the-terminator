@@ -65,7 +65,7 @@ stage 2 - privilege escalation (powered by GTFObins)
 
 stage 3 - persistence and data exfiltration (ensure ssh is active on local machine)
 - check for root permissions and suggest -f to bypass root check
-- if root permissions is true, create password from user input, add new root user to /etc/passwd, /etc/shadow files and add to root group
+- if root permissions are true, create password from user input, add new root user to /etc/passwd, /etc/shadow files and add to root group
 - create shell script at /dev/shm/.data/data_log containing netcat reverse shell at ip:port from user input
 - create cronjob in /etc/crontab to execute the shell script every minute
 
@@ -75,7 +75,7 @@ stage 3 - persistence and data exfiltration (ensure ssh is active on local machi
 - cover tracks by clearing log files and history, restoring log files to the copies made during stage 2, deleting all files created by terminator, and deleting terminator.py itself
 
 stage 4 - report writing
-- add contents from enum.txt (enumeration data), priv.txt (privilege escalation vector used to gain root privileges), and data_exfil.txt (peristence and target machine data) to .txt and .docx files with headings; use -o to specify desired file name
+- add contents from enum.txt (enumeration data), priv.txt (privilege escalation vector used to gain root privileges), and data_exfil.txt (persistence and target machine data) to .txt and .docx files with headings; use -o to specify desired file name
 
 # credit and license
 Copyright (c) 2023 suffs811
@@ -84,10 +84,10 @@ https://github.com/suffs811
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-directory-list.txt comes from SecLists' common.txt list of directory names. it can be found here: https://github.com/suffs811/SecLists/blob/master/Discovery/Web-Content/common.txt
+directory-list.txt comes from SecLists' common.txt list of directory names. it can be found here: [common.txt](https://github.com/danielmiessler/SecLists/blob/master/Discovery/Web-Content/common.txt)
 
 *terminator has been tested on kali linux 2022.4 (local machine) and ubuntu unity 22.10 / Ubuntu 20.04.6 / Ubuntu 18.04.6 (target machine)*
 
-*NOTE: the terminator is only intended to be used for personal, legal activities. DO NOT use the terminator for illegal hacking activities. I am not liable for any damages caused by unlawful use of this tool by another person.*
+*NOTE: the terminator is only intended to be used for personal, legal activities. DO NOT use the terminator for illegal hacking activities. I am not liable for any damages caused by the unlawful use of this tool by another person.*
 
 -+- Leave a comment if you have any questions! -+-
