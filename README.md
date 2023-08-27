@@ -13,16 +13,16 @@
 <> the terminator automates every stage of a penetration test *except* gaining the initial shell (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
 
 # how to use
-## 1) before you begin
+## 1) download the terminator
+
+- `git clone https://github.com/suffs811/the-terminator.git`
+- note: if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
+
+## 2) download terminator's dependencies
 
 run the following command to download the required dependencies
 
 `python3 reqs.py`
-
-## 2) clone the repository to your computer
-
-- `git clone https://github.com/suffs811/the-terminator.git`
-- note: if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
 
 ## 3) deploy the terminator
 
