@@ -18,13 +18,7 @@
 - `git clone https://github.com/suffs811/the-terminator.git`
 - note: if you choose to only download terminator.py and not the entire repo, you will need to specify a directory wordlist for webpage enumeration ("-w" with the "enum" module of terminator.py)
 
-## 2) download terminator's dependencies
-
-run the following command to download the required dependencies
-
-`python3 reqs.py`
-
-## 3) deploy the terminator
+## 2) deploy the terminator
 
 <> the terminator has four modules. for full terminator productivity, you will need to run the script *four* separate times:
 first on your own machine (enum), second time on the target machine after gaining initial shell (priv), third time on target machine after gaining root privileges (root), and fourth time on your local machine to compile the report (report).
@@ -56,6 +50,7 @@ first on your own machine (enum), second time on the target machine after gainin
 
 # details
 stage 1 - enumeration
+- downloads necessary dependencies
 - initial nmap scan to find open ports on host
 - secondary nmap scan to identify services running on open ports
 - if http in use, run nikto, gobuster, curl robots.txt, and search web page source code for 'username' and 'password'
