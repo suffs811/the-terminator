@@ -24,6 +24,7 @@ import os
 import argparse
 import time
 import re
+import sys
 
 
 # set command line flags and corresponding global variables
@@ -818,6 +819,13 @@ def clear_tracks(username,password,local_ip,local_port):
 
 # add contents from enum.txt, priv.txt, and data_exfil.txt to file with -o output file name
 def report(output):
+   # test if file name was provided with -o
+   try:
+      len(output) > 0
+   except:
+      print("Please specify the report name with '-o'")
+      exit()
+    
    # get target ip from enum.txt
    ipf = open("/terminator/enum.txt")
    ipread = ipf.readline()
