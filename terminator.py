@@ -69,19 +69,18 @@ print('''
 time.sleep(2)
 
 
-# install dependencies ###############################
-
-print(" ### installing terminator's dependencies (nmap, nikto, gobuster, etc.) ###\n")
-os.system("sudo apt install nmap")
-os.system("sudo apt install nikto")
-os.system("sudo apt install gobuster")
-os.system("sudo apt install enum4linux")
-os.system("pip install python-docx")
-os.system("python3 -m pip install python-docx")
-print("\n### installation complete ###")
-
-
 # enumeration ###############################
+
+# install dependencies
+def install_depends():
+   print(" ### installing terminator's dependencies (nmap, nikto, gobuster, enum4linux, python-docx) ###\n")
+   os.system("sudo apt install nmap")
+   os.system("sudo apt install nikto")
+   os.system("sudo apt install gobuster")
+   os.system("sudo apt install enum4linux")
+   os.system("pip install python-docx")
+   os.system("python3 -m pip install python-docx")
+   print("\n### installation complete ###")
 
 # run nmap scans
 def init_scan(ip):
@@ -945,7 +944,8 @@ def doc_make(output):
 # call functions
 if module == "enum":
    # call enumeration functions
-   # prevent rerunning functions if more than one instance of service
+   install_depends()
+   # prevent rerunning functions if more than one instance of service found in open ports
    webc = 0
    smbc = 0
    ftpc = 0
