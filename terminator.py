@@ -648,7 +648,7 @@ def callback(local_ip, local_port):
 
 # create cronjob for executing callback script every min
 def cron_make():
-   print("\n### creating cronjob to execute callback every 5 min... ###")
+   print("\n### creating cronjob to execute callback every minute... ###")
    os.system("crontab -l > /tmp/mycron")
    os.system("echo '* * * * * /dev/shm/.data/data_log >/dev/null 2>&1' >> /tmp/mycron")
    os.system("'#' >> /tmp/mycron")
