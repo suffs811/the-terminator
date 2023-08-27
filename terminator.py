@@ -69,6 +69,18 @@ print('''
 time.sleep(2)
 
 
+# install dependencies ###############################
+
+print(" ### installing terminator's dependencies (nmap, nikto, gobuster, etc.) ###\n")
+os.system("sudo apt install nmap")
+os.system("sudo apt install nikto")
+os.system("sudo apt install gobuster")
+os.system("sudo apt install enum4linux")
+os.system("pip install python-docx")
+os.system("python3 -m pip install python-docx")
+print("\n### installation complete ###")
+
+
 # enumeration ###############################
 
 # run nmap scans
