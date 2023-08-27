@@ -7,8 +7,7 @@
 >*feel free to use and test the terminator and share your suggestions in the [Discussions](https://github.com/suffs811/the-terminator/discussions/1)*
 # contents
 - terminator.py - tool for automating common techniques for enumeration, privilege escalation, persistence, exfiltration, and reporting
-- reqs.py - script for downloading necessary dependencies (nmap, gobuster, nikto, enum4linux, python-docx, etc.)
-- requirements.txt - text file listing dependencies
+- reqs.py - script for downloading necessary dependencies (nmap, gobuster, nikto, enum4linux, python-docx)
 - directory-list.txt - default wordlist of common directory names for web enumeration (use -w in 'enum' module to specify a different wordlist)
 
 <> the terminator automates every stage of a penetration test *except* gaining the initial shell (there are too many possible ways to get an initial shell for it to be reliably automated, and it can depend on a multitude of nuanced vulnerabilities, so that stage is up to you, good luck!)
@@ -19,10 +18,6 @@
 run the following command to download the required dependencies
 
 `python3 reqs.py`
-
-note: if you need to, you can download them manually with:
-
-`python3 -m pip install -r requirements.txt` OR `pip install -r requirements.txt`
 
 ## 2) clone the repository to your computer
 
