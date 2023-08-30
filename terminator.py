@@ -169,11 +169,8 @@ def web(ip,wordlist,services):
       with open("/terminator/robots.txt") as rob:
          r = rob.readlines()
          for line in r:
-            if "/" in line:
-               os.system("echo '{}' >> /terminator/enum.txt".format(line))
-               os.system("echo '{}' >> /terminator/robots_dir.txt".format(line))
-            else:
-               continue
+            os.system("echo '{}' >> /terminator/enum.txt".format(line))
+            os.system("echo '{}' >> /terminator/robots_dir.txt".format(line))
 
       # look for 'username' and 'password' in web page source code
       os.system("echo '/# curl results #' > /terminator/curl.txt")
