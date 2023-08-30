@@ -89,6 +89,10 @@ def init_scan(ip):
    services = []
 
    # make terminator directory for output files
+   if os.path.exists('/terminator'):
+      os.system("rm -rf /terminator")
+   else:
+      continue
    os.system("mkdir /terminator/")
    os.system("chmod 777 /terminator/")
    os.system("touch /terminator/enum.txt")
@@ -174,9 +178,9 @@ def web(ip,wordlist,services):
             os.system("echo '{}' >> /terminator/robots_dir.txt".format(line))
 
       # look for 'username' and 'password' in web page source code
+      os.system("echo '### possible usernames/passwords from webpage source code: ###' >> /terminator/curl_find.txt")
       os.system("echo '### curl results ###' > /terminator/curl.txt")
       os.system("curl -s http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
-      os.system("echo '### possible username/password from webpage source code: ###' >> /terminator/curl_find.txt")
       os.system("grep -i -e 'username' -e 'password' /terminator/curl.txt >> /terminator/curl_find.txt")
       curl = open("/terminator/curl.txt")
       c = curl.readlines()
