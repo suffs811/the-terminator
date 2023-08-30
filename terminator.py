@@ -163,9 +163,10 @@ def web(ip,wordlist,services):
       os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
       os.system("gobuster dir -u {} -w directory-list.txt | tee -a /terminator/enum.txt".format(ip))
    os.system("echo '### robots.txt results ###' >> /terminator/enum.txt")
+   os.system("echo '### robots.txt: ###' >> /terminator/robots_dir.txt")
    for port in web_port:
       print("\n### curling robots.txt for {}:{}... ###".format(ip,port))
-      os.system("curl http://{}:{}/robots.txt | tee /terminator/robots.txt".format(ip,port.strip()))
+      os.system("curl -s http://{}:{}/robots.txt | tee /terminator/robots.txt".format(ip,port.strip()))
       with open("/terminator/robots.txt") as rob:
          r = rob.readlines()
          for line in r:
@@ -177,7 +178,7 @@ def web(ip,wordlist,services):
       os.system("curl http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
       curl = open("/terminator/curl.txt")
       c = curl.readlines()
-      os.system("echo '# possible username/password from webpage: #' >> /terminator/curl_find.txt")
+      os.system("echo '### possible username/password from webpage source code: ###' >> /terminator/curl_find.txt")
       for line in c:
          x = line.split('"')
          for sec in x:
@@ -202,6 +203,8 @@ def smb(ip):
    wheresmb = open("/terminator/wheresmb.txt")
    smbloc = wheresmb.readline()
    os.system("{} -a {} >> /terminator/smb.txt".format(smbloc.strip(),ip))
+   os.system("echo '### smb users/shares: ###' >> /terminator/smb_plus.txt")
+   os.system("echo '' >> /terminator/smb_plus.txt")
    os.system("{} -a {} | grep 'Local User' >> /terminator/smb_plus.txt".format(smbloc.strip(),ip))
    os.system("{} -a {} | grep 'Disk' >> /terminator/smb_plus.txt".format(smbloc.strip(),ip))
    os.system("cat smb_plus.txt >> /terminator/smb.txt")
@@ -244,6 +247,7 @@ def nfs(ip):
    os.system("cat /terminator/nfs_nmap.txt >> /terminator/enum.txt")
    os.system("echo '' >> /terminator/enum.txt")
    os.system("echo '### NFS mounts ###' >> /terminator/enum.txt")
+   os.system("echo '### NFS mounts ###' >> /terminator/nfs.txt")
    os.system("/usr/sbin/showmount -e {} >> /terminator/enum.txt".format(ip))
    os.system("/usr/sbin/showmount -e {} >> /terminator/nfs.txt".format(ip))
    print("\n### nfs enum output saved to /terminator/enum.txt ###")
@@ -264,8 +268,11 @@ def imp_enum(ip):
    os.system("cat /terminator/services.txt >> /terminator/imp_enum_results.txt")
    os.system("rm -f /terminator/services.txt")
    os.system("echo ''")
-   os.system("echo '### important findings: ###' >> /terminator/imp_enum_results.txt")
+   os.system("echo '***********************************************************' >> /terminator/imp_enum_results.txt")
    os.system("echo ''")
+   os.system("echo '################### important findings: ###################' >> /terminator/imp_enum_results.txt")
+   os.system("echo ''")
+   os.system("echo '***********************************************************' >> /terminator/imp_enum_results.txt")
 
    # get important enum results
    with open("/terminator/enum.txt") as enum:
@@ -282,26 +289,23 @@ def imp_enum(ip):
             os.system("echo '{}' >> /terminator/ftp_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/ftp_enum.txt")
          elif "allows session" in line or "allow session" in line:
-            os.system("echo '-- smb no-auth login:' >> /terminator/smb_enum.txt")
-            os.system('echo "{}" >> /terminator/smb_enum.txt'.format(line.strip()))
-            os.system("echo '' >> /terminator/smb_enum.txt")
+            os.system("echo '-- smb no-auth login:' >> /terminator/smb_imp.txt")
+            os.system('echo "{}" >> /terminator/smb_imp.txt'.format(line.strip()))
+            os.system("echo '' >> /terminator/smb_imp.txt")
          else:
             continue
 
    # save important enum results to /terminator/imp_enum_results.txt and print to screen
    os.system("cat /terminator/web_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
-   os.system("echo 'robots.txt:' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/robots_dir.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/curl_find.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/ftp_enum.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
-   os.system("echo '### smb users/shares: ###' >> /terminator/imp_enum_results.txt")
-   os.system("cat /terminator/smb_plus.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
+   os.system("cat /terminator/smb_imp.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
-   os.system("echo '-- nfs mounts:' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/nfs.txt >> /terminator/imp_enum_results.txt 2>/dev/null")
    os.system("echo '' >> /terminator/imp_enum_results.txt")
    os.system("cat /terminator/imp_enum_results.txt")
