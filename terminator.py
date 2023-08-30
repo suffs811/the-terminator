@@ -174,8 +174,9 @@ def web(ip,wordlist,services):
             os.system("echo '{}' >> /terminator/robots_dir.txt".format(line))
 
       # look for 'username' and 'password' in web page source code
-      os.system("echo '/# curl results #' > /terminator/curl.txt")
+      os.system("echo '### curl results ###' > /terminator/curl.txt")
       os.system("curl -s http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
+      os.system("grep -i -e 'username' -e 'password' /terminator/curl.txt >> /terminator/curl_find.txt")
       curl = open("/terminator/curl.txt")
       c = curl.readlines()
       os.system("echo '### possible username/password from webpage source code: ###' >> /terminator/curl_find.txt")
@@ -183,6 +184,7 @@ def web(ip,wordlist,services):
          x = line.split('"')
          for sec in x:
             if "html" in sec or "htm" in sec or "php" in sec or "css" in sec:
+               print("\n### curling http://{}:{}/{} ###".format(ip,port.strip(),sec.strip()))
                os.system("curl -s http://{}:{}/{} > /terminator/curltmp.txt".format(ip,port.strip(),sec.strip()))
                os.system("grep -i -e 'username' -e 'password' /terminator/curltmp.txt >> /terminator/curl_find.txt")
                os.system("echo '' > /terminator/curltmp.txt")
