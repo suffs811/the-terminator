@@ -176,10 +176,11 @@ def web(ip,wordlist,services):
       # look for 'username' and 'password' in web page source code
       os.system("echo '### curl results ###' > /terminator/curl.txt")
       os.system("curl -s http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
+      os.system("echo '### possible username/password from webpage source code: ###' >> /terminator/curl_find.txt")
       os.system("grep -i -e 'username' -e 'password' /terminator/curl.txt >> /terminator/curl_find.txt")
       curl = open("/terminator/curl.txt")
       c = curl.readlines()
-      os.system("echo '### possible username/password from webpage source code: ###' >> /terminator/curl_find.txt")
+
       for line in c:
          x = line.split('"')
          for sec in x:
