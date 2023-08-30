@@ -103,7 +103,7 @@ def init_scan(ip):
       lines_1 = scan_1.readlines()
       for line in lines_1:
          number = re.search("\A[1-9][0-9]",line)
-         if number:
+         if number and "closed" not in line:
             line_split = line.split(" ")
             first_word = line_split[0]
             ports.append(first_word[:-4].strip())
@@ -129,7 +129,10 @@ def init_scan(ip):
    os.system("echo ''")
    os.system("echo '### open ports and services on {} ###'| tee -a /terminator/enum.txt".format(ip))
    for item in services:
-      os.system("echo '{}' | tee -a /terminator/enum.txt /terminator/services.txt".format(item))
+      if "closed" not in item:
+         os.system("echo '{}' | tee -a /terminator/enum.txt /terminator/services.txt".format(item))
+      else:
+         continue
 
    time.sleep(3)
 
@@ -177,7 +180,7 @@ def web(ip,wordlist,services):
       os.system("curl http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
       curl = open("/terminator/curl.txt")
       c = curl.readlines()
-      os.system("echo '# possible username/password from webpages: #' >> /terminator/curl_find.txt")
+      os.system("echo '# possible username/password from webpage: #' >> /terminator/curl_find.txt")
       for line in c:
          x = line.split('"')
          for sec in x:
@@ -272,7 +275,7 @@ def imp_enum(ip):
       e = enum.readlines()
       for line in e:
          smb_check = re.search("//{}/.".format(ip),line)
-         if "interesting" in line:
+         if "interesting" in line.lower() or "login" in line.lower() or "admin" in line.lower():
             os.system("echo '{}' >> /terminator/web_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/web_enum.txt")
          elif "robots" in line and "#" not in line:
