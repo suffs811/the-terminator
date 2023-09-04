@@ -92,7 +92,7 @@ def init_scan(ip):
    if os.path.exists('/terminator'):
       os.system("rm -rf /terminator")
    else:
-      continue
+      pass
    os.system("mkdir /terminator/")
    os.system("chmod 777 /terminator/")
    os.system("touch /terminator/enum.txt")
