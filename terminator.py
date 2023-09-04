@@ -183,8 +183,8 @@ def web(ip,wordlist,services):
             os.system("echo '{}' >> /terminator/robots_dir.txt".format(line))
 
       # look for 'username' and 'password' in web page source code
-      os.system("echo '### possible usernames/passwords from webpage source code: ###' >> /terminator/curl_find.txt")
-      os.system("echo '### curl results ###' > /terminator/curl.txt")
+      os.system("echo '### possible usernames/passwords from webpage source code: ###' >> /terminator/curl.txt")
+      os.system("echo '' > /terminator/curl.txt")
       os.system("curl -s http://{}:{} >> /terminator/curl.txt".format(ip,port.strip()))
       os.system("grep -i -e 'username' -e 'password' /terminator/curl.txt >> /terminator/curl_find.txt")
       curl = open("/terminator/curl.txt")
@@ -245,7 +245,6 @@ def smb(ip):
 def ftp(ip):
    print("\n### initiating ftp enumeration... ###")
    os.system("echo '### ftp enumeration results ###' >> /terminator/enum.txt")
-   os.system("echo '-- ftp anonymous login:' >> /terminator/ftp_enum.txt")
    os.system("nmap -vv -p 21 --script=ftp-anon {} -oN /terminator/ftp_nmap.txt".format(ip))
    os.system("cat /terminator/ftp_nmap.txt >> /terminator/enum.txt")
    print("\n### ftp enum output saved to /terminator/enum.txt ###")
@@ -298,6 +297,7 @@ def imp_enum(ip):
             os.system("echo '{}' >> /terminator/web_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/web_enum.txt")
          elif "Anonymous FTP" in line:
+            os.system("echo '### ftp anonymous login: ###' >> /terminator/ftp_enum.txt")
             os.system("echo '{}' >> /terminator/ftp_enum.txt".format(line.strip()))
             os.system("echo '' >> /terminator/ftp_enum.txt")
          elif "allows session" in line or "allow session" in line:
