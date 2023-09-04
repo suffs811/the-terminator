@@ -146,31 +146,36 @@ def init_scan(ip):
 # enumerate web service with nikto, gobuster, curl
 def web(ip,wordlist,services):
    print("\n### initiating web enumeration... ###")
-   web_port = []
+   web_ports = []
    for line in services:
       if "http" in line or "web" in line:
          split = line.split(" ")
          tcp = split[0]
          psplit = tcp.split("/")
-         web_port.append(psplit[0])
+         web_ports.append(psplit[0])
       else:
          continue
+   for port in web_ports:
+      # nikto
+      print("\n### running nikto on {}:{}... ###".format(ip,port))
+      os.system("echo '### nikto results ###' >> /terminator/enum.txt")
+      os.system("nikto -h {} -p {} -t 3 -ask no | tee -a /terminator/enum.txt".format(ip,port))
 
-   print("\n### running nikto... ###")
-   os.system("echo '### nikto results ###' >> /terminator/enum.txt")
-   os.system("nikto -h {} -t 3 -ask no | tee -a /terminator/enum.txt".format(ip))
-   print("\n### running gobuster... ###")
-   if wordlist:
-      os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
-      os.system("gobuster dir -u {} -w {} | tee -a /terminator/enum.txt".format(ip,wordlist))
-   else:
-      os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
-      os.system("gobuster dir -u {} -w directory-list.txt | tee -a /terminator/enum.txt".format(ip))
-   os.system("echo '### robots.txt results ###' >> /terminator/enum.txt")
-   os.system("echo '### robots.txt: ###' >> /terminator/robots_dir.txt")
-   for port in web_port:
+      # gobuster
+      print("\n### running gobuster on {}:{}... ###".format(ip,port))
+      if wordlist:
+         os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
+         os.system("gobuster dir -u {}:{} -w {} | tee -a /terminator/enum.txt".format(ip,wordlist))
+      else:
+         os.system("echo '### gobuster results ###' >> /terminator/enum.txt")
+         os.system("gobuster dir -u http://{}:{} -w directory-list.txt | tee -a /terminator/enum.txt".format(ip,port))
+
+      # robots.txt
+      os.system("echo '### robots.txt results ###' >> /terminator/enum.txt")
+      os.system("echo '### robots.txt: ###' >> /terminator/robots_dir.txt")
       print("\n### curling robots.txt for {}:{}... ###".format(ip,port))
       os.system("curl -s http://{}:{}/robots.txt | tee /terminator/robots.txt".format(ip,port.strip()))
+    
       with open("/terminator/robots.txt") as rob:
          r = rob.readlines()
          for line in r:
