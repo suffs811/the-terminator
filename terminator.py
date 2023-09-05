@@ -86,9 +86,8 @@ def install_depends():
       else:
          print("### installing {} ###".format(dep))
          os.system("sudo apt install {}".format(dep))
-
-   for dep in pipDeps:
-      import dep
+       
+   			import docx
       exists = "'{}'".format(dep) in sys.modules
       if exists:
          continue
