@@ -86,15 +86,15 @@ def install_depends():
       else:
          print("### installing {} ###".format(dep))
          os.system("sudo apt install {}".format(dep))
-       
-   			import docx
+
+      import docx
       exists = "'{}'".format(dep) in sys.modules
       if exists:
          continue
       else:
-         print("### installing {} ###".format(dep))
-         os.system("pip install {}".format(dep))
-         os.system("python3 -m pip install {}".format(dep))
+         print("### installing docx ###")
+         os.system("pip install python-docx")
+         os.system("python3 -m pip install python-docx)
 
    print("\n### installation complete ###")
 
