@@ -74,10 +74,9 @@ time.sleep(2)
 
 # install dependencies
 def install_depends():
-   print(" ### installing terminator's dependencies (nmap, nikto, gobuster, enum4linux, python-docx) ###\n")
+   print(" ### installing terminator's dependencies (nmap, nikto, gobuster, enum4linux) ###\n")
 
    aptDeps = ["nmap", "nikto", "gobuster", "enum4linux"]
-   pipDeps = ["docx"]
 
    for dep in aptDeps:
       exists = os.system("which {}".format(dep))
@@ -86,15 +85,6 @@ def install_depends():
       else:
          print("### installing {} ###".format(dep))
          os.system("sudo apt install {}".format(dep))
-
-      import docx
-      exists = "'{}'".format(dep) in sys.modules
-      if exists:
-         continue
-      else:
-         print("### installing docx ###")
-         os.system("pip install python-docx")
-         os.system("python3 -m pip install python-docx")
 
    print("\n### installation complete ###")
 
