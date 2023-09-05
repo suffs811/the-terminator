@@ -84,6 +84,7 @@ def install_depends():
       if exists == 0:
          continue
       else:
+         print("### installing {} ###".format(dep))
          os.system("sudo apt install {}".format(dep))
 
    for dep in pipDeps:
@@ -92,6 +93,7 @@ def install_depends():
       if exists:
          continue
       else:
+         print("### installing {} ###".format(dep))
          os.system("pip install {}".format(dep))
          os.system("python3 -m pip install {}".format(dep))
 
