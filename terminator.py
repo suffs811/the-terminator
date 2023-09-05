@@ -94,7 +94,7 @@ def install_depends():
       else:
          print("### installing docx ###")
          os.system("pip install python-docx")
-         os.system("python3 -m pip install python-docx)
+         os.system("python3 -m pip install python-docx")
 
    print("\n### installation complete ###")
 
