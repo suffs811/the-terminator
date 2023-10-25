@@ -758,7 +758,7 @@ def export(local_ip):
    time.sleep(1)
 
    # get username of local user to scp files to
-   u_root = input("\n\n### specify local username to send data to (for scp): ")
+   u_root = input("\n\n### specify local username to send data to (ensure ssh is running on your machine): ")
    time.sleep(1)
 
    # try to scp files to local machine using inputted username
